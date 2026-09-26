@@ -171,6 +171,81 @@ select:focus,input:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .upc .go{color:var(--muted); flex:none}
 .todaybar{display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:.9rem}
 .todaybar .spacer{flex:1}
+/* bloques de Tu día: Repasa · Aprende · Ponte a prueba */
+.tblock + .tblock{margin-top:10px}
+.tbh{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; padding:10px 0 2px; border-bottom:1px solid var(--line)}
+.tbh b{font-size:.74rem; text-transform:uppercase; letter-spacing:.06em; color:var(--accent)}
+.tbh span{font-size:.78rem; color:var(--muted)}
+.tblock .tasks > .task:first-child{border-top:none}
+
+/* 🧭 el método: estado de la lección, ruta, cuadro de la lección */
+.stchip{display:inline-block; font-size:.72rem; font-weight:650; border-radius:20px; padding:1px 9px; white-space:nowrap; background:var(--chip); color:var(--muted); vertical-align:1px}
+.st-aprendiendo{background:color-mix(in srgb,var(--warn) 14%,var(--card)); color:var(--warn)}
+.st-repaso{background:color-mix(in srgb,var(--accent) 12%,var(--card)); color:var(--accent)}
+.st-dominada{background:color-mix(in srgb,var(--ok) 14%,var(--card)); color:var(--ok)}
+.stctl{display:flex; flex-direction:column; gap:4px; margin-top:14px}
+.stctl .chipbtn{margin:0}
+.routebox{margin-top:14px; padding:12px 14px; border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line)); border-radius:12px; background:color-mix(in srgb,var(--accent) 4%,var(--card))}
+.routebox .bar{background:color-mix(in srgb,var(--ink) 9%,var(--card))}
+.lsum{font-size:.9rem; color:var(--ink); margin:4px 0 8px; line-height:1.55}
+.loose{display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-top:12px; font-size:.8rem; color:var(--muted)}
+.loose > span{margin-right:2px}
+.cacts .btn, .routebox .btn, .lessoncta .btn{white-space:normal; text-align:left; max-width:100%}
+.lessonbox{display:flex; gap:10px 14px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin:14px 0 4px; padding:11px 13px;
+  border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line)); border-radius:12px; background:color-mix(in srgb,var(--accent) 4%,var(--card))}
+.lessonbox .lbt{min-width:0}
+.lessonbox .lba{display:flex; gap:6px; flex-wrap:wrap}
+.lsteps{display:flex; gap:4px 10px; flex-wrap:wrap; margin-top:5px; font-size:.78rem; color:var(--muted)}
+.lstep.ok{color:var(--ok); font-weight:600}
+.lessoncta{margin-bottom:6px}
+
+/* 🤖 tutor con Gemini */
+.aisub{font-size:.84rem; margin:-4px 0 10px !important}
+.aimsgs{display:flex; flex-direction:column; gap:10px; max-height:52vh; overflow:auto; padding:2px}
+.aim{border-radius:14px; padding:10px 13px; font-size:.9rem; line-height:1.55; max-width:92%}
+.aim.ai{background:var(--chip); align-self:flex-start; color:var(--ink)}
+.aim.me{background:color-mix(in srgb,var(--accent) 13%,var(--card)); color:var(--ink); align-self:flex-end; white-space:pre-wrap}
+.aim p, .aim li{color:var(--ink) !important; font-size:.9rem; margin:0 0 6px}
+.aim p:last-child, .aim ul:last-child, .aim ol:last-child{margin-bottom:0}
+.aim ul, .aim ol{margin:0 0 6px 0 !important; padding-left:20px}
+.aim li{margin-bottom:3px}
+.aim.busy{color:var(--muted); font-size:.86rem}
+pre.aicode{background:var(--code); border:1px solid var(--line); border-radius:10px; padding:9px 11px; overflow:auto; font-size:.8rem; margin:4px 0 8px; white-space:pre}
+pre.aicode code{background:none; border:none; padding:0; font-size:inherit; color:var(--ink)}
+.explmodal .rule ul{margin:4px 0 0 !important; padding-left:18px}
+.dots{display:inline-flex; gap:3px; vertical-align:middle; margin-right:4px}
+.dots i{width:5px; height:5px; border-radius:50%; background:currentColor; opacity:.35; animation:dotb 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s} .dots i:nth-child(3){animation-delay:.3s}
+@keyframes dotb{0%,100%{opacity:.25; transform:translateY(0)} 50%{opacity:1; transform:translateY(-2px)}}
+.aiin{display:flex; gap:8px; align-items:flex-end; margin-top:12px}
+.aiin textarea, .explmodal textarea, .pcmodal textarea{flex:1; width:100%; min-width:0; font:inherit; font-size:.9rem; padding:9px 11px; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--ink); resize:vertical}
+.aierr{font-size:.84rem; color:var(--bad); background:color-mix(in srgb,var(--bad) 8%,var(--card)); border-radius:10px; padding:8px 10px; margin:8px 0; display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.explrow{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px; font-size:.84rem; color:var(--muted)}
+.explrow span{flex:1 1 220px}
+.explsum{background:var(--chip); border-radius:12px; padding:10px 12px; margin-bottom:10px; font-size:.9rem}
+.explsum small{display:block; color:var(--muted); margin-top:4px; font-size:.78rem}
+.explok{color:var(--ink) !important}
+.explkp{list-style:none; margin:8px 0 !important; padding:0}
+.explkp li{display:flex; gap:9px; align-items:flex-start; padding:6px 0; border-top:1px solid var(--line); color:var(--ink) !important; margin:0 !important}
+.explkp li small{display:block; color:var(--muted); font-size:.8rem; margin-top:2px}
+.explkp .ei{flex:none; width:22px; height:22px; border-radius:50%; display:grid; place-items:center; font-size:.75rem; font-weight:700; background:var(--chip); color:var(--muted)}
+.ek-cubierto .ei{background:var(--ok); color:#fff} .ek-parcial .ei{background:var(--warn); color:#fff} .ek-error .ei{background:var(--bad); color:#fff}
+.ek-falta{opacity:.75}
+.expltxt{white-space:pre-wrap; color:var(--ink) !important; background:var(--chip); border-radius:10px; padding:9px 11px}
+.explself .pitem span{color:var(--ink)}
+.pcrow{display:flex; gap:12px; flex-wrap:wrap}
+.pcrow label{display:flex; flex-direction:column; gap:4px; font-size:.84rem; font-weight:600; flex:1 1 200px}
+.pcrow input{font:inherit; font-size:.9rem; padding:8px 10px; border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--ink); min-width:0}
+.pclist{max-height:34vh}
+.pclist details{padding:4px 0; border-bottom:1px solid var(--line)}
+.pclist details:last-child{border-bottom:none}
+.pclist summary{cursor:pointer; font-weight:650; font-size:.88rem; padding:4px 0}
+.pcwhy{display:block; color:var(--accent2); font-size:.76rem; margin-top:1px}
+.pcday{display:flex; gap:12px; padding:6px 0; border-top:1px solid var(--line); font-size:.86rem}
+.pcday b{flex:none; width:110px} .pcday span{flex:1; min-width:0; color:var(--muted)}
+.pcbanner{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px; padding:9px 12px; border-radius:12px;
+  background:color-mix(in srgb,var(--accent) 7%,var(--card)); border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line)); font-size:.87rem}
+.pcbanner .spacer{flex:1}
 
 /* ---------- cursos ---------- */
 .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px}
@@ -209,6 +284,8 @@ select:focus,input:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 i.h0{background:var(--chip)} i.h1{background:color-mix(in srgb,var(--bad) 70%,var(--card)); border-color:transparent}
 i.h2{background:color-mix(in srgb,var(--warn) 75%,var(--card)); border-color:transparent} i.h3{background:color-mix(in srgb,var(--accent) 75%,var(--card)); border-color:transparent}
 i.h4{background:var(--ok); border-color:transparent}
+i.l0{background:var(--chip)} i.l1{background:color-mix(in srgb,var(--warn) 75%,var(--card)); border-color:transparent}
+i.l2{background:color-mix(in srgb,var(--accent) 75%,var(--card)); border-color:transparent} i.l3{background:var(--ok); border-color:transparent}
 
 /* cabecera de un curso */
 .chead{display:flex; gap:14px; align-items:flex-start}
@@ -668,20 +745,20 @@ function bookLine(c){
   const b = c.book; if(!b) return '';
   return (b.done ? '✓ Leído completo' : `📖 Leído hasta la p. ${b.readTo}`) + (b.author ? ' · ' + esc(b.author) : '');
 }
-/* cuando un libro trae secciones nuevas (Días que acabas de leer), se programan solas: una por día desde mañana */
+/* cuando un libro trae secciones nuevas (Días que acabas de leer), entran a su ruta como lecciones nuevas */
 function scheduleNewSections(){
   if(!state.knownSecs) state.knownSecs = {};
   const fresh = [];
   COURSES.forEach(c => c.sections.forEach(s => { if(s.added && !state.knownSecs[skey(c.id, s.id)]) fresh.push({c, s}); }));
   if(!fresh.length) return;
-  fresh.forEach((x, i) => { const k = skey(x.c.id, x.s.id); state.knownSecs[k] = today(); if(!nextPlanFor(k)) addPlan({date: addDays(today(), 1 + i), secs: [k], from: 'book'}); });
+  fresh.forEach(x => { state.knownSecs[skey(x.c.id, x.s.id)] = today(); });
   save();
   const names = [...new Set(fresh.map(x => x.c.title))].join(', ');
-  setTimeout(() => toast(`🆕 ${fresh.length} ${plural(fresh.length, 'sección nueva', 'secciones nuevas')} de ${names}: una por día desde mañana en "Tu día"`), 500);
+  setTimeout(() => toast(`🆕 ${fresh.length} ${plural(fresh.length, 'sección nueva', 'secciones nuevas')} en la ruta de ${names}: te aparecen como lecciones en Hoy`), 500);
 }
 function isDue(id){ const st = state.cards[id]; return !st || st.due <= today(); }
-function dueIn(courseId, sectionId){
-  return ALL.filter(k => (!courseId || k.courseId===courseId) && (!sectionId || k.sectionId===sectionId) && isDue(k.id));
+function dueIn(courseId, sectionId){   // solo tarjetas vistas o de lo que ya aprendiste (ver cardEligible en 🧭 EL MÉTODO)
+  return ALL.filter(k => (!courseId || k.courseId===courseId) && (!sectionId || k.sectionId===sectionId) && isDue(k.id) && cardEligible(k));
 }
 function priority(list){ // más olvidadas y más vencidas primero; nuevas al final
   return list.slice().sort((a,b) => {
@@ -799,7 +876,23 @@ function planSummary(p){
   ['fc','quiz','multi','code'].forEach(k => { const v = p.n[k]; if(v) bits.push(v === 'all' ? (k === 'fc' ? 'todas las flashcards' : 'todo ' + nm[k][1]) : v + ' ' + nm[k][v === 1 ? 0 : 1]); });
   return bits.join(' · ') || 'nada elegido';
 }
-function planDue(){ const t = today(); return plans().filter(p => !p.done && p.date <= t && planSecObjs(p).length + (p.src === 'failed' ? 1 : 0)).sort((a,b) => a.date < b.date ? -1 : 1); }
+function planDue(){ const t = today(); return plans().filter(p => !p.done && p.date <= t && planSecObjs(p).length + (p.src === 'failed' ? 1 : 0) && !seriesWaiting(p)).sort((a,b) => a.date < b.date ? -1 : 1); }
+/* repasos en serie (1-3-7 de una lección, de lo estudiado o programado por ti): el 2.º no toca hasta que hagas el 1.º,
+   y si hiciste uno tarde, los siguientes se corren para que sigan separados (hacer dos el mismo día desperdicia uno) */
+const inSeries = p => !!(p && p.series && p.step && p.from !== 'parcial');
+function seriesWaiting(p){ return inSeries(p) && plans().some(q => q.series === p.series && q.step && q.step < p.step && !q.done); }
+function shiftSeries(p){
+  if(!inSeries(p) || !p.done) return 0;
+  const next = plans().filter(q => q.series === p.series && q.step > p.step && !q.done).sort((a, b) => a.step - b.step);
+  let prevOrig = p.date, prevNew = p.done > p.date ? p.done : p.date, moved = 0;
+  next.forEach(q => {
+    const gap = Math.max(1, daysBetween(prevOrig, q.date)), nd = addDays(prevNew, gap);
+    prevOrig = q.date;
+    if(nd > q.date){ q.date = nd; q.upd = Date.now(); moved++; }
+    prevNew = q.date;
+  });
+  return moved;
+}
 function plansOn(ds){ return plans().filter(p => p.date === ds); }
 function nextPlanFor(k){ return plans().filter(p => !p.done && p.secs.includes(k)).sort((a,b) => a.date < b.date ? -1 : 1)[0] || null; }
 function dayLabel(ds){
@@ -813,7 +906,13 @@ function planBadge(p){
   if(p.date === t) return {cls:'today', txt:'📝 hoy'};
   return {cls:'', txt:'📝 ' + dayLabel(p.date)};
 }
-function markPlanDone(id){ const p = planById(id); if(p && !p.done){ p.done = today(); p.upd = Date.now(); save(); } }
+function markPlanDone(id){
+  const p = planById(id); if(!p || p.done) return;
+  p.done = today(); p.upd = Date.now();
+  const moved = shiftSeries(p); save();
+  if(moved){ const nx = plans().filter(q => q.series === p.series && !q.done).sort((a, b) => a.step - b.step)[0];
+    setTimeout(() => toast(`📅 Lo hiciste tarde: ${moved === 1 ? 'el siguiente repaso se corrió' : 'los siguientes repasos se corrieron'} para que queden separados${nx ? ' (el próximo: ' + dayLabel(nx.date) + ')' : ''}`), 300); }
+}
 function removePlan(id){ const p = planById(id); if(p){ markGone('plan:' + id); markGone('plansig:' + planSig(p)); } state.plans = plans().filter(p => p.id !== id); save(); }
 /* los viejos "⏰ Repasar en…" pasan a ser planes (una sola vez) */
 function migrateReminders(){
@@ -861,17 +960,19 @@ function taskRow(tk, num, isNext){
 }
 function planTask(p, opts){
   opts = opts || {};
-  const t = today(), so = planSecObjs(p), late = p.date < t && !p.done ? daysBetween(p.date, t) : 0;
+  const t = today(), so = planSecObjs(p), wait = !p.done && seriesWaiting(p), late = p.date < t && !p.done && !wait ? daysBetween(p.date, t) : 0;
   const one = so.length === 1 && p.src !== 'failed' ? so[0] : null;
-  const origin = {studied:'lo marcaste 📌 estudiado', book:'sección nueva del libro', note:'apunte nuevo'}[p.from] || '';
+  const origin = p.from === 'parcial' && p.parcial ? `para tu parcial del ${fmtDate(p.parcial.date)}: ${so.slice(0, 3).map(x => esc(shortSec(x.s.title))).join(', ')}${so.length > 3 ? ` y ${so.length - 3} más` : ''}`
+    : {studied:'lo marcaste 📌 estudiado', book:'sección nueva del libro', note:'apunte nuevo', lesson:'para fijar la lección'}[p.from] || '';
   const bits = [esc(planSummary(p))];
-  if(p.step) bits.push(`repaso ${p.step} de 3 (1-3-7)`);
+  if(p.step && p.from !== 'lesson') bits.push(`repaso ${p.step} de 3 (1-3-7)`);
   if(late) bits.push(`<span class="late">atrasado ${late} ${plural(late,'día')}</span>`);
+  if(wait) bits.push('espera a que hagas el repaso anterior: al hacerlo, este se corre para quedar separado');
   if(opts.showDate && !p.done) bits.push(dayLabel(p.date));
   if(p.done) bits.push('hecho ' + dayLabel(p.done));
   if(origin) bits.push(origin);
   if(one) bits.push(`<a data-act="section" data-c="${one.c.id}" data-s="${one.s.id}">ver la sección</a>`);
-  const canRun = !p.done && p.date <= t;
+  const canRun = !p.done && p.date <= t && !wait;
   return {done: !!p.done, late: !!late, title: esc(planTitle(p)), meta: bits.join(' · '),
     acts: cls => `${canRun ? `<button class="${cls}" data-act="planGo" data-id="${p.id}">Empezar</button>` : ''}
       <button class="btn small ghost" data-act="planDone" data-id="${p.id}" title="Marcar como hecho">✓ Hecho</button>
@@ -880,52 +981,786 @@ function planTask(p, opts){
 function planRow(p, opts){ return taskRow(planTask(p, opts), '•', false); }
 
 /* =====================================================================
-   VISTA: HOY  ("Tu día": una sola lista en orden)
+   🧭 EL MÉTODO: 1) repasa lo que toca → 2) aprende una lección → 3) evalúate al cerrar un bloque
+   - Cada curso tiene un estado: 'activo' (lo estás estudiando: te propongo lecciones),
+     'terminado' (para no olvidar: entra al repaso de mantenimiento) o 'pausa'.
+   - Una LECCIÓN lleva una sección por pasos fijos: Entender → Recordar → Distinguir → Aplicar.
+     Es guiada (el siguiente paso siempre es el botón principal) pero no bloquea.
+     Al terminarla, la sección queda aprendida y se programan sus 3 repasos (1-3-7):
+     reaprendizaje sucesivo (Rawson & Dunlosky, 2022).
+   - Lo nuevo se aprende en bloque (una sección a la vez); lo que se repasa va mezclado
+     (intercalado: Brunmair & Richter, 2019).
    ===================================================================== */
-function dayTasks(){
-  const t = today(), tasks = [];
-  // 1) lo que fallaste y vuelve hoy (banco de errores)
+const COURSE_STATUS = {activo:'En curso', terminado:'Para no olvidar', pausa:'En pausa'};
+const COURSE_STATUS_SUB = {activo:'lo estás estudiando: te propongo sus lecciones en Hoy',
+  terminado:'ya lo estudiaste: entra al repaso de mantenimiento para que no se te olvide',
+  pausa:'por ahora no avanza; sus tarjetas vistas siguen repasándose'};
+function courseStatus(cId){ const m = state.courseStatus || {}; return (m[cId] && m[cId].s) || 'activo'; }
+function setCourseStatus(cId, s){ (state.courseStatus = state.courseStatus || {})[cId] = {s, ts: Date.now()}; save(); }
+function migrateMethod(){
+  if(state.methodV) return;
+  const def = {fastapi:'terminado', datascience:'terminado', ml_andrewng:'terminado', libros:'terminado', ejerciciosml:'activo', dlfastai:'activo'};
+  state.courseStatus = state.courseStatus || {};
+  Object.entries(def).forEach(([c, s]) => { if(!state.courseStatus[c]) state.courseStatus[c] = {s, ts: 0}; });
+  // las secciones nuevas de un libro ya no se programan como repaso: entran a la ruta como lecciones
+  state.plans = plans().filter(p => p.done || p.from !== 'book');
+  state.methodV = 1; save();
+}
+
+/* ---------- lecciones ---------- */
+const STEP_INFO = {
+  read:   {n:'Entender',   ico:'📖', what: s => `resumen y ${s.keyPoints.length} puntos clave`,
+           why:'Lee el resumen y los puntos clave: es la base sobre la que vas a recuperar.'},
+  recall: {n:'Recordar',   ico:'🃏', what: s => `${s.flashcards.length} tarjetas, de memoria`,
+           why:'Recuperar la idea sin verla es lo que la fija (mucho más que releer).'},
+  quiz:   {n:'Distinguir', ico:'📝', what: s => `quiz de ${s.quiz.length} preguntas`,
+           why:'Elegir entre opciones parecidas te obliga a separar conceptos que se confunden.'},
+  multi:  {n:'Distinguir', ico:'☑', what: s => `${s.multi.length} de múltiple respuesta`,
+           why:'Juzgar cada afirmación por separado, sin poder adivinar por descarte.'},
+  code:   {n:'Aplicar',    ico:'💻', what: s => `${s.code.length} ejercicios de código`,
+           why:'Primero lees código (predecir, encontrar el error) y después lo escribes (completar, armar, ordenar).'},
+};
+const STEP_GROUPS = [{g:'Entender', keys:['read']}, {g:'Recordar', keys:['recall']}, {g:'Distinguir', keys:['quiz','multi']}, {g:'Aplicar', keys:['code']}];
+function lessonKeys(s){ return ['read', s.flashcards.length && 'recall', s.quiz.length && 'quiz', (s.multi||[]).length && 'multi', (s.code||[]).length && 'code'].filter(Boolean); }
+function lessonGroups(s){ const ks = lessonKeys(s); return STEP_GROUPS.map(g => ({g: g.g, keys: g.keys.filter(k => ks.includes(k))})).filter(g => g.keys.length); }
+function lessonOf(cId, sId){ return (state.lessons || {})[skey(cId, sId)] || null; }
+function lessonDone(cId, sId){ const l = lessonOf(cId, sId); return !!(l && l.done); }
+function lessonNext(c, s){ const l = lessonOf(c.id, s.id) || {}; return lessonKeys(s).find(k => !l[k]) || null; }
+function lessonStepNo(c, s){   // en qué paso (grupo) vas: 1..N
+  const nx = lessonNext(c, s), gs = lessonGroups(s);
+  return nx ? gs.findIndex(g => g.keys.includes(nx)) + 1 : gs.length;
+}
+function lessonPlans(k){ return plans().filter(p => p.from === 'lesson' && p.secs.length === 1 && p.secs[0] === k); }
+function secStatus(c, s){
+  const k = skey(c.id, s.id), l = lessonOf(c.id, s.id);
+  if(l && l.done){
+    const ps = lessonPlans(k), d = ps.filter(p => p.done).length;
+    if(!ps.length) return {k:'repaso', lbl:'Aprendida', lv:2};
+    return d >= ps.length ? {k:'dominada', lbl:'Dominada', lv:3} : {k:'repaso', lbl:`En repaso · ${d} de ${ps.length}`, lv:2};
+  }
+  if(l && lessonKeys(s).some(x => l[x])) return {k:'aprendiendo', lbl:`Aprendiendo · paso ${lessonStepNo(c, s)} de ${lessonGroups(s).length}`, lv:1};
+  return {k:'nueva', lbl:'Por aprender', lv:0};
+}
+function nextLessonSec(c){ return c.sections.find(s => !lessonDone(c.id, s.id)) || null; }
+function learnedSecs(c){ return c.sections.filter(s => lessonDone(c.id, s.id)); }
+/* una tarjeta NUEVA solo entra a tu repaso diario si ya aprendiste su sección (o si el curso es "para no olvidar") */
+function cardEligible(k){
+  if(state.cards[k.id]) return true;
+  const c = course(k.courseId);
+  return !c || !!c.custom || courseStatus(k.courseId) === 'terminado' || lessonDone(k.courseId, k.sectionId);
+}
+function routeCourses(){ return COURSES.filter(c => !c.custom && c.sections.length && courseStatus(c.id) === 'activo'); }
+function lessonDates(cId, sId){ const l = lessonOf(cId, sId); return l ? Object.entries(l).filter(([k, v]) => k !== 'ts' && typeof v === 'string').map(([, v]) => v) : []; }
+/* marca un paso; si con eso se completa la lección, la sección queda aprendida y se programan sus 3 repasos */
+function markStep(cId, sId, key){
+  const c = course(cId), s = c && section(cId, sId); if(!s) return null;
+  const k = skey(cId, sId), L = state.lessons = state.lessons || {}, l = L[k] = L[k] || {};
+  if(!l[key]) l[key] = today();
+  l.ts = Date.now();
+  let learned = false;
+  if(!l.done && lessonKeys(s).every(x => l[x])){
+    l.done = today(); l.doneTs = Date.now(); learned = true;
+    const series = newId(), n = {fc: Math.min(10, s.flashcards.length), quiz: Math.min(3, s.quiz.length),
+      multi: Math.min(3, (s.multi||[]).length), code: Math.min(3, (s.code||[]).length)};
+    if(!lessonPlans(k).length) [1, 3, 7].forEach((d, i) => addPlan({date: addDays(today(), d), secs: [k], n, series, step: i + 1, from: 'lesson',
+      label: `Repaso ${i + 1} de 3 · ${shortSec(s.title)}`}));
+  }
+  save();
+  return learned;
+}
+function resetLesson(cId, sId){   // borra sus pasos y TODOS sus repasos (si la vuelves a aprender, empiezan de nuevo sus 3)
+  const k = skey(cId, sId);
+  if(state.lessons) delete state.lessons[k];
+  markGone('lesson:' + k);
+  lessonPlans(k).forEach(p => removePlan(p.id));
+  save();
+}
+/* una lección con todos sus pasos pero sin cerrar (p. ej. los pasos llegaron de dos dispositivos): se cierra y se programan sus repasos */
+function normalizeLessons(){
+  let n = 0;
+  Object.entries(state.lessons || {}).forEach(([k, l]) => {
+    const [cId, sId] = k.split('|'), c = course(cId), s = c && c.sections.find(x => x.id === sId);
+    if(!s || !l || l.done || !lessonKeys(s).every(x => l[x])) return;
+    markStep(cId, sId, 'read'); n++;
+  });
+  return n;
+}
+function lessonGo(cId, sId){
+  const c = course(cId), s = c && section(cId, sId); if(!s) return;
+  const nx = lessonNext(c, s);
+  if(!nx || nx === 'read') return goLesson(cId, sId);
+  startLessonStep(cId, sId, nx);
+}
+/* abre la ronda de un paso; la sesión queda marcada para volver a la lección al salir */
+function startLessonStep(cId, sId, key){
+  leave();
+  ({recall: startCards, quiz: startQuiz, multi: startMulti, code: startCode})[key](cId, sId);
+  const z = fcSession || quizSession || multiSession || codeSession;
+  if(z) z.lesson = true;
+}
+/* al terminar una ronda completa de una sección: cuenta como paso de su lección */
+function lessonHook(cId, sId, key, pct, fromLesson){
+  const c = course(cId);
+  if(!c || c.custom || !sId || String(sId).includes('~')) return {learned: false, cta: ''};
+  // en un curso "para no olvidar", la práctica suelta no abre lecciones; solo cuenta si la empezaste tú
+  if(courseStatus(cId) === 'terminado' && !fromLesson && !lessonOf(cId, sId)) return {learned: false, cta: ''};
+  const learned = markStep(cId, sId, key);
+  if(learned) toast('🎉 Sección aprendida: sus 3 repasos quedaron programados');
+  return {learned, cta: lessonCta(cId, sId, learned, pct)};
+}
+/* recuadro al final de una ronda de la sección: sigue la lección (o celebra que quedó aprendida) */
+function lessonCta(cId, sId, learned, pct){
+  const c = course(cId), s = c && section(cId, sId); if(!s) return '';
+  if(learned){
+    const nx = nextLessonSec(c);
+    return `<div class="plan lessoncta"><b>🎉 Sección aprendida: ${esc(shortSec(s.title))}</b>
+      <p>Sus 3 repasos quedaron programados: mañana, en 3 días y en 7 (te aparecen en Hoy). Así la pasas a la memoria de largo plazo.</p>
+      <div class="mrow" style="margin-top:8px"><button class="btn" data-act="home">Ir a Hoy</button>
+        ${nx ? `<button class="btn sec" data-act="lesson" data-c="${c.id}" data-s="${nx.id}">Siguiente lección: ${esc(shortSec(nx.title))}</button>` : ''}</div></div>`;
+  }
+  if(lessonDone(cId, sId)) return '';
+  const nx = lessonNext(c, s); if(!nx) return '';
+  const gs = lessonGroups(s), no = lessonStepNo(c, s);
+  return `<div class="plan lessoncta"><b>📘 Lección: ${esc(shortSec(s.title))} · paso ${no} de ${gs.length}</b>
+    <p>Sigue con <b>${STEP_INFO[nx].n}</b> (${esc(STEP_INFO[nx].what(s))}). ${STEP_INFO[nx].why}</p>
+    ${pct !== undefined && pct < 60 ? `<p>Te costó (${pct}%): si quieres, repite las falladas antes de seguir. Igual vuelven mañana en <i>Lo que fallaste</i>.</p>` : ''}
+    <div class="mrow" style="margin-top:8px"><button class="btn" data-act="lessonGo" data-c="${c.id}" data-s="${s.id}">Seguir la lección →</button>
+      <button class="btn ghost" data-act="lesson" data-c="${c.id}" data-s="${s.id}">Ver la lección</button></div></div>`;
+}
+
+/* ---------- la vista de una lección ---------- */
+let LESSON = null;
+function goLesson(cId, sId){ leave(); setTab('courses'); view = 'lesson'; LESSON = {c: cId, s: sId}; renderLesson(cId, sId); window.scrollTo(0, 0); }
+function renderLesson(cId, sId){
+  const c = course(cId), s = c && section(cId, sId); if(!s) return goCourses();
+  const k = skey(cId, sId), l = lessonOf(cId, sId) || {}, st = secStatus(c, s), gs = lessonGroups(s), nx = lessonNext(c, s);
+  const nxGroup = nx ? gs.findIndex(g => g.keys.includes(nx)) : -1;
+  const doneN = gs.filter(g => g.keys.every(x => l[x])).length;
+  const btn = (key, label, primary) => `<button class="btn small ${primary ? '' : 'sec'}" data-act="lessonStep" data-c="${cId}" data-s="${sId}" data-k="${key}">${label}</button>`;
+  const rows = gs.map((g, gi) => {
+    const done = g.keys.every(x => l[x]), isNext = gi === nxGroup;
+    let body = '', acts = '';
+    if(g.g === 'Entender'){
+      body = `<div class="lsum">${fmt(s.summary)}</div>
+        <details class="plain" ${done ? '' : 'open'}><summary>📖 Los ${s.keyPoints.length} puntos clave</summary><ul class="kp" style="margin-top:8px">${s.keyPoints.map(p => `<li>${fmt(p)}</li>`).join('')}</ul></details>
+        ${done ? '' : `<div class="mrow" style="margin-top:10px">${btn('read', 'Ya lo leí ✓', isNext)}<span class="hint" style="margin:0; text-align:left">Léelo con calma: en el paso 2 lo vas a recuperar de memoria, sin verlo.</span></div>`}
+        ${(() => { const e = explLast(cId, sId); return `<div class="explrow">✍️ <span>${e ? `Tu última explicación: ${e.cov} de ${e.tot} puntos clave (${fmtDate(e.d)})` : 'Cierra los puntos clave y explícalo con tus palabras: escribirlo de memoria es lo que más fija la idea.'}</span>
+          <button class="btn small ${done && !e ? 'sec' : 'ghost'}" data-act="explain" data-c="${cId}" data-s="${sId}">${e ? 'Explicarlo otra vez' : 'Explícalo con tus palabras'}</button></div>`; })()}`;
+      acts = done ? `<span class="badge done">✓ ${fmtDate(l.read)}</span>` : '';
+    } else {
+      body = `<div class="tmeta">${g.keys.map(x => esc(STEP_INFO[x].what(s))).join(' y ')} · ${STEP_INFO[g.keys[0]].why}</div>`;
+      acts = g.keys.map(x => l[x] ? `<button class="btn small ghost" data-act="lessonStep" data-c="${cId}" data-s="${sId}" data-k="${x}" title="Hacerlo otra vez">✓ ${STEP_INFO[x].ico} Otra vez</button>`
+        : btn(x, (g.keys.length > 1 ? STEP_INFO[x].ico + ' ' + ({quiz:'Quiz', multi:'Múltiple'}[x] || '') : 'Empezar'), isNext && x === nx)).join('');
+    }
+    return `<div class="task ${done ? 'done' : ''} ${isNext ? 'next' : ''}">
+      <span class="tnum">${done ? '✓' : gi + 1}</span>
+      <div class="tbody"><div class="ttitle">${gi + 1}. ${g.g}</div>${body}</div>
+      <div class="tact">${acts}</div></div>`;
+  }).join('');
+  const ps = lessonPlans(k);
+  app.innerHTML = `
+  <div class="crumb"><a data-act="course" data-c="${cId}">‹ ${c.emoji || '📘'} ${esc(c.title)}</a></div>
+  <div class="card">
+    <div class="phead" style="margin:0">
+      <div class="eyebrow">Lección · ${esc(COURSE_STATUS[courseStatus(cId)])}</div>
+      <h1 style="font-size:1.4rem">${esc(s.title)}</h1>
+      <p><span class="stchip st-${st.k}">${esc(st.lbl)}</span> ${l.done ? `Aprendida el ${fmtDate(l.done)}.` : `${doneN} de ${gs.length} pasos. Sigue el orden: cada paso se apoya en el anterior.`}</p>
+    </div>
+    <div class="dayprog" style="margin-top:10px"><span class="bar g" style="max-width:none"><i style="width:${Math.round(100 * doneN / gs.length)}%"></i></span></div>
+    <div class="tasks">${rows}</div>
+    ${l.done ? `<div class="alldone">✅ <span><b>Aprendida.</b> ${ps.length ? 'Repasos: ' + ps.map(p => `${p.done ? '✓' : '○'} ${dayLabel(p.date)}`).join(' · ') + '.' : ''} Te aparecen en Hoy el día que tocan.</span></div>` : ''}
+  </div>
+  <div class="card todaybar">
+    <button class="btn small ghost" data-act="askAI" data-c="${cId}" data-s="${sId}">💬 Pedirle a Claude que me la explique</button>
+    <button class="btn small ghost" data-act="remEdit" data-c="${cId}" data-s="${sId}">📅 Programar un repaso</button>
+    <span class="spacer"></span>
+    ${!l.done ? `<button class="btn small ghost" data-act="lessonLearned" data-c="${cId}" data-s="${sId}" title="Marca todos los pasos y programa sus repasos">Ya la sé: marcar aprendida</button>` : ''}
+    ${Object.keys(l).length ? `<button class="btn small ghost" data-act="lessonReset" data-c="${cId}" data-s="${sId}" style="color:var(--bad)">Reiniciar la lección</button>` : ''}
+  </div>`;
+}
+
+/* ---------- mantenimiento: lo de los cursos terminados, mezclado, para que no se olvide ---------- */
+function maintCourses(){ return COURSES.filter(c => !c.custom && courseStatus(c.id) === 'terminado' && c.sections.some(s => (s.quiz||[]).length + (s.multi||[]).length + (s.code||[]).length)); }
+function buildMaint(n, cId){
+  const secs = [];
+  maintCourses().filter(c => !cId || c.id === cId).forEach(c => c.sections.forEach(s => {
+    const items = [];
+    ['quiz','multi','code'].forEach(k => (s[k] || []).forEach((x, i) => items.push({kind:k, x, c, s, i, sid:s.id, key:k+'|'+c.id+'|'+s.id+'|'+i})));
+    if(!items.length) return;
+    const last = items.reduce((m, it) => { const d = seenEx()[it.key]; return d && d > m ? d : m; }, '');
+    secs.push({c, s, items, last, r: Math.random()});
+  }));
+  secs.sort((a, b) => (a.last < b.last ? -1 : a.last > b.last ? 1 : a.r - b.r));   // las menos practicadas primero
+  const byC = {}; secs.forEach(x => (byC[x.c.id] = byC[x.c.id] || []).push(x));
+  const keys = Object.keys(byC), order = []; let i = 0;
+  while(order.length < n && keys.some(k => byC[k].length)){ const k = keys[i++ % keys.length]; if(byC[k].length) order.push(byC[k].shift()); }
+  return order.map(x => {
+    const pool = x.items.filter(it => !errbank()[it.key]).concat(x.items.filter(it => errbank()[it.key]));
+    const best = pool.reduce((m, it) => { const d = seenEx()[it.key] || ''; return m === null || d < m ? d : m; }, null);
+    const top = pool.filter(it => (seenEx()[it.key] || '') === best);
+    return top[Math.floor(Math.random() * top.length)];
+  });
+}
+function maintDone(){ return !!(state.maint || {})[today()]; }
+function startMaint(cId){
+  const list = buildMaint(+(cfg().maintN || 10), cId);
+  if(!list.length){ toast('No tienes cursos marcados "Para no olvidar"'); return; }
+  startMix(list, {title: '🔁 Para no olvidar' + (cId ? ' · ' + course(cId).title : ''), mode: 'maint', maintC: cId || null});
+}
+
+/* ---------- evalúate: examen de lo aprendido (mezclado y con tiempo) ---------- */
+function examL(c){ return (state.exam || {})[c.id + ':L'] || null; }
+const examTime = ex => ex.ts || noon(ex.date);
+function learnedTime(cId, sId){ const l = lessonOf(cId, sId); return l ? (l.doneTs || noon(l.done)) : 0; }
+function learnedSinceExam(c){ const ex = examL(c); return learnedSecs(c).filter(s => !ex || learnedTime(c.id, s.id) > examTime(ex)); }
+function examReady(c){
+  const since = learnedSinceExam(c).length, ex = examL(c);
+  return since >= 3 || (since >= 1 && ex && daysBetween(ex.date, today()) >= 7);
+}
+function startSecsExam(cId, secIds, title, cpKey){
+  const c = course(cId); if(!c) return;
+  const pool = cpPool(c, {sections: secIds}), n = Math.min(+examCfg().n || 20, pool.length);
+  if(!pool.length){ toast('Todavía no hay preguntas para este examen'); return; }
+  const by = k => shuffle(pool.filter(x => x.kind === k));
+  const q = by('quiz'), m = by('multi'), cd = by('code');
+  const wq = Math.round(n * .4), wm = Math.round(n * .3), wc = n - wq - wm;
+  const pick = [...q.slice(0, wq), ...m.slice(0, wm), ...cd.slice(0, wc)];
+  const rest = shuffle([...q.slice(wq), ...m.slice(wm), ...cd.slice(wc)]);
+  while(pick.length < n && rest.length) pick.push(rest.pop());
+  const secs = pick.reduce((t, x) => t + EXAM_SECS[x.kind], 0);
+  startMix(pick, {title, mode: 'exam', exam: {c: cId, cp: cpKey, secs}});
+}
+function startLearnedExam(cId){
+  const c = course(cId); if(!c) return;
+  const ls = learnedSecs(c);
+  if(!ls.length){ toast('Primero aprende al menos una sección de este curso'); return; }
+  startSecsExam(cId, ls.map(s => s.id), `🎓 Examen · lo aprendido de ${c.title}`, 'L');
+}
+function cpReady(c, cp){
+  if(!cp.sections.every(id => lessonDone(c.id, id))) return false;
+  const ex = (state.exam || {})[c.id + ':' + cp.id], lastL = Math.max(...cp.sections.map(id => learnedTime(c.id, id)));
+  return !ex || examTime(ex) < lastL;
+}
+
+/* =====================================================================
+   🤖 TUTOR CON GEMINI (opcional: necesita tu clave de API y internet)
+   - La clave se guarda aparte, solo en este navegador: no va en el archivo de exportar ni en GitHub.
+   - El tutor explica y propone; nunca cambia tu progreso por su cuenta (el repaso espaciado sigue con sus reglas).
+   - Tres usos: explicarte lo que fallaste (con repreguntas), revisar lo que explicas con tus palabras
+     y proponerte las secciones para un parcial (el calendario lo arma el dashboard, tú lo apruebas).
+   ===================================================================== */
+const AIKEY = KEY + '.ai';
+const AI_URL = 'https://generativelanguage.googleapis.com/v1beta/';
+const AI_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.1-flash-lite'];
+const AI_SYS = `Eres el tutor de Carlos, un ingeniero biomédico en Colombia que estudia Machine Learning con un dashboard de repaso espaciado.
+Responde en español de Colombia, tuteando, como un profesor cercano y preciso. Sé breve (máximo unas 200 palabras, salvo que te pida más), concreto y con ejemplos; usa código en Python cuando ayude.
+Formato simple: párrafos cortos, listas con "- ", **negrita** con moderación, \`código\` en línea y bloques \`\`\`python. Sin encabezados ni tablas.
+Si no estás seguro de algo, dilo. No inventes datos del dashboard ni de sus cursos.`;
+function aiCfg(){ try{ return JSON.parse(localStorage.getItem(AIKEY)) || {}; }catch(e){ return {}; } }
+function aiSet(patch){ const c = Object.assign(aiCfg(), patch); try{ localStorage.setItem(AIKEY, JSON.stringify(c)); }catch(e){} return c; }
+function aiOn(){ const c = aiCfg(); return !!c.key && c.on !== false; }
+function aiModel(){ return String(aiCfg().model || AI_MODELS[0]).replace(/^models\//, '').trim(); }
+function aiUsedToday(){ return (aiCfg().use || {})[today()] || 0; }
+function aiCount(){ const t = today(), u = {}; u[t] = aiUsedToday() + 1; aiSet({use: u}); }
+const AI_ERR = {
+  nokey: 'Primero pega tu clave de Gemini en Ajustes → Tutor con Gemini.',
+  offline: 'Sin conexión: el tutor necesita internet (lo demás del dashboard sigue funcionando).',
+  network: 'No se pudo conectar con Gemini. Revisa tu internet e intenta otra vez.',
+  timeout: 'Gemini tardó demasiado en responder. Intenta otra vez.',
+  badkey: 'Google dice que la clave no es válida. Revísala en Ajustes → Tutor con Gemini.',
+  denied: 'Google rechazó la clave (permiso denegado). Revisa en Google AI Studio que la clave esté activa.',
+  model: 'Ese modelo no está disponible para tu clave. En Ajustes → Tutor con Gemini pulsa "Probar conexión" y elige otro.',
+  quota: 'Llegaste al límite de uso de Gemini por ahora. Espera un minuto o revisa tu plan en Google AI Studio.',
+  server: 'Gemini está fallando en este momento. Intenta en un rato.',
+  request: 'Gemini rechazó la solicitud.',
+  blocked: 'Gemini no quiso responder esta vez (filtro de seguridad). Reformula e intenta otra vez.',
+  empty: 'Gemini respondió vacío. Intenta otra vez.',
+  format: 'La respuesta de Gemini llegó en un formato raro. Intenta otra vez.',
+};
+function aiErr(kind, detail){ const e = new Error(AI_ERR[kind] || AI_ERR.network); e.kind = kind; e.detail = String(detail || ''); return e; }
+function aiErrText(e){ return (e && e.message || AI_ERR.network) + (e && e.detail && ['request', 'denied', 'model'].includes(e.kind) ? ` (${e.detail.slice(0, 160)})` : ''); }
+function aiHttpKind(status, data){
+  const er = (data && data.error) || {}, msg = String(er.message || '').toLowerCase();
+  if(msg.includes('api key') && (msg.includes('not valid') || msg.includes('invalid') || msg.includes('expired'))) return 'badkey';
+  if(status === 401 || status === 403) return 'denied';
+  if(status === 404) return 'model';
+  if(status === 429) return 'quota';
+  if(status >= 500) return 'server';
+  return 'request';
+}
+async function aiFetch(path, init){
+  const c = aiCfg(); if(!c.key) throw aiErr('nokey');
+  if(navigator.onLine === false) throw aiErr('offline');
+  const ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const tm = setTimeout(() => { if(ctl) ctl.abort(); }, 60000);
+  let r;
+  try{ r = await fetch(AI_URL + path, Object.assign({}, init, {headers: Object.assign({'x-goog-api-key': c.key}, (init || {}).headers || {}), signal: ctl ? ctl.signal : undefined})); }
+  catch(e){ throw aiErr(e && e.name === 'AbortError' ? 'timeout' : 'network'); }
+  finally{ clearTimeout(tm); }
+  let data = null; try{ data = await r.json(); }catch(e){}
+  if(!r.ok) throw aiErr(aiHttpKind(r.status, data), data && data.error && data.error.message);
+  return data || {};
+}
+/* una consulta: msgs = [{role:'user'|'ai', text}] · json: pide y valida JSON */
+async function aiAsk(o){
+  const body = {contents: o.msgs.map(m => ({role: m.role === 'ai' ? 'model' : 'user', parts: [{text: m.text}]}))};
+  if(o.system) body.systemInstruction = {parts: [{text: o.system}]};
+  if(o.json) body.generationConfig = {responseMimeType: 'application/json'};
+  const data = await aiFetch('models/' + encodeURIComponent(aiModel()) + ':generateContent', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+  aiCount();
+  const cand = (data.candidates || [])[0];
+  const text = cand && cand.content ? (cand.content.parts || []).filter(p => !p.thought && typeof p.text === 'string').map(p => p.text).join('') : '';
+  if(!text.trim()) throw aiErr(/SAFETY|BLOCK|PROHIBITED/.test((cand && cand.finishReason) || '') || (data.promptFeedback && data.promptFeedback.blockReason) ? 'blocked' : 'empty');
+  if(!o.json) return text.trim();
+  const j = aiParseJSON(text); if(!j) throw aiErr('format'); return j;
+}
+function aiParseJSON(t){
+  const s = String(t).trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  try{ return JSON.parse(s); }catch(e){}
+  const a = s.indexOf('{'), b = s.lastIndexOf('}');
+  if(a >= 0 && b > a){ try{ return JSON.parse(s.slice(a, b + 1)); }catch(e){} }
+  return null;
+}
+async function aiListModels(){
+  const data = await aiFetch('models?pageSize=200', {method: 'GET'});
+  const rank = n => (/flash-lite/.test(n) ? 0 : /flash/.test(n) ? 1 : /pro/.test(n) ? 2 : 3) + (/preview|exp/.test(n) ? .5 : 0);
+  return (data.models || []).filter(m => (m.supportedGenerationMethods || []).includes('generateContent') && /gemini/.test(m.name || '') &&
+      !/embed|tts|image|live|audio|aqa|robotic|computer|native/i.test(m.name))
+    .map(m => m.name.replace(/^models\//, '')).sort((a, b) => rank(a) - rank(b) || (a < b ? 1 : a > b ? -1 : 0));
+}
+function aiNeedKey(){ toast('🤖 ' + AI_ERR.nokey); showSettings(); setTimeout(() => document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'}), 50); }
+
+/* ---------- respuestas del tutor: markdown sencillo, siempre escapado ---------- */
+function mdLite(t){
+  const lines = String(t).replace(/\r/g, '').split('\n'); let html = '', inCode = false, code = [], list = null, para = [];
+  const flushP = () => { if(para.length){ html += `<p>${fmt(para.join(' '))}</p>`; para = []; } };
+  const flushL = () => { if(list){ html += `<${list.t}>${list.items.map(i => `<li>${fmt(i)}</li>`).join('')}</${list.t}>`; list = null; } };
+  for(const ln of lines){
+    if(/^\s*```/.test(ln)){ if(inCode){ html += `<pre class="aicode"><code>${esc(code.join('\n'))}</code></pre>`; code = []; inCode = false; } else { flushP(); flushL(); inCode = true; } continue; }
+    if(inCode){ code.push(ln); continue; }
+    const m = ln.match(/^\s*(?:[-*•]|(\d+)[.)])\s+(.*)$/);
+    if(m){ flushP(); const tg = m[1] ? 'ol' : 'ul'; if(!list || list.t !== tg){ flushL(); list = {t: tg, items: []}; } list.items.push(m[2]); continue; }
+    if(!ln.trim()){ flushP(); flushL(); continue; }
+    const h = ln.match(/^\s*#{1,6}\s+(.*)$/); if(h){ flushP(); flushL(); html += `<p><b>${fmt(h[1])}</b></p>`; continue; }
+    if(list){ list.items[list.items.length - 1] += ' ' + ln.trim(); continue; }
+    para.push(ln.trim());
+  }
+  if(inCode) html += `<pre class="aicode"><code>${esc(code.join('\n'))}</code></pre>`;
+  flushP(); flushL(); return html;
+}
+function aiModal(cls){   // modal propio (no se cierra tocando afuera: tiene texto que escribes)
+  let bg = document.querySelector('.modal-bg.' + cls);
+  if(!bg){ document.querySelector('.modal-bg')?.remove(); bg = document.createElement('div'); bg.className = 'modal-bg ' + cls; document.body.appendChild(bg); }
+  return bg;
+}
+
+/* ---------- 1) 🤖 Explícamelo: conversación sobre una pregunta, un ejercicio o una tarjeta ---------- */
+let AICHAT = null;
+function aiChat(o){
+  if(!aiOn()) return aiNeedKey();
+  AICHAT = {title: o.title, sub: o.sub || '', msgs: [{role: 'user', text: o.first, hidden: true}], busy: false, err: null, copy: o.copy || null, n: 0};
+  aiChatSend();
+}
+function renderAIChat(){
+  const z = AICHAT; if(!z) return;
+  const bg = aiModal('aichat'), shown = z.msgs.filter(m => !m.hidden), keep = document.getElementById('aiQ') ? document.getElementById('aiQ').value : '';
+  bg.innerHTML = `<div class="modal wide aimodal">
+    <h3>🤖 ${esc(z.title)}</h3>${z.sub ? `<p class="aisub">${esc(z.sub)}</p>` : ''}
+    <div class="aimsgs" id="aimsgs">${shown.map(m => m.role === 'ai' ? `<div class="aim ai">${mdLite(m.text)}</div>` : `<div class="aim me">${esc(m.text)}</div>`).join('')}
+      ${z.busy ? `<div class="aim ai busy"><span class="dots"><i></i><i></i><i></i></span> El tutor está pensando…</div>` : ''}
+      ${z.err ? `<div class="aierr">⚠️ ${esc(z.err)} <button class="btn small ghost" data-act="aiRetry">Reintentar</button></div>` : ''}</div>
+    <div class="aiin"><textarea id="aiQ" rows="2" placeholder="Respóndele o pregúntale algo más…" ${z.busy ? 'disabled' : ''}></textarea>
+      <button class="btn" data-act="aiSend" ${z.busy ? 'disabled' : ''}>Enviar</button></div>
+    <div class="mrow" style="margin-top:10px"><button class="btn small ghost" data-act="closeModal">Cerrar</button>
+      ${z.copy ? `<button class="btn small ghost" data-act="aiCopy">💬 Copiar para Claude</button>` : ''}
+      <span class="spacer"></span><span class="hint" style="margin:0">Gemini · ${esc(aiModel())}</span></div>
+  </div>`;
+  const q = bg.querySelector('#aiQ'); if(q && keep) q.value = keep;
+  const box = bg.querySelector('#aimsgs'); if(box) box.scrollTop = box.scrollHeight;
+  if(q && !z.busy && shown.length) q.focus({preventScroll: true});
+}
+async function aiChatSend(){
+  const z = AICHAT; if(!z || z.busy) return;
+  z.busy = true; z.err = null; renderAIChat();
+  try{ const t = await aiAsk({system: AI_SYS, msgs: z.msgs}); if(AICHAT === z) z.msgs.push({role: 'ai', text: t}); }
+  catch(e){ if(AICHAT === z) z.err = aiErrText(e); }
+  z.busy = false;
+  if(AICHAT === z && document.querySelector('.modal-bg.aichat')) renderAIChat();
+}
+function aiChatUser(){
+  const z = AICHAT, q = document.getElementById('aiQ'); if(!z || !q || z.busy) return;
+  const t = q.value.trim(); if(!t) return;
+  if(z.n >= 12){ toast('Esta conversación ya es larga: ciérrala y abre otra si necesitas más'); return; }
+  q.value = ''; z.n++; z.msgs.push({role: 'user', text: t.slice(0, 2000)}); aiChatSend();
+}
+function aiItemPrompt(kind, it){
+  const ok = itemOk(kind, it), idk = itemIdk(kind, it);
+  const body = kind === 'quiz' ? askBodyQuiz(it) : kind === 'multi' ? askBodyMulti(it) : askBodyCode(it);
+  const focus = kind === 'code' ? ASK_FOCUS[it.type] : ASK_FOCUS[kind];
+  return askHead(it.cId, it.sId, ok, idk) + '\n\n' + body +
+    `\n\nYa leí la explicación del dashboard; no me la repitas igual. En máximo 200 palabras:\n1. La idea de fondo con otras palabras y una analogía concreta.\n2. ${focus}\n` +
+    `3. ${ok && !idk ? 'Qué detalle me podría hacer fallarla la próxima vez.' : `La confusión más probable que me llevó a ${idk ? 'no saberla' : 'equivocarme'} y cómo evitarla.`}\n` +
+    `Termina con UNA pregunta corta para comprobar que lo entendí, sin la respuesta: te la contesto aquí y me corriges.`;
+}
+function aiExplainItem(kind, it){
+  if(!it) return;
+  const s = it.cId && it.sId ? section(it.cId, it.sId) : null;
+  aiChat({title: 'Explícamelo', sub: s ? s.title : '', first: aiItemPrompt(kind, it), copy: () => askOne(kind, it)});
+}
+function aiExplainCard(){
+  const k = fcSession && curCard(); if(!k) return;
+  const c = course(k.courseId), s = section(k.courseId, k.sectionId);
+  aiChat({title: 'Explícame esta tarjeta', sub: s.title, copy: askCardPrompt,
+    first: `Estoy repasando "${s.title}" del curso "${c.title}" en mi dashboard de repaso espaciado. No tengo clara esta flashcard:\n\nPregunta: ${k.card.q}\nRespuesta: ${k.card.a}` +
+      (k.card.why ? `\nExplicación del dashboard: ${cleanWhy(k.card.why)}` : '') +
+      `\n\nNo me repitas la explicación igual. En máximo 150 palabras explícamela de otra forma, con un ejemplo concreto (código si aplica), y termina con UNA pregunta corta para comprobar que la entendí, sin la respuesta.`});
+}
+function aiItemFrom(src, i){
+  if(src === 'askQ') return quizSession && ['quiz', quizSession.qs[quizSession.i]];
+  if(src === 'askM') return multiSession && ['multi', multiSession.qs[multiSession.i]];
+  if(src === 'askC') return codeSession && ['code', codeSession.qs[codeSession.i]];
+  if(src === 'askRep'){ const r = REPORT.items[+i]; return r && [r.kind, r.it]; }
+  return null;
+}
+
+/* ---------- 2) ✍️ Explícalo con tus palabras: de memoria, y el tutor lo compara con los puntos clave ---------- */
+let EXPL = null;
+const EXPL_ICO = {cubierto: '✓', parcial: '◐', error: '✗', falta: '○'};
+function explainOpen(cId, sId){
+  const c = course(cId), s = c && section(cId, sId); if(!s) return;
+  EXPL = {c: cId, s: sId, text: '', res: null, selfShow: false, self: new Set(), busy: false, err: null};
+  renderExplain();
+}
+function explLast(cId, sId){ const a = (state.explains || {})[skey(cId, sId)] || []; return a[a.length - 1] || null; }
+function renderExplain(){
+  const z = EXPL; if(!z) return;
+  const s = section(z.c, z.s), kp = s.keyPoints, m = kp.length, bg = aiModal('explain');
+  let inner;
+  if(z.res){
+    const P = z.res.puntos, cov = P.filter(p => p.estado === 'cubierto').length, part = P.filter(p => p.estado === 'parcial').length, errs = P.filter(p => p.estado === 'error').length;
+    inner = `<div class="explsum"><b>Cubriste ${cov} de ${m} puntos clave</b>${part ? ` · ${part} a medias` : ''}${errs ? ` · <span style="color:var(--bad)">${errs} con error</span>` : ''}
+        <div class="bar g" style="margin-top:6px"><i style="width:${Math.round(100 * (cov + part / 2) / m)}%"></i></div>
+        <small>No hace falta cubrirlos todos: los que faltan son los que conviene repasar.</small></div>
+      ${z.res.bien ? `<p class="explok">👍 ${fmt(z.res.bien)}</p>` : ''}
+      ${z.res.corregir.length ? `<div class="rule"><b>✏️ Para corregir</b><ul>${z.res.corregir.map(x => `<li>${fmt(x)}</li>`).join('')}</ul></div>` : ''}
+      <ul class="explkp">${kp.map((t, i) => { const p = P[i]; return `<li class="ek-${p.estado}"><span class="ei">${EXPL_ICO[p.estado]}</span><span>${fmt(t)}${p.nota && p.estado !== 'cubierto' ? `<small>${fmt(p.nota)}</small>` : ''}</span></li>`; }).join('')}</ul>
+      ${z.res.consejo ? `<p class="explok">💡 ${fmt(z.res.consejo)}</p>` : ''}
+      <details class="plain"><summary>Lo que escribiste</summary><p class="expltxt">${esc(z.text)}</p></details>
+      <div class="mrow"><button class="btn" data-act="explNext">Seguir con la lección →</button>
+        <button class="btn sec" data-act="explAgain">Intentarlo otra vez</button>
+        <button class="btn ghost" data-act="explChat">🤖 Pregúntale algo</button></div>`;
+  } else if(z.selfShow){
+    inner = `<p>Lo que escribiste:</p><p class="expltxt">${esc(z.text)}</p>
+      <p>Marca los puntos clave que sí dijiste (con tus palabras cuenta):</p>
+      <div class="explself">${kp.map((t, i) => `<label class="pitem"><input type="checkbox" data-set="explChk" value="${i}" ${z.self.has(i) ? 'checked' : ''}><span>${fmt(t)}</span></label>`).join('')}</div>
+      <div class="mrow"><button class="btn" data-act="explSelfSave" id="explSelfBtn">Listo: dije ${z.self.size} de ${m}</button>
+        <button class="btn ghost" data-act="explBack">Volver a mi texto</button></div>`;
+  } else {
+    const on = aiOn();
+    inner = `<p>Sin mirar tus notas, explica con tus palabras <b style="color:var(--ink)">${esc(s.title)}</b>: qué es, para qué sirve, cómo se usa y cuál es la trampa típica. Con 3 a 6 frases basta; no tienes que cubrir todo.</p>
+      <textarea id="explIn" rows="7" placeholder="Escríbelo como si se lo explicaras a un compañero…" ${z.busy ? 'disabled' : ''}>${esc(z.text)}</textarea>
+      ${z.err ? `<div class="aierr">⚠️ ${esc(z.err)}</div>` : ''}
+      <div class="mrow">${on ? `<button class="btn" data-act="explSend" ${z.busy ? 'disabled' : ''}>${z.busy ? '<span class="dots"><i></i><i></i><i></i></span> El tutor está leyendo…' : '🤖 Revisar con el tutor'}</button>` : ''}
+        <button class="btn ${on ? 'ghost' : ''}" data-act="explSelf" ${z.busy ? 'disabled' : ''}>${on ? 'Compararla yo mismo' : 'Compararla con los puntos clave'}</button>
+        <button class="btn ghost" data-act="closeModal">Cancelar</button></div>
+      ${on ? '' : `<p class="hint" style="text-align:left">Con el tutor de Gemini (Ajustes) te diría qué cubriste, qué te faltó y qué dijiste mal.</p>`}`;
+  }
+  bg.innerHTML = `<div class="modal wide explmodal"><h3>✍️ Explícalo con tus palabras</h3>${inner}</div>`;
+  const ta = bg.querySelector('#explIn'); if(ta && !z.busy) ta.focus({preventScroll: true});
+}
+function explText(){ const ta = document.getElementById('explIn'); if(ta && EXPL) EXPL.text = ta.value; return EXPL ? EXPL.text.trim() : ''; }
+async function explSend(){
+  const z = EXPL; if(!z || z.busy) return;
+  const text = explText();
+  if(text.length < 20){ z.err = 'Escribe un poco más (al menos una o dos frases) para que valga la pena revisarlo.'; renderExplain(); return; }
+  const c = course(z.c), s = section(z.c, z.s), kp = s.keyPoints;
+  const msg = `Sección: "${s.title}" (curso: ${c.title})\nResumen de referencia: ${s.summary}\n\nPuntos clave (numerados):\n${kp.map((p, i) => `${i + 1}. ${p}`).join('\n')}\n\n` +
+    `Explicación de Carlos, escrita de memoria y sin mirar:\n"""\n${text.slice(0, 3000)}\n"""\n\n` +
+    `Compara su explicación con los puntos clave:\n- Juzga solo contra el resumen y los puntos clave. No penalices algo correcto que no esté ahí, pero sí señala cualquier afirmación falsa.\n` +
+    `- Para CADA punto clave pon "estado": "cubierto" (lo explicó bien, aunque con otras palabras), "parcial" (lo tocó pero incompleto o vago), "error" (dijo algo que lo contradice) o "falta" (no lo mencionó). No se espera que los cubra todos.\n` +
+    `- "nota": una frase corta; en "parcial" di qué le faltó y en "error" cuál es la idea correcta. En "falta" y "cubierto" puede ir vacía.\n` +
+    `- "bien": 1-2 frases con lo que explicó bien. "corregir": lista de las afirmaciones equivocadas que escribió, cada una con la corrección (vacía si no hubo). "consejo": una frase con qué repasar primero.\n` +
+    `Responde SOLO con JSON: {"puntos":[{"i":1,"estado":"cubierto","nota":""}],"bien":"","corregir":[],"consejo":""}`;
+  z.busy = true; z.err = null; renderExplain();
+  try{
+    const j = await aiAsk({system: AI_SYS, msgs: [{role: 'user', text: msg}], json: true});
+    const by = {}; (Array.isArray(j.puntos) ? j.puntos : []).forEach(p => { if(p && +p.i >= 1 && +p.i <= kp.length) by[+p.i - 1] = p; });
+    if(!Object.keys(by).length) throw aiErr('format');
+    const ok = ['cubierto', 'parcial', 'error', 'falta'];
+    z.res = {puntos: kp.map((_, i) => { const p = by[i] || {}; return {estado: ok.includes(p.estado) ? p.estado : 'falta', nota: String(p.nota || '').slice(0, 300)}; }),
+      bien: String(j.bien || '').slice(0, 500), corregir: (Array.isArray(j.corregir) ? j.corregir : []).map(x => String(x).slice(0, 300)).filter(Boolean).slice(0, 6),
+      consejo: String(j.consejo || '').slice(0, 300)};
+    const cov = z.res.puntos.filter(p => p.estado === 'cubierto').length;
+    explSave(z, cov, kp.length, true);
+  }catch(e){ z.err = aiErrText(e); }
+  z.busy = false;
+  if(EXPL === z && document.querySelector('.modal-bg.explain')) renderExplain();
+}
+function explSave(z, cov, tot, ai){
+  const k = skey(z.c, z.s), E = state.explains = state.explains || {}, arr = E[k] = E[k] || [];
+  arr.push({d: today(), ts: Date.now(), t: z.text.slice(0, 2000), cov, tot, ai: !!ai});
+  if(arr.length > 5) arr.splice(0, arr.length - 5);
+  const L = state.lessons = state.lessons || {}, l = L[k] = L[k] || {};
+  if(!l.explain) l.explain = today();
+  l.ts = Date.now();
+  recordSession(); save();
+}
+function explChat(){
+  const z = EXPL; if(!z || !z.res) return;
+  const s = section(z.c, z.s);
+  aiChat({title: 'Pregúntale al tutor', sub: s.title,
+    first: `Estoy estudiando "${s.title}". Puntos clave:\n${s.keyPoints.map((p, i) => `${i + 1}. ${p}`).join('\n')}\n\nEscribí esto de memoria:\n"""${z.text}"""\n\n` +
+      `Me faltaron o tuve mal: ${z.res.puntos.map((p, i) => p.estado !== 'cubierto' ? `${i + 1} (${p.estado})` : '').filter(Boolean).join(', ') || 'nada'}.\n` +
+      `Explícame en máximo 150 palabras la idea que más me conviene reforzar de esas, con un ejemplo, y hazme UNA pregunta corta para comprobarla, sin la respuesta.`});
+}
+
+/* ---------- 3) 🎯 Plan para un parcial: el tutor propone secciones, el dashboard arma los repasos, tú apruebas ---------- */
+let PARC = null;
+function parcialCatalog(){ const out = []; COURSES.forEach(c => c.sections.forEach(s => out.push({c, s, k: skey(c.id, s.id)}))); return out; }
+function parcialOpen(){
+  PARC = {name: '', date: addDays(today(), 7), temas: '', sel: new Set(), order: [], why: {}, nota: '', busy: false, err: null};
+  renderParcial();
+}
+/* reparte las secciones hasta el día antes: cada una 1 vez (o 2, espaciadas, si hay 5+ días) y un repaso general al final */
+function parcialSchedule(keys, date){
+  const t = today(), days = daysBetween(t, date);
+  if(days < 1 || !keys.length) return [];
+  const slots = []; for(let d = days <= 2 ? 0 : 1; d < days; d++) slots.push(addDays(t, d));
+  if(slots.length <= 1) return [{date: slots[0] || t, secs: keys.slice(), general: true}];
+  const out = [], last = slots.pop();
+  const put = (ds, ks) => ks.forEach((k, i) => { const d = ds[Math.floor(i * ds.length / ks.length)];
+    let o = out.find(x => x.date === d); if(!o){ o = {date: d, secs: []}; out.push(o); } if(!o.secs.includes(k)) o.secs.push(k); });
+  if(slots.length >= 4){ const h = Math.ceil(slots.length / 2); put(slots.slice(0, h), keys); put(slots.slice(h), keys); }
+  else put(slots, keys);
+  out.sort((a, b) => a.date < b.date ? -1 : 1);
+  out.push({date: last, secs: keys.slice(), general: true});
+  return out;
+}
+function parcialN(k, general){ return general ? {fc: 15, quiz: 8, multi: 6, code: 4} : {fc: Math.min(8 * k, 30), quiz: Math.min(3 * k, 9), multi: Math.min(2 * k, 6), code: Math.min(2 * k, 6)}; }
+function parcialKeys(){ const z = PARC; return z.order.filter(k => z.sel.has(k)).concat(parcialCatalog().map(x => x.k).filter(k => z.sel.has(k) && !z.order.includes(k))); }
+function parcialPreview(){
+  const z = PARC, days = daysBetween(today(), z.date);
+  if(!(days >= 1)) return {html: `<p class="errmsg">Elige una fecha a partir de mañana.</p>`, n: 0};
+  const keys = parcialKeys();
+  if(!keys.length) return {html: `<p class="hint" style="text-align:left">Elige al menos una sección (o que el tutor te las proponga).</p>`, n: 0};
+  const sch = parcialSchedule(keys, z.date), nm = k => { const [c, s] = k.split('|'), se = course(c) && course(c).sections.find(x => x.id === s); return se ? shortSec(se.title) : k; };
+  const twice = sch.filter(x => !x.general).length && keys.every(k => sch.filter(x => !x.general && x.secs.includes(k)).length >= 2);
+  return {n: sch.length, html: `<p class="hint" style="text-align:left; margin:0 0 6px">Faltan ${days} ${plural(days, 'día')}: ${sch.length > 1 ? `cada sección ${twice ? '2 veces, espaciadas,' : 'una vez'} y un repaso general el día antes` : 'un repaso general de todo'}. Cada repaso: primero tarjetas, luego preguntas y código.</p>` +
+    sch.map(x => `<div class="pcday"><b>${esc(dayLabel(x.date).replace(/^./, ch => ch.toUpperCase()))}</b><span>${x.general ? `Repaso general · ${keys.length} ${plural(keys.length, 'sección', 'secciones')}` : x.secs.map(k => esc(nm(k))).join(' · ')}</span></div>`).join('')};
+}
+function renderParcial(){
+  const z = PARC; if(!z) return;
+  const bg = aiModal('parcial'), pv = parcialPreview();
+  bg.innerHTML = `<div class="modal wide pcmodal">
+    <h3>🎯 Plan para un parcial</h3>
+    <p>Dime de qué es y cuándo. Eliges las secciones (o te las propone el tutor) y el dashboard reparte los repasos hasta ese día. Aparecen en Hoy como cualquier repaso.</p>
+    <div class="pcrow"><label>¿Qué parcial?<input type="text" id="pcName" data-set="pcName" maxlength="60" placeholder="Parcial de regresión" value="${esc(z.name)}"></label>
+      <label>Fecha<input type="date" id="pcDate" data-set="pcDate" min="${addDays(today(), 1)}" value="${z.date}"></label></div>
+    <label class="qlabel" style="display:block">¿Qué temas entran? <small style="font-weight:400; color:var(--muted)">opcional, le ayuda al tutor</small></label>
+    <textarea id="pcTemas" data-set="pcTemas" rows="2" placeholder="Regresión lineal, Ridge y Lasso, métricas, validación cruzada…">${esc(z.temas)}</textarea>
+    <div class="qlabel">Secciones <span class="badge today" id="pcCount">${z.sel.size} ${plural(z.sel.size, 'elegida', 'elegidas')}</span></div>
+    ${aiOn() ? `<div class="mrow" style="margin:0 0 8px"><button class="btn small" data-act="pcAI" ${z.busy ? 'disabled' : ''}>${z.busy ? '<span class="dots"><i></i><i></i><i></i></span> El tutor está eligiendo…' : '🤖 Que el tutor las proponga'}</button><span class="hint" style="margin:0">tú decides: quitas o agregas</span></div>`
+      : `<p class="hint" style="text-align:left">Con el tutor de Gemini (Ajustes) te las propone a partir de los temas.</p>`}
+    ${z.err ? `<div class="aierr">⚠️ ${esc(z.err)}</div>` : ''}${z.nota ? `<div class="rule">💡 ${fmt(z.nota)}</div>` : ''}
+    <div class="plist pclist">${COURSES.filter(c => c.sections.length).map(c => { const n = c.sections.filter(s => z.sel.has(skey(c.id, s.id))).length;
+      return `<details ${n ? 'open' : ''}><summary>${c.emoji || '📘'} ${esc(c.title)}${n ? ` <span class="badge today">${n}</span>` : ''}</summary>${c.sections.map(s => { const k = skey(c.id, s.id);
+        return `<label class="pitem"><input type="checkbox" data-set="pcSec" value="${esc(k)}" ${z.sel.has(k) ? 'checked' : ''}><span>${esc(s.title)}${z.why[k] ? `<small class="pcwhy">🤖 ${esc(z.why[k])}</small>` : ''}</span></label>`; }).join('')}</details>`; }).join('')}</div>
+    <div class="qlabel">El plan</div>
+    <div id="pcPlan">${pv.html}</div>
+    <div class="mrow"><button class="btn" data-act="pcCreate" id="pcCreate" ${pv.n ? '' : 'disabled'}>Crear el plan${pv.n ? ` (${pv.n} ${plural(pv.n, 'repaso', 'repasos')})` : ''}</button><button class="btn ghost" data-act="closeModal">Cancelar</button></div>
+  </div>`;
+}
+function parcialRefresh(){
+  const z = PARC, pv = parcialPreview(), el = document.getElementById('pcPlan'), b = document.getElementById('pcCreate'), n = document.getElementById('pcCount');
+  if(el) el.innerHTML = pv.html;
+  if(b){ b.disabled = !pv.n; b.textContent = 'Crear el plan' + (pv.n ? ` (${pv.n} ${plural(pv.n, 'repaso', 'repasos')})` : ''); }
+  if(n) n.textContent = `${z.sel.size} ${plural(z.sel.size, 'elegida', 'elegidas')}`;
+}
+function parcialInputs(){ const z = PARC; if(!z) return; const g = id => document.getElementById(id);
+  if(g('pcName')) z.name = g('pcName').value; if(g('pcTemas')) z.temas = g('pcTemas').value; if(g('pcDate') && g('pcDate').value) z.date = g('pcDate').value; }
+async function parcialAI(){
+  const z = PARC; if(!z || z.busy) return; parcialInputs();
+  if(!z.name.trim() && !z.temas.trim()){ z.err = 'Escribe de qué es el parcial (y, si puedes, qué temas entran).'; renderParcial(); return; }
+  const days = daysBetween(today(), z.date), cat = parcialCatalog();
+  const msg = `Tengo un parcial: "${z.name.trim() || 'sin nombre'}". Fecha: ${z.date} (faltan ${days} días).${z.temas.trim() ? `\nTemas que entran: ${z.temas.trim()}` : ''}\n\n` +
+    `Catálogo de secciones de mi dashboard (id · curso · título — resumen):\n` +
+    cat.map(x => `${x.k} · ${x.c.title} · ${x.s.title}${lessonDone(x.c.id, x.s.id) ? ' · (ya la aprendí)' : ''} — ${String(x.s.summary || '').slice(0, 160)}`).join('\n') +
+    `\n\nElige las secciones que más me sirven para preparar ESE parcial: máximo 12 y solo las relevantes (si solo aplican 2, elige 2), en el orden en que conviene repasarlas (de la base a lo más avanzado). Usa exactamente los ids del catálogo.\n` +
+    `Responde SOLO con JSON: {"secciones":[{"id":"<id del catálogo>","por_que":"<máximo 12 palabras>"}],"nota":"<1-2 frases de consejo para preparar el parcial; no inventes datos del parcial>"}`;
+  z.busy = true; z.err = null; renderParcial();
+  try{
+    const j = await aiAsk({system: AI_SYS, msgs: [{role: 'user', text: msg}], json: true});
+    const valid = new Set(cat.map(x => x.k)), seen = new Set();
+    const picks = (Array.isArray(j.secciones) ? j.secciones : []).filter(x => x && valid.has(x.id) && !seen.has(x.id) && seen.add(x.id)).slice(0, 12);
+    if(!picks.length) z.err = 'El tutor no encontró secciones de tu dashboard para ese parcial. Elígelas tú abajo o describe mejor los temas.';
+    else { z.sel = new Set(picks.map(x => x.id)); z.order = picks.map(x => x.id); z.why = Object.fromEntries(picks.map(x => [x.id, String(x.por_que || '').slice(0, 120)])); }
+    z.nota = String(j.nota || '').slice(0, 400);
+  }catch(e){ z.err = aiErrText(e); }
+  z.busy = false;
+  if(PARC === z && document.querySelector('.modal-bg.parcial')) renderParcial();
+}
+function parcialCreate(){
+  const z = PARC; if(!z) return; parcialInputs();
+  const name = z.name.trim() || 'Parcial', keys = parcialKeys(), sch = parcialSchedule(keys, z.date);
+  if(!sch.length) return;
+  const series = newId(), par = {id: series, name, date: z.date}, nd = sch.filter(x => !x.general).length;
+  let i = 0;
+  sch.forEach(x => addPlan({date: x.date, secs: x.secs, n: parcialN(x.secs.length, x.general), from: 'parcial', series, parcial: par,
+    label: x.general ? `🎯 ${name} · repaso general` : `🎯 ${name} · repaso ${++i} de ${nd}`}));
+  document.querySelector('.modal-bg')?.remove(); PARC = null;
+  toast(`🎯 Listo: ${sch.length} ${plural(sch.length, 'repaso', 'repasos')} hasta el ${fmtDate(z.date)}. Te aparecen en Hoy`);
+  refresh();
+}
+function parciales(){
+  const by = {}, t = today();
+  plans().filter(p => p.from === 'parcial' && p.parcial && p.parcial.date >= t).forEach(p => {
+    const x = by[p.parcial.id] = by[p.parcial.id] || {id: p.parcial.id, name: p.parcial.name, date: p.parcial.date, n: 0, done: 0};
+    x.n++; if(p.done) x.done++; });
+  return Object.values(by).sort((a, b) => a.date < b.date ? -1 : 1);
+}
+function parcialDelete(id){
+  const ps = plans().filter(p => p.from === 'parcial' && p.parcial && p.parcial.id === id);
+  if(!ps.length || !confirm(`¿Borrar el plan de "${ps[0].parcial.name}"? Se quitan sus ${ps.length} repasos (lo que ya hiciste queda en tu diario).`)) return;
+  ps.forEach(p => removePlan(p.id)); toast('Plan del parcial borrado'); refresh();
+}
+function parcialBanner(){
+  const ps = parciales(); if(!ps.length) return '';
+  return ps.map(x => { const d = daysBetween(today(), x.date);
+    return `<div class="pcbanner">🎯 <span><b>${esc(x.name)}</b> · ${d === 0 ? 'es hoy' : d === 1 ? 'mañana' : `en ${d} días (${fmtDate(x.date)})`} · ${x.done} de ${x.n} ${plural(x.n, 'repaso hecho', 'repasos hechos')}</span>
+      <span class="spacer"></span><button class="btn small ghost" data-act="pcDel" data-id="${esc(x.id)}">Borrar el plan</button></div>`; }).join('');
+}
+
+/* ---------- ajustes del tutor ---------- */
+function aiSettingsHtml(){
+  const c = aiCfg(), models = [...new Set([aiModel()].concat(c.models && c.models.length ? c.models : AI_MODELS))];
+  return `<h3 data-ai style="font-size:.98rem; margin-top:22px">🤖 Tutor con Gemini <span class="badge ${aiOn() ? 'done' : ''}">${aiOn() ? 'activo' : c.key ? 'apagado' : 'sin configurar'}</span></h3>
+    <p>Opcional. Te explica tus errores ahí mismo (y puedes repreguntarle), revisa lo que explicas con tus palabras y te propone las secciones para un parcial. Nunca cambia tu progreso por su cuenta: propone y tú decides.</p>
+    ${c.key ? `
+    <div class="setrow"><div class="rt"><b>Clave</b><small>•••• ${esc(String(c.key).slice(-4))} · guardada solo en este navegador</small></div>
+      <button class="btn small ghost" data-act="aiKeyDel" style="color:var(--bad)">Quitar</button></div>
+    <div class="setrow"><div class="rt"><b>Modelo</b><small>Flash-Lite es el más rápido y barato; alcanza para esto</small></div>
+      <select data-set="aiModel">${models.map(m => `<option value="${esc(m)}" ${m === aiModel() ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></div>
+    <div class="setrow"><div class="rt"><b>Usar el tutor</b><small>Hoy: ${aiUsedToday()} ${plural(aiUsedToday(), 'consulta')}</small></div>
+      <input type="checkbox" data-set="aiOn" ${c.on !== false ? 'checked' : ''} style="width:18px; height:18px; accent-color:var(--accent)"></div>
+    <div class="mrow"><button class="btn small sec" data-act="aiTest">Probar conexión</button></div>`
+    : `<ol><li>Entra a <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio → API keys</a> con tu cuenta de Google.</li>
+      <li>Crea una clave (<i>Create API key</i>) y cópiala.</li><li>Pégala aquí. En cada dispositivo se pega una vez.</li></ol>
+    <div class="mrow"><input type="password" id="aiKeyIn" placeholder="Pega tu clave de Gemini" autocomplete="off" spellcheck="false" style="flex:1; min-width:0">
+      <button class="btn small" data-act="aiKeySave">Guardar y probar</button></div>`}
+    <p id="aiMsg" class="hint" style="text-align:left"></p>
+    <p class="hint" style="text-align:left">La clave no va en el archivo de exportar ni en GitHub. Lo que le envías (la pregunta, tu respuesta, lo que escribes) va a Google: sin facturación, Google puede usarlo para mejorar sus productos; con facturación activada (por ejemplo, con los créditos de Google AI Pro), no.</p>`;
+}
+function aiSay(t, ok){ const el = document.getElementById('aiMsg'); if(el){ el.className = ok === true ? 'okmsg' : ok === false ? 'errmsg' : 'hint'; el.style.textAlign = 'left'; el.textContent = t; } }
+async function aiTest(){
+  aiSay('Probando la conexión…');
+  try{
+    let list = [];
+    try{ list = await aiListModels(); }catch(e){ if(!['model', 'request', 'server'].includes(e.kind)) throw e; }
+    if(list.length){ aiSet({models: list.slice(0, 30)}); if(!list.includes(aiModel())) aiSet({model: list.find(x => /flash-lite/.test(x) && !/preview|exp/.test(x)) || list[0]}); }
+    const r = await aiAsk({msgs: [{role: 'user', text: 'Responde solo con la palabra: listo'}]});
+    showSettings(); document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'});
+    aiSay(`✓ Conectado con ${aiModel()}. Respondió: "${r.slice(0, 40)}"`, true);
+  }catch(e){ aiSay(aiErrText(e), false); }
+}
+
+/* =====================================================================
+   VISTA: HOY  ("Tu día": tres bloques en orden — repasa, aprende, ponte a prueba)
+   ===================================================================== */
+function dayBlocks(){
+  const t = today();
+  // 1) REPASA: lo que toca hoy para no olvidar
+  const rep = [];
   const bd = bankDue();
   if(bd.length){
     const byCourse = {};
     bd.forEach(e => { byCourse[e.c] = (byCourse[e.c] || 0) + 1; });
     const chips = Object.keys(byCourse).length > 1 ? `<div class="tsub">Solo de un curso: ${Object.entries(byCourse).map(([c, n]) =>
         `<button class="btn small sec" data-act="failRun" data-m="due" data-c="${c}" title="${esc(course(c).title)}">${course(c).emoji || '📘'} ${n}</button>`).join('')}</div>` : '';
-    tasks.push({title: `Repasa ${bd.length} ${plural(bd.length,'ejercicio')} que fallaste`,
+    rep.push({title: `Repasa ${bd.length} ${plural(bd.length,'ejercicio')} que fallaste`,
       meta: `${esc(bankTopics(bd))} · vuelven hasta que los aciertes en 3 días distintos`, extra: chips,
       acts: cls => `<button class="${cls}" data-act="failRun" data-m="due">Empezar</button>`});
   } else if((state.reports || []).some(r => r.date === t && r.mode === 'bank')){
-    tasks.push({done: true, title: 'Repasaste lo que fallaste', meta: 'Tu banco de errores está al día'});
+    rep.push({done: true, title: 'Repasaste lo que fallaste', meta: 'Tu banco de errores está al día'});
   }
-  // 2) repasos programados (los de hoy, los atrasados y los que ya hiciste hoy)
-  planDue().forEach(p => tasks.push(planTask(p)));
-  plans().filter(p => p.done === t && p.date <= t).forEach(p => tasks.push(planTask(p)));
-  // 3) tarjetas del día · 4) quiz de tu sección más floja · 5) releer y cerrar el día
-  const plan = buildPlan(), step = planStep(), sq = planTarget(), sk = skey(sq.c.id, sq.s.id), qz = state.quiz[sk];
-  if(step > 0 || !plan.cards.length)
-    tasks.push({done: true, title: 'Tarjetas del día', meta: step > 0 ? 'Hechas' : 'No tienes tarjetas pendientes',
-      doneActs: step > 0 && plan.cards.length ? `<button class="btn small ghost" data-act="plan">Repetir</button>` : ''});
+  planDue().forEach(p => rep.push(planTask(p)));
+  plans().filter(p => p.done === t && p.date <= t).forEach(p => rep.push(planTask(p)));
+  const plan = buildPlan(), cardsDone = state.planCards === t;
+  if(cardsDone || !plan.cards.length)
+    rep.push({done: true, title: 'Tarjetas del día', meta: cardsDone ? 'Hechas' : 'No tienes tarjetas pendientes',
+      doneActs: cardsDone && plan.cards.length ? `<button class="btn small ghost" data-act="plan">Otra ronda</button>` : ''});
+  else if(plan.catchUp)
+    rep.push({title: `Ponte al día: repasa ${plan.cards.length} tarjetas vencidas`,
+      meta: `Tienes ${plan.backlog} vencidas (${plan.overdue} de días anteriores). Hoy solo repaso, sin nuevas: las nuevas vuelven cuando te pongas al día${plan.days > 1 ? `, en unos ${plan.days} días a este ritmo` : ''}. Primero las que más se te estaban olvidando.`,
+      extra: `<div class="tsub">Tamaño de la sesión: <select data-set="cap">${[30,40,60,80,100].map(n => `<option value="${n}" ${cfg().cap===n?'selected':''}>${n} tarjetas</option>`).join('')}</select> <span>· si tienes tiempo, súbelo unos días para ponerte al día más rápido</span></div>`,
+      acts: cls => `<button class="${cls}" data-act="plan">Empezar</button>`});
   else
-    tasks.push({title: `Repasa ${plan.cards.length} tarjetas`,
-      meta: `${plan.nRev} de repaso y ${plan.nNew} nuevas, de todos tus cursos${plan.remaining > 0 ? ` · las otras ${plan.remaining} esperan su turno` : ''}`,
+    rep.push({title: `Repasa ${plan.cards.length} tarjetas`,
+      meta: `${plan.nRev} de repaso y ${plan.nNew} nuevas, de lo que ya aprendiste${plan.remaining > 0 ? ` · las otras ${plan.remaining} esperan su turno` : ''}`,
       extra: `<div class="tsub">Tamaño de la sesión: <select data-set="cap">${[30,40,60,80,100].map(n => `<option value="${n}" ${cfg().cap===n?'selected':''}>${n} tarjetas</option>`).join('')}</select></div>`,
       acts: cls => `<button class="${cls}" data-act="plan">Empezar</button>`});
-  tasks.push({done: step > 1, title: `Quiz de tu sección más floja`,
-    meta: `${sq.c.emoji || '📘'} ${esc(sq.s.title)} · ${qz ? 'mejor marca ' + qz.best + '%' : 'nunca evaluada'}`,
-    acts: cls => `<button class="${cls}" data-act="quiz" data-c="${sq.c.id}" data-s="${sq.s.id}">Hacer el quiz</button>
-      ${sq.s.multi.length ? `<button class="btn small ghost" data-act="multi" data-c="${sq.c.id}" data-s="${sq.s.id}" title="Versión exigente: marca todas las que apliquen">☑ Múltiple</button>` : ''}`,
-    doneActs: `<button class="btn small ghost" data-act="quiz" data-c="${sq.c.id}" data-s="${sq.s.id}">Otra vez</button>`});
-  tasks.push({done: step === 3, title: step === 3 ? 'Día cerrado' : 'Relee sus puntos clave y cierra el día',
-    meta: step === 3 ? 'Sumaste a tu racha semanal' : `${esc(sq.s.title)}${step === 2 ? '' : ' · se habilita al terminar el quiz'}`,
-    acts: cls => `<button class="${step === 2 ? 'btn small sec' : cls}" data-act="section" data-c="${sq.c.id}" data-s="${sq.s.id}">Ver puntos clave</button>
-      ${step === 2 ? `<button class="btn small" data-act="finishPlan" data-c="${sq.c.id}" data-s="${sq.s.id}">✓ Terminar el día</button>` : ''}`});
-  return tasks;
+  const mc = maintCourses();
+  if(mc.length){
+    const n = +(cfg().maintN || 10), names = mc.map(c => `${c.emoji || '📘'} ${esc(c.title)}`).join(', ');
+    rep.push(maintDone() ? {done: true, title: 'Para no olvidar', meta: `Hecho · ${names}`, doneActs: `<button class="btn small ghost" data-act="maint">Otra ronda</button>`}
+      : {title: `Para no olvidar: ${n} preguntas de tus cursos terminados`, meta: `${names} · mezcladas, primero lo que llevas más tiempo sin practicar`,
+         acts: cls => `<button class="${cls}" data-act="maint">Empezar</button>`});
+  }
+  // 2) APRENDE: la siguiente lección de cada curso que estás estudiando
+  const learn = [];
+  const rc = routeCourses();
+  rc.forEach(c => {
+    const nx = nextLessonSec(c);
+    const today_ = learnedSecs(c).filter(s => lessonOf(c.id, s.id).done === t);
+    if(!nx){ learn.push({done: true, title: `${c.emoji || '📘'} Terminaste la ruta de ${esc(c.title)}`, meta: 'Ya aprendiste todas sus secciones. Cuando quieras, márcalo "Para no olvidar" en el curso.',
+      doneActs: `<button class="btn small ghost" data-act="course" data-c="${c.id}">Ver el curso</button>`}); return; }
+    const l = lessonOf(c.id, nx.id) || {}, started = lessonKeys(nx).some(k => l[k]);
+    const k = lessonNext(c, nx), gs = lessonGroups(nx), no = lessonStepNo(c, nx);
+    if(today_.length && !started){
+      learn.push({done: true, title: `Aprendiste hoy: ${esc(shortSec(today_[today_.length - 1].title))}`,
+        meta: `${c.emoji || '📘'} ${esc(c.title)} · buen ritmo: una lección al día. Si te sobra energía, la siguiente es ${esc(shortSec(nx.title))}.`,
+        doneActs: `<button class="btn small ghost" data-act="lessonGo" data-c="${c.id}" data-s="${nx.id}">Otra lección</button>`});
+      return;
+    }
+    learn.push({title: `${started ? 'Sigue' : 'Empieza'}: ${esc(nx.title)}`,
+      meta: `${c.emoji || '📘'} ${esc(c.title)} · paso ${no} de ${gs.length}${k ? `: <b>${STEP_INFO[k].n}</b> (${esc(STEP_INFO[k].what(nx))})` : ''}`,
+      acts: cls => `<button class="${cls}" data-act="lessonGo" data-c="${c.id}" data-s="${nx.id}">${started ? 'Continuar' : 'Empezar'}</button>
+        <button class="btn small ghost" data-act="lesson" data-c="${c.id}" data-s="${nx.id}">Ver la lección</button>`});
+  });
+  if(!rc.length) learn.push({title: 'Elige qué estás estudiando', meta: 'En Cursos, marca como <b>En curso</b> lo que estás aprendiendo ahora: aquí te aparece su siguiente lección.',
+    acts: cls => `<button class="${cls}" data-act="courses">Ir a Cursos</button>`});
+  // 3) PONTE A PRUEBA: examen mezclado cuando cierras un bloque
+  const test = [];
+  COURSES.filter(c => !c.custom).forEach(c => {
+    const ex = examL(c);
+    if(examReady(c)){
+      const n = learnedSinceExam(c).length;
+      test.push({title: `Examen de lo aprendido: ${c.emoji || '📘'} ${esc(c.title)}`,
+        meta: `${n} ${plural(n, 'sección aprendida', 'secciones aprendidas')} desde tu último examen · quiz, múltiple y código mezclados, con tiempo`,
+        acts: cls => `<button class="${cls}" data-act="learnedExam" data-c="${c.id}">Empezar</button>`});
+    } else if(ex && ex.date === t) test.push({done: true, title: `Examen de lo aprendido: ${esc(c.title)}`, meta: `Hecho · ${ex.last}% (mejor ${ex.best}%)`});
+    (c.checkpoints || []).forEach(cp => {
+      const b = (state.exam || {})[c.id + ':' + cp.id];
+      if(cpReady(c, cp)) test.push({title: `Examen del ${esc(cp.title)}: ${c.emoji || '📘'} ${esc(c.title)}`,
+        meta: 'Ya aprendiste todas sus secciones: comprueba que el bloque completo quedó firme',
+        acts: cls => `<button class="${cls}" data-act="cpExam" data-c="${c.id}" data-cp="${cp.id}">Empezar</button>`});
+      else if(b && b.date === t) test.push({done: true, title: `Examen del ${esc(cp.title)}`, meta: `Hecho · ${b.last}% (mejor ${b.best}%)`});
+    });
+  });
+  return [
+    {k: 'rep', h: 'Repasa', sub: 'lo que toca hoy, justo antes de olvidarlo', tasks: rep},
+    {k: 'learn', h: 'Aprende', sub: 'una lección a la vez, en orden', tasks: learn},
+    {k: 'test', h: 'Ponte a prueba', sub: 'un examen mezclado al cerrar un bloque', tasks: test},
+  ].filter(b => b.tasks.length);
 }
+function dayTasks(){ return dayBlocks().flatMap(b => b.tasks); }
 function renderHome(){
   const t = today(), st = streak(), tot = diaryTotals(t);
   const dateStr = new Date().toLocaleDateString('es-CO',{weekday:'long', day:'numeric', month:'long'});
-  const tasks = dayTasks(), done = tasks.filter(x => x.done).length, left = tasks.length - done;
-  const nextI = tasks.findIndex(x => !x.done);
+  const blocks = dayBlocks(), tasks = blocks.flatMap(b => b.tasks), done = tasks.filter(x => x.done).length, left = tasks.length - done;
+  const nextT = tasks.find(x => !x.done);
+  let num = 0;
+  const body = blocks.map(b => `<div class="tblock" data-block="${b.k}"><div class="tbh"><b>${b.h}</b><span>${b.sub}</span></div>
+    <div class="tasks">${b.tasks.map(tk => taskRow(tk, ++num, tk === nextT)).join('')}</div></div>`).join('');
   const next = plans().filter(p => !p.done && p.date > t && daysBetween(t, p.date) <= 7).sort((a,b) => a.date < b.date ? -1 : 1);
   const up = p => { const l = dayLabel(p.date); return `<div class="upc" data-act="calDay" data-d="${p.date}">
       <span class="d">${esc(l.charAt(0).toUpperCase() + l.slice(1))}</span>
@@ -934,22 +1769,23 @@ function renderHome(){
   <div class="phead">
     <div class="eyebrow">${esc(dateStr.charAt(0).toUpperCase() + dateStr.slice(1))}</div>
     <h1>Hola Carlos 👋</h1>
-    <p>${left ? `Te ${left === 1 ? 'queda 1 cosa' : 'quedan ' + left + ' cosas'} para hoy.` : 'Terminaste todo lo de hoy.'}${st ? ` · 🔥 ${st} ${plural(st,'semana','semanas')} de racha` : ''} · ${globalMastery()}% de dominio</p>
+    <p>${left ? `Te ${left === 1 ? 'queda 1 cosa' : 'quedan ' + left + ' cosas'} para hoy.` : 'Terminaste todo lo de hoy.'}${(() => { const x = parciales()[0]; if(!x) return ''; const d = daysBetween(t, x.date); return ` · 🎯 ${esc(x.name)} ${d === 0 ? 'hoy' : d === 1 ? 'mañana' : `en ${d} días`}`; })()}${st ? ` · 🔥 ${st} ${plural(st,'semana','semanas')} de racha` : ''} · ${globalMastery()}% de dominio</p>
   </div>
   <div class="card">
     <div class="card-h"><h2>Tu día</h2><span class="spacer"></span>
-      <span class="dayprog">${done} de ${tasks.length} ${plural(tasks.length,'hecha','hechas')}<span class="bar g" style="width:90px"><i style="width:${Math.round(100*done/tasks.length)}%"></i></span></span></div>
-    <div class="tasks">${tasks.map((tk, i) => taskRow(tk, i + 1, i === nextI)).join('')}</div>
+      <span class="dayprog">${done} de ${tasks.length} ${plural(tasks.length,'hecha','hechas')}<span class="bar g" style="width:90px"><i style="width:${Math.round(100*done/Math.max(1, tasks.length))}%"></i></span></span></div>
+    ${body}
     ${!left ? `<div class="alldone">🎉 <span><b>¡Listo por hoy!</b> Si quieres seguir, en <a class="linkbtn" data-act="practice">Practicar</a> tienes práctica libre, exámenes y lo que fallaste.</span></div>` : ''}
+    <div class="hint" style="text-align:left; margin-top:10px">El orden importa: primero repasas (lo que ya sabes se fija justo antes de olvidarse), luego aprendes algo nuevo. <a class="linkbtn" data-act="help">¿Por qué así?</a></div>
   </div>
   ${tot.n ? `<div class="card todaybar">📊 <span><b>Hoy llevas:</b> ${esc(totalsTxt(tot))}</span>
-     <span class="spacer"></span><button class="btn small ghost" data-act="calDay" data-d="${t}">Ver el día</button>
-     <button class="btn small sec" data-act="planNew" data-src="day" data-d="${t}" data-when="137">🔁 Programar 1-3-7 de lo de hoy</button></div>` : ''}
+     <span class="spacer"></span><button class="btn small ghost" data-act="calDay" data-d="${t}">Ver el día</button></div>` : ''}
   <div class="card">
     <div class="card-h"><h2>Próximos días</h2><span class="spacer"></span><a data-act="calendar">Calendario</a></div>
     ${next.length ? '<div class="upcs">' + next.slice(0, 6).map(up).join('') + '</div>' + (next.length > 6 ? `<div class="hint">…y ${next.length - 6} más en el calendario.</div>` : '')
       : `<div class="empty">Nada programado para los próximos 7 días.</div>`}
-    <div class="mrow"><button class="btn small sec" data-act="planNew">＋ Programar un repaso</button></div>
+    ${parcialBanner()}
+    <div class="mrow"><button class="btn small sec" data-act="planNew">＋ Programar un repaso</button><button class="btn small sec" data-act="parcial">🎯 Tengo un parcial</button></div>
   </div>`;
 }
 
@@ -1088,7 +1924,7 @@ function renderCalendar(){
     const ds = d.toLocaleDateString('sv'), inMonth = d.getMonth() === CAL.m;
     if(i >= 35 && !inMonth && i % 7 === 0) break;
     const tot = ds <= t ? diaryTotals(ds) : {n:0}, ps = plansOn(ds), pend = ps.filter(p => !p.done).length, done = ps.filter(p => p.done).length;
-    const bk = ds >= t ? bankOn(ds) : 0, note = noteOf(ds), late = pend && ds < t;
+    const bk = ds >= t ? bankOn(ds) : 0, note = noteOf(ds), late = ds < t && ps.some(p => !p.done && !seriesWaiting(p));
     const dots = [tot.n ? 'st' : '', pend ? (late ? 'late' : 'pl') : '', bk ? 'bk' : ''].filter(Boolean);
     cells.push(`<button class="cday ${inMonth ? '' : 'out'} ${ds === t ? 'today' : ''} ${ds === CAL.sel ? 'sel' : ''} ${ds < t ? 'past' : ''}" data-act="calDay" data-d="${ds}">
       <span class="cn">${d.getDate()}</span>
@@ -1107,6 +1943,7 @@ function renderCalendar(){
       <button class="btn small sec" data-act="calNext" title="Mes siguiente">›</button>
       <button class="btn small ghost" data-act="calToday">Hoy</button>
       <span class="spacer"></span>
+      <button class="btn small sec" data-act="parcial">🎯 Tengo un parcial</button>
       <button class="btn small" data-act="planNew" data-d="${CAL.sel}">＋ Programar repaso</button>
     </div>
     <div class="calgrid">${['L','M','X','J','V','S','D'].map(x => `<div class="cdh">${x}</div>`).join('')}${cells.join('')}</div>
@@ -1170,7 +2007,7 @@ function recentSections(range){
   const to   = range==='yesterday' ? addDays(t,-1) : t;
   const out = [];
   COURSES.forEach(c => c.sections.forEach(s => {
-    const dates = (studiedLog()[skey(c.id,s.id)]||[]).filter(d => d>=from && d<=to);
+    const dates = (studiedLog()[skey(c.id,s.id)]||[]).concat(lessonDates(c.id, s.id)).filter(d => d>=from && d<=to);
     if(dates.length) out.push({c, s, last: dates.slice().sort().pop()});
   }));
   out.sort((a,b) => a.last < b.last ? 1 : -1);
@@ -1190,15 +2027,18 @@ function roundRobin(list, n){
   return out;
 }
 function buildPlan(){
-  const due = ALL.filter(k => isDue(k.id));
+  const t = today(), due = ALL.filter(k => isDue(k.id) && cardEligible(k));
   const news = due.filter(k => !state.cards[k.id]);
   const review = priority(due.filter(k => state.cards[k.id]));
   const cap = cfg().cap || 60;
-  const maxNew = Math.min(cfg().newPer ?? 20, cap);
-  const revPick = roundRobin(review, Math.max(0, cap - Math.min(maxNew, news.length)));
+  // primero TODO lo que vence (hasta el tope de la sesión); las nuevas solo llenan el espacio que sobra.
+  // Si estás atrasado (vencen más de las que caben), hoy no entran nuevas: meterlas te dejaría más atrasado.
+  const revPick = roundRobin(review, cap);
   const newPick = roundRobin(news, cap - revPick.length);
   const cards = shuffle(revPick.concat(newPick));
-  return {cards, nNew:newPick.length, nRev:revPick.length, totalDue:due.length, remaining: due.length - cards.length};
+  const overdue = review.filter(k => state.cards[k.id].due < t).length;
+  return {cards, nNew:newPick.length, nRev:revPick.length, totalDue:due.length, remaining: due.length - cards.length,
+    catchUp: review.length >= cap && overdue > 0, overdue, backlog: review.length, days: Math.ceil(review.length / cap)};
 }
 function suggestQuiz(){
   let best = null;
@@ -1272,28 +2112,40 @@ function renderHistory(){
 }
 
 function renderCourseGrid(){
-  const solo = COURSES.filter(c => !c.group), groups = {};
-  COURSES.filter(c => c.group).forEach(c => (groups[c.group] = groups[c.group] || []).push(c));
-  return courseCards(solo) + Object.entries(groups).map(([g, cs]) =>
-    `<div class="gtitle">${g === 'Libros' ? '📚 ' : ''}${esc(g)}</div>` + courseCards(cs)).join('');
+  const real = COURSES.filter(c => !c.custom);
+  const blocks = [['activo', '📘 En curso', 'aprendes sus lecciones en orden'], ['terminado', '🔁 Para no olvidar', 'ya los estudiaste: repaso mezclado para mantenerlos'], ['pausa', '⏸ En pausa', 'quietos por ahora']];
+  return blocks.map(([k, t, sub]) => { const l = real.filter(c => courseStatus(c.id) === k);
+      return l.length ? `<div class="gtitle" data-status="${k}">${t} <small>${sub}</small></div>` + courseCards(l) : ''; }).join('')
+    + `<div class="gtitle">📝 Mis apuntes <small>lo que estudias por fuera</small></div>` + courseCards(COURSES.filter(c => c.custom));
 }
 function courseCards(list){
   return `<div class="grid">
     ${list.map(c => {
-      const d = dueIn(c.id).length, m = mastery(c.id), nn = newSecs(c).length;
-      const revd = c.sections.filter(s => state.reviewed[skey(c.id,s.id)]).length;
+      const d = dueIn(c.id).length, m = mastery(c.id), nn = newSecs(c).length, st = courseStatus(c.id);
+      const route = !c.custom && st !== 'terminado' && c.sections.length, ls = learnedSecs(c).length, nx = route ? nextLessonSec(c) : null;
+      const bar = route ? `<div><div class="barlbl"><span>Ruta</span><span>${ls} de ${c.sections.length} ${plural(c.sections.length, 'aprendida', 'aprendidas')}</span></div><div class="bar"><i style="width:${Math.round(100*ls/c.sections.length)}%"></i></div></div>`
+        : `<div><div class="barlbl"><span>Dominio</span><span>${m}%</span></div><div class="bar g"><i style="width:${m}%"></i></div></div>`;
+      const foot = route && st === 'activo' ? (nx ? `<span class="dot acc"></span>Sigue: ${esc(shortSec(nx.title))}` : `<span class="dot ok"></span>Ruta completa`)
+        : d ? `<span class="dot warn"></span>${d} ${plural(d,'tarjeta')} por repasar` : c.sections.length ? `<span class="dot ok"></span>Al día` : 'Todavía vacío';
       return `<div class="ccard" data-act="course" data-c="${c.id}">
         <div class="cc-top"><span class="emoji">${c.emoji||'📘'}</span>
           <div style="min-width:0"><h3>${esc(c.title)}</h3>
-            <div class="meta">${c.sections.length} ${plural(c.sections.length,'sección','secciones')}${revd ? ` · ${revd} ${plural(revd,'repasada')}` : ''}</div>
+            <div class="meta">${c.sections.length} ${plural(c.sections.length,'sección','secciones')}</div>
             ${c.book ? `<div class="bookline">${bookLine(c)}</div>` : ''}</div></div>
-        <div><div class="barlbl"><span>Dominio</span><span>${m}%</span></div><div class="bar g"><i style="width:${m}%"></i></div></div>
-        ${c.sections.length ? heatStrip(c, true) : ''}
-        <div class="cc-foot">${d ? `<span class="dot warn"></span>${d} ${plural(d,'tarjeta')} por repasar` : c.sections.length ? `<span class="dot ok"></span>Al día` : 'Todavía vacío'}
+        ${bar}
+        ${c.sections.length ? (route ? lessonStrip(c, true) : heatStrip(c, true)) : ''}
+        <div class="cc-foot">${foot}
           ${nn ? `<span class="spacer"></span><span class="tagm new">🆕 ${nn} ${plural(nn,'nueva')}</span>` : ''}</div>
       </div>`;
     }).join('')}
   </div>`;
+}
+function lessonStrip(c, small){
+  return `<div class="heat ${small?'sm':''}">${c.sections.map(s => { const st = secStatus(c, s);
+    return `<i class="l${st.lv}" title="${esc(s.title)} · ${esc(st.lbl)}" ${small?'':`data-act="lesson" data-c="${c.id}" data-s="${s.id}"`}></i>`; }).join('')}</div>`;
+}
+function lessonLegend(extra){
+  return `<div class="heatlegend"><span><i class="l0"></i>por aprender</span><span><i class="l1"></i>aprendiendo</span><span><i class="l2"></i>aprendida, en repaso</span><span><i class="l3"></i>dominada (3 repasos)</span>${extra || ''}</div>`;
 }
 function heatLegend(extra){
   return `<div class="heatlegend"><span><i class="h0"></i>sin empezar</span><span><i class="h1"></i>empezando</span><span><i class="h2"></i>en progreso</span><span><i class="h3"></i>avanzada</span><span><i class="h4"></i>dominada</span>${extra || ''}</div>`;
@@ -1304,47 +2156,67 @@ function heatLegend(extra){
    ===================================================================== */
 function renderCourses(){
   const nSec = COURSES.reduce((n,c)=>n+c.sections.length,0);
-  const secs = [];
-  COURSES.forEach(c => c.sections.forEach(s => secs.push({c,s,last: state.reviewed[skey(c.id,s.id)] || null, m: secMastery(c.id,s.id)})));
-  secs.sort((a,b) => (a.m.pct - b.m.pct) || ((a.last||'0000') < (b.last||'0000') ? -1 : 1));
   app.innerHTML = `
   <div class="phead"><h1>Cursos</h1>
     <p>${COURSES.length} cursos · ${nSec} secciones · ${ALL.length} flashcards · dominio global ${globalMastery()}%</p></div>
   ${renderCourseGrid()}
-  <div class="gtitle">Para reforzar <small>tus secciones más flojas</small></div>
-  <div class="suggest">
-    ${secs.slice(0,3).map(x => `<a data-act="section" data-c="${x.c.id}" data-s="${x.s.id}">
-      <span>${x.c.emoji||'📘'} ${esc(x.s.title)}</span>
-      <span class="why">${LEVEL_LBL[x.m.level]} · ${x.last ? 'repasada '+fmtDate(x.last) : 'nunca repasada'}</span></a>`).join('')}
-  </div>
-  <div style="margin-top:18px">${heatLegend('<span>· cada cuadrito es una sección</span>')}</div>`;
+  <div class="card todaybar" style="margin-top:22px">🧭 <span><b>Cómo se usan:</b> los cursos <b>En curso</b> se aprenden una sección a la vez, con su lección (entender → recordar → distinguir → aplicar). Los <b>Para no olvidar</b> entran a un repaso diario mezclado. Cambias el estado dentro de cada curso.</span></div>`;
 }
 function renderCourse(cId){
   const c = course(cId);
   const due = dueIn(cId).length, cap = cfg().cap || 60, m = mastery(cId);
-  const ex = (state.exam||{})[cId];
+  const ex = (state.exam||{})[cId], st = courseStatus(cId), route = !c.custom && st !== 'terminado';
+  const ls = learnedSecs(c).length, nx = route ? nextLessonSec(c) : null, exL = examL(c);
+  const statusCtl = c.custom ? '' : `<div class="stctl"><span class="seg">${Object.entries(COURSE_STATUS).map(([k, lbl]) =>
+      `<button class="chipbtn ${st === k ? 'on' : ''}" data-act="courseStatus" data-c="${cId}" data-v="${k}">${lbl}</button>`).join('')}</span>
+      <span class="hint" style="margin:0; text-align:left">${esc(COURSE_STATUS_SUB[st])}</span></div>`;
+  let routeBox = '';
+  if(route && c.sections.length){
+    const l = nx && (lessonOf(cId, nx.id) || {}), started = nx && lessonKeys(nx).some(k => l[k]), k = nx && lessonNext(c, nx);
+    routeBox = `<div class="routebox">
+      <div class="barlbl"><span><b>Ruta de aprendizaje</b></span><span>${ls} de ${c.sections.length} ${plural(c.sections.length, 'sección aprendida', 'secciones aprendidas')}</span></div>
+      <div class="bar"><i style="width:${Math.round(100*ls/c.sections.length)}%"></i></div>
+      ${nx ? `<div class="mrow" style="margin-top:10px">
+          <button class="btn" data-act="lessonGo" data-c="${cId}" data-s="${nx.id}">▶ ${started ? 'Continuar' : 'Empezar'} la lección: ${esc(shortSec(nx.title))}</button>
+          <span class="hint" style="margin:0">paso ${lessonStepNo(c, nx)} de ${lessonGroups(nx).length}${k ? ': ' + STEP_INFO[k].n : ''}</span></div>`
+        : `<p class="hint" style="text-align:left; margin-top:8px">🎉 Aprendiste todas las secciones. ${st === 'activo' ? 'Cuando quieras, márcalo <b>Para no olvidar</b>: entra al repaso diario mezclado.' : ''}</p>`}
+    </div>`;
+  }
+  const acts = [];
+  if(c.custom){
+    acts.push(`<button class="btn" data-act="noteNew">＋ Nuevo apunte</button>`);
+    if(due) acts.push(`<button class="btn sec" data-act="cards" data-c="${cId}" data-s="">▶ Repasar ${Math.min(due,cap)} ${plural(Math.min(due,cap),'tarjeta')}${due>cap?' de '+due:''}</button>`);
+  } else if(!route){
+    if(maintCourses().some(x => x.id === cId)) acts.push(`<button class="btn" data-act="maint" data-c="${cId}">🔁 Para no olvidar: ${+(cfg().maintN || 10)} preguntas mezcladas</button>`);
+    if(due) acts.push(`<button class="btn sec" data-act="cards" data-c="${cId}" data-s="">▶ Repasar ${Math.min(due,cap)} ${plural(Math.min(due,cap),'tarjeta')}${due>cap?' de '+due:''}</button>`);
+  } else if(ls){
+    const n = learnedSinceExam(c).length;
+    acts.push(`<button class="btn ${examReady(c) ? '' : 'sec'}" data-act="learnedExam" data-c="${cId}">🎓 Examen de lo aprendido${n && examReady(c) ? ` (${n} ${plural(n, 'sección nueva', 'secciones nuevas')})` : ''}${exL ? ` · mejor ${exL.best}%` : ''}</button>`);
+  }
+  const loose = [];
+  if(route && due) loose.push(`<button class="btn small sec" data-act="cards" data-c="${cId}" data-s="">🃏 Repasar ${Math.min(due,cap)} ${plural(Math.min(due,cap),'tarjeta')}</button>`);
+  if(c.sections.some(s => s.quiz.length)) loose.push(`<button class="btn small sec" data-act="exam" data-c="${cId}">🎓 Examen de todo el curso${ex ? ' · mejor ' + ex.best + '%' : ''}</button>`);
+  if(c.sections.some(s => (s.code || []).length)) loose.push(`<button class="btn small sec" data-act="codeCourse" data-c="${cId}">💻 Código del curso</button>`);
+  if(c.sections.length) loose.push(`<button class="btn small ghost" data-act="summary" data-c="${cId}">🖨 Resumen</button>`);
   let html = `<div class="crumb"><a data-act="courses">‹ Cursos</a> ${courseSelect(cId)}</div>
   <div class="card">
     <div class="chead"><span class="emoji">${c.emoji||'📘'}</span>
       <div style="flex:1; min-width:0">
         <h1>${esc(c.title)}</h1>
         ${c.book ? `<div class="bookline">${bookLine(c)}${c.book.chapter ? ' · ' + esc(c.book.chapter) : ''}</div>` : ''}
-        <div class="muted" style="font-size:.86rem; margin-top:2px">${c.sections.length} ${plural(c.sections.length,'sección','secciones')} · dominio ${m}% · ${due ? due+' '+plural(due,'tarjeta')+' por repasar' : 'al día ✓'}${ex ? ' · examen: mejor '+ex.best+'%' : ''}</div>
+        <div class="muted" style="font-size:.86rem; margin-top:2px">${c.sections.length} ${plural(c.sections.length,'sección','secciones')} · dominio ${m}% · ${due ? due+' '+plural(due,'tarjeta')+' por repasar' : 'al día ✓'}</div>
       </div></div>
-    ${c.sections.length ? `<div style="margin-top:14px">${heatStrip(c)}${heatLegend('<span>· toca un cuadrito para ir a la sección</span>')}</div>` : ''}
-    <div class="cacts">
-      ${c.custom ? `<button class="btn" data-act="noteNew">＋ Nuevo apunte</button>` : ''}
-      ${due ? `<button class="btn ${c.custom?'sec':''}" data-act="cards" data-c="${cId}" data-s="">▶ Repasar ${Math.min(due,cap)} ${plural(Math.min(due,cap),'tarjeta')}${due>cap?' de '+due:''}</button>` : ''}
-      ${c.sections.some(s => s.quiz.length) ? `<button class="btn sec" data-act="exam" data-c="${cId}">🎓 Examen del curso</button>` : ''}
-      ${c.sections.some(s => s.code.length) ? `<button class="btn sec" data-act="codeCourse" data-c="${cId}">💻 Código del curso</button>` : ''}
-      ${c.sections.length ? `<button class="btn ghost" data-act="summary" data-c="${cId}">🖨 Resumen</button>` : ''}
-    </div>
+    ${statusCtl}
+    ${routeBox}
+    ${acts.length ? `<div class="cacts">${acts.join('')}</div>` : ''}
+    ${loose.length ? `<div class="loose"><span>Práctica suelta:</span>${loose.join('')}</div>` : ''}
+    ${c.sections.length ? `<div style="margin-top:14px">${route ? lessonStrip(c) + lessonLegend('<span>· toca un cuadrito para abrir su lección</span>') : heatStrip(c) + heatLegend('<span>· toca un cuadrito para ir a la sección</span>')}</div>` : ''}
     ${(c.checkpoints || []).map(cp => cpCard(c, cp)).join('')}
-    ${c.book && !c.book.done ? `<details class="plain" style="margin-top:14px"><summary>📖 ¿Leíste más?</summary><p class="hint" style="margin-top:6px">Agrega los Días nuevos a tu guía de Word (${esc(c.book.guide || 'la guía del libro')}), déjala en <code>repaso/inbox/</code> y dile a Claude "procesa la bandeja". Se agregan solo los Días nuevos, con todo (flashcards, quiz, múltiple, código y hermanos), sin tocar tu progreso; si trae un checkpoint nuevo, también su examen y su proyecto.</p></details>` : ''}
+    ${c.book && !c.book.done ? `<details class="plain" style="margin-top:14px"><summary>📖 ¿Leíste más?</summary><p class="hint" style="margin-top:6px">Agrega los Días nuevos a tu guía de Word (${esc(c.book.guide || 'la guía del libro')}), déjala en <code>repaso/inbox/</code> y dile a Claude "procesa la bandeja". Se agregan solo los Días nuevos, con todo (flashcards, quiz, múltiple, código y hermanos), sin tocar tu progreso; entran a tu ruta como lecciones nuevas y, si traen un checkpoint, también su examen y su proyecto.</p></details>` : ''}
     ${c.custom ? `<p class="hint">Aquí van los temas que estudias fuera de los cursos. Cada apunte tiene puntos clave y fichas que entran al mismo repaso espaciado. Se guardan en este navegador (y en el archivo de Exportar).</p>` : ''}
   </div>
   ${c.custom && !c.sections.length ? `<div class="card center"><div style="font-size:2.2rem">📝</div><h2 style="font-size:1.1rem; margin:6px 0">Aún no tienes apuntes</h2><p class="sub">Estudiaste algo nuevo hoy y quieres comprobar mañana si quedó claro: crea un apunte con el título, lo que aprendiste y unas fichas. O pídele a Claude que genere las fichas por ti.</p><button class="btn" data-act="noteNew">＋ Crear mi primer apunte</button></div>` : ''}
-  ${c.sections.length ? `<div class="gtitle">Secciones <small>toca una para ver sus puntos clave y practicarla</small></div>` : ''}`;
+  ${c.sections.length ? (route ? `<div class="gtitle">Ruta <small>en orden: cada lección se apoya en la anterior</small></div>` : `<div class="gtitle">Secciones <small>toca una para ver sus puntos clave y practicarla</small></div>`) : ''}`;
   let lastGroup = null;
   c.sections.forEach(s => {
     if(s.group && s.group !== lastGroup){ html += `<div class="gtitle" style="margin-top:22px"><small style="font-size:.86rem; font-weight:700; color:var(--ink)">${esc(s.group)}</small></div>`; lastGroup = s.group; }
@@ -1355,17 +2227,25 @@ function renderCourse(cId){
 function modeBtn(act, c, s, ico, name, n, unit){
   return `<button class="mode" data-act="${act}" data-c="${c.id}" data-s="${s.id}" ${n ? '' : 'disabled'}><span class="mi">${ico}</span><span><b>${name}</b><small>${n} ${unit}</small></span></button>`;
 }
+function lessonBox(c, s){
+  const st = secStatus(c, s), l = lessonOf(c.id, s.id) || {}, nx = lessonNext(c, s), gs = lessonGroups(s);
+  const steps = gs.map(g => { const ok = g.keys.every(x => l[x]); return `<span class="lstep ${ok ? 'ok' : ''}">${ok ? '✓' : '○'} ${g.g}</span>`; }).join('');
+  return `<div class="lessonbox"><div class="lbt"><b>📘 Lección</b> <span class="stchip st-${st.k}">${esc(st.lbl)}</span><div class="lsteps">${steps}</div></div>
+    <div class="lba">${nx && STEP_INFO[nx] && st.k === 'aprendiendo' ? `<button class="btn small" data-act="lessonGo" data-c="${c.id}" data-s="${s.id}">Seguir: ${STEP_INFO[nx].n}</button>` : ''}
+      <button class="btn small ${st.k === 'nueva' ? '' : 'sec'}" data-act="lesson" data-c="${c.id}" data-s="${s.id}">${st.k === 'nueva' ? 'Empezar la lección' : 'Ver la lección'}</button></div></div>`;
+}
 function renderSectionRow(c, s){
-  const cId = c.id, k = skey(cId,s.id);
+  const cId = c.id, k = skey(cId,s.id), route = !c.custom && courseStatus(cId) !== 'terminado';
   const rev = state.reviewed[k], qz = state.quiz[k], mz = (state.multi||{})[k], cz = (state.codeScore||{})[k], d = dueIn(cId,s.id).length, m = secMastery(cId,s.id);
-  const p = nextPlanFor(k);
-  const meta = [LEVEL_LBL[m.level].charAt(0).toUpperCase() + LEVEL_LBL[m.level].slice(1)];
+  const p = nextPlanFor(k), sst = c.custom ? null : secStatus(c, s);
+  const meta = [route ? `<span class="stchip st-${sst.k}">${esc(sst.lbl)}</span>` : LEVEL_LBL[m.level].charAt(0).toUpperCase() + LEVEL_LBL[m.level].slice(1)];
+  if(!route && sst && sst.k !== 'nueva') meta.push(`<span class="stchip st-${sst.k}">${esc(sst.lbl)}</span>`);
   if(d) meta.push(`<span class="due">${d} por repasar</span>`);
   if(qz) meta.push(`quiz ${qz.best}%`);
   if(mz) meta.push(`múltiple ${mz.best}%`);
   if(cz) meta.push(`código ${cz.best}%`);
   if(p) meta.push(`<span class="${p.date < today() ? 'due' : ''}">📝 repaso ${p.date < today() ? 'atrasado' : dayLabel(p.date)}</span>`);
-  if(rev) meta.push(`<span class="okc">✓ repasada</span>`);
+  if(rev && !route) meta.push(`<span class="okc">✓ repasada</span>`);
   return `<details class="srow" id="sec-${s.id}">
     <summary>
       <span class="chev">▶</span>
@@ -1374,19 +2254,19 @@ function renderSectionRow(c, s){
       <span class="sprog" title="${m.mastered}/${m.total} tarjetas dominadas (nivel 3+)"><span>${m.pct}%</span><span class="bar mini"><i style="width:${m.pct}%;background:${m.level ? LEVEL_COLOR[m.level] : 'var(--line)'}"></i></span></span>
     </summary>
     <div class="sbody">
+      ${c.custom ? '' : lessonBox(c, s)}
       <div class="summary">${fmt(s.summary)}</div>
+      <div class="kptitle">📖 Puntos clave</div>
+      <ul>${s.keyPoints.map(p => `<li>${fmt(p)}</li>`).join('')}</ul>
+      <div class="kptitle">${c.custom ? 'Practicar' : 'Práctica suelta'} <small>${c.custom ? '' : 'fuera de la lección, cuando quieras'}</small></div>
       <div class="modes">
         ${modeBtn('cards', c, s, '🃏', 'Flashcards', s.flashcards.length, plural(s.flashcards.length,'tarjeta'))}
         ${modeBtn('quiz', c, s, '📝', 'Quiz', s.quiz.length, plural(s.quiz.length,'pregunta'))}
         ${modeBtn('multi', c, s, '☑', 'Múltiple respuesta', s.multi.length, plural(s.multi.length,'pregunta'))}
         ${s.code.length ? modeBtn('code', c, s, '💻', 'Código', s.code.length, plural(s.code.length,'ejercicio')) : ''}
       </div>
-      <div class="kptitle">📖 Puntos clave</div>
-      <ul>${s.keyPoints.map(p => `<li>${fmt(p)}</li>`).join('')}</ul>
       <div class="level">${LEVEL_LBL[m.level]} · ${m.seen}/${m.total} tarjetas vistas · ${m.mastered} dominadas${m.seen?' · nivel promedio '+m.avgBox:''}${lastStudied(k) ? ' · 📌 estudiada '+fmtDate(lastStudied(k)) : ''}${rev ? ' · repasada '+fmtDate(rev) : ''}</div>
       <div class="actions">
-        <button class="btn small ${rev?'ok':'sec'}" data-act="mark" data-c="${cId}" data-s="${s.id}">${rev ? '✓ Repasada' : 'Marcar repasada'}</button>
-        <button class="btn small ${studiedOn(k,today())?'ok':'sec'}" data-act="studied" data-c="${cId}" data-s="${s.id}" title="Te programa un repaso mañana, en 3 y en 7 días">${studiedOn(k,today()) ? '📌 Estudiada hoy ✓' : '📌 Estudié esto hoy'}</button>
         <button class="btn small sec" data-act="remEdit" data-c="${cId}" data-s="${s.id}">📅 Programar repaso</button>
         <button class="btn small ghost" data-act="askAI" data-c="${cId}" data-s="${s.id}">💬 Pedirle a Claude que me la explique</button>
         ${c.custom ? `<button class="btn small ghost" data-act="noteEdit" data-s="${s.id}">✏️ Editar apunte</button><button class="btn small ghost" data-act="noteDelete" data-s="${s.id}" style="color:var(--bad)">🗑 Eliminar</button>` : ''}
@@ -1592,7 +2472,7 @@ function startFreeQuiz(){
 function startRecent(range){
   const secs = recentSections(range);
   const pool = ALL.filter(k => secs.some(x => x.c.id===k.courseId && x.s.id===k.sectionId));
-  if(!pool.length){ toast('No has marcado nada como estudiado en ese rango'); return; }
+  if(!pool.length){ toast('No trabajaste ninguna sección en ese rango'); return; }
   beginCards(shuffle(pool), {recent:range, label:'Repaso de lo reciente'});
 }
 function renderPractice(){
@@ -1604,7 +2484,7 @@ function renderPractice(){
   const rows = [['today','Hoy','📌'],['yesterday','Ayer','⏪'],['week','Últimos 7 días','📅']].map(([r,lbl,ico]) => {
     const secs = recentSections(r), n = secs.length;
     const cards = ALL.filter(k => secs.some(x => x.c.id===k.courseId && x.s.id===k.sectionId)).length;
-    return `<div class="frow"><span class="ic">${ico}</span><div class="rt"><b>${lbl}</b><small>${n ? n+' '+plural(n,'sección','secciones')+' · '+cards+' tarjetas' : 'nada marcado'}</small></div>
+    return `<div class="frow"><span class="ic">${ico}</span><div class="rt"><b>${lbl}</b><small>${n ? n+' '+plural(n,'sección','secciones')+' · '+cards+' tarjetas' : 'nada todavía'}</small></div>
       <button class="btn small sec" data-act="recent" data-r="${r}" ${n?'':'disabled'}>Repasar</button></div>`;
   }).join('');
   const week = recentSections('week');
@@ -1649,8 +2529,8 @@ function renderPractice(){
 
   <div class="card">
     <div class="card-h"><h2>📌 Lo que estudiaste hace poco</h2></div>
-    <p class="lead-in">Todas las tarjetas de las secciones que marcaste con <b>📌 Estudié esto hoy</b>, mientras están frescas.</p>
-    ${week.length ? `<div>${rows}</div>` : `<div class="empty">Nada marcado esta semana. En cada sección tienes el botón <b>📌 Estudié esto hoy</b>.</div>`}
+    <p class="lead-in">Todas las tarjetas de las secciones que trabajaste en una lección, mientras están frescas.</p>
+    ${week.length ? `<div>${rows}</div>` : `<div class="empty">Nada esta semana. Aquí aparecen las secciones en las que avances una lección.</div>`}
     ${week.length ? `<details class="plain"><summary>Ver las ${week.length} ${plural(week.length,'sección','secciones')} de esta semana</summary>` +
       week.map(x => `<div class="frow"><div class="rt">${x.c.emoji||'📘'} ${esc(x.s.title)}<small>${fmtDate(x.last)}</small></div>
         <button class="btn small ghost" data-act="cards" data-c="${x.c.id}" data-s="${x.s.id}">🃏 Tarjetas</button>
@@ -1683,7 +2563,7 @@ function startPlan(){
 }
 function startCards(cId, sId){
   if(cId && sId){ const s = section(cId,sId);
-    beginCards(shuffle(ALL.filter(k => k.courseId===cId && k.sectionId===sId)), {cId, sId, label: 'Sección'}); return; }
+    beginCards(shuffle(ALL.filter(k => k.courseId===cId && k.sectionId===sId)), {cId, sId, sec: true, label: shortSec(s.title)}); return; }
   const cap = cfg().cap || 60;
   const due = priority(dueIn(cId || null));
   if(!due.length){ toast('No hay tarjetas pendientes aquí 🎉'); return; }
@@ -1737,7 +2617,8 @@ function renderCard(){
       </div>
       <div class="fclinks">
         <button class="btn small ghost" data-act="toggleKp">📖 ${f.showKp?'Ocultar':'Ver'} puntos clave de la sección <kbd>k</kbd></button>
-        <button class="btn small ghost" data-act="askCard">💬 Pedirle a Claude otra explicación</button>
+        ${aiOn() ? `<button class="btn small sec" data-act="aiCard">🤖 Explícamela</button>` : ''}
+        <button class="btn small ghost" data-act="askCard">💬 ${aiOn() ? 'Para Claude' : 'Pedirle a Claude otra explicación'}</button>
       </div>
       ${k.card.why ? `<div class="fcwhy"><b>🎓 Por qué:</b> ${fmt(cleanWhy(k.card.why))}</div>` : ''}
       ${f.showKp ? `<ul class="kp">${s.keyPoints.map(p=>`<li>${fmt(p)}</li>`).join('')}</ul>` : ''}
@@ -1792,12 +2673,11 @@ function renderCardsEnd(){
   touched.forEach(k => { const [c,s] = k.split('|'); autoReview(c,s); });
   let planExtra = '';
   if(f.plan){
-    const sq = suggestQuiz();
-    state.planCards = today(); state.planQuiz = {date: today(), c: sq.c.id, s: sq.s.id}; save();
-    planExtra = `<p class="sub" style="margin:6px 0">Sigue en tu día → quiz de <b>${esc(sq.s.title)}</b></p>
-      <div class="mrow" style="justify-content:center; margin-bottom:4px">
-        <button class="btn" data-act="quiz" data-c="${sq.c.id}" data-s="${sq.s.id}">📝 Hacer el quiz</button></div>`;
+    state.planCards = today(); save();
+    const left = dayTasks().filter(x => !x.done).length;
+    planExtra = `<p class="sub" style="margin:6px 0">✅ Tarjetas del día hechas${left ? ` · te ${left === 1 ? 'queda 1 cosa' : 'quedan ' + left + ' cosas'} en Hoy` : ''}</p>`;
   }
+  if(f.sec) planExtra += lessonHook(f.cId, f.sId, 'recall', undefined, f.lesson).cta;
   if(f.userPlan){
     if(PLANRUN && PLANRUN.id === f.userPlan && PLANRUN.mix.length)
       planExtra = `<p class="sub" style="margin:6px 0">📝 Sigue tu repaso programado con <b>${PLANRUN.mix.length} ${plural(PLANRUN.mix.length, 'pregunta o ejercicio', 'preguntas y ejercicios')}</b></p>
@@ -1831,7 +2711,7 @@ function renderCardsEnd(){
         ${weakCards.length ? `<button class="btn warn" data-act="retryFailed">🔁 Repasar solo estas ${weakCards.length}</button>` : ''}
         ${weakCards.length ? `<button class="btn sec" data-act="askWeak">💬 Pedirle a Claude que me las explique</button>` : ''}
         ${f.cId ? `<button class="btn sec" data-act="course" data-c="${f.cId}">Volver al curso</button>` : ''}
-        <button class="btn ${f.plan||weakCards.length?'sec':''}" data-act="${f.free||f.recent ? 'practice' : 'home'}">${f.free||f.recent ? 'Volver a Practicar' : 'Ir a Hoy'}</button>
+        <button class="btn ${weakCards.length || f.sec ? 'sec' : ''}" data-act="${f.free||f.recent ? 'practice' : 'home'}">${f.free||f.recent ? 'Volver a Practicar' : 'Ir a Hoy'}</button>
       </div>
       ${failHtml}
       ${goodHtml}
@@ -1962,6 +2842,7 @@ function renderQuizEnd(){
   const {entries, rec} = finishRound('quiz', z);
   recordSession(); save();
   if(!z.free && !z.exam) autoReview(z.cId, z.sId);
+  const cta = !z.free && !z.exam && !z.partial ? lessonHook(z.cId, z.sId, 'quiz', pct, z.lesson).cta : '';
   const failed = z.qs.filter(q => !itemOk('quiz', q));
   const msg = pct>=90?'¡Excelente! 🏆':pct>=70?'¡Muy bien! 💪':pct>=50?'Vas bien, repasa los fallos 📖':'Toca repasar esta sección 🔄';
   const failedIdx = failed.map(q => q.idx).filter(x => x!==undefined);
@@ -1977,8 +2858,9 @@ function renderQuizEnd(){
         : z.free ? `<button class="btn sec" data-act="freeQuiz">🔁 Otro quiz mezclado</button><button class="btn" data-act="practice">Volver</button>`
         : `${failedIdx.length && failedIdx.length < section(z.cId,z.sId).quiz.length ? `<button class="btn warn" data-act="retryQuizFailed" data-c="${z.cId}" data-s="${z.sId}" data-only="${failedIdx.join(',')}">🔁 Solo las ${failedIdx.length} falladas</button>` : ''}
            <button class="btn sec" data-act="quiz" data-c="${z.cId}" data-s="${z.sId}">🔁 Reintentar todo</button>
-           <button class="btn" data-act="course" data-c="${z.cId}">Volver al curso</button>`}
+           <button class="btn ${cta ? 'sec' : ''}" data-act="course" data-c="${z.cId}">Volver al curso</button>`}
       </div>
+      ${cta}
       ${reportBody(entries, rec)}
     </div>
   </div>`;
@@ -2078,6 +2960,7 @@ function renderMultiEnd(){
   }
   const {entries, rec} = finishRound('multi', z);
   recordSession(); save();
+  const cta = !z.free && !z.partial ? lessonHook(z.cId, z.sId, 'multi', pct, z.lesson).cta : '';
   const failed = z.qs.filter(q => !multiOk(q));
   const msg = pct>=90?'¡Excelente! 🏆':pct>=70?'¡Muy bien! 💪':pct>=50?'Vas bien, revisa los fallos 📖':'Toca repasar esta sección 🔄';
   const failedIdx = failed.map(q => q.idx).filter(x => x!==undefined);
@@ -2092,8 +2975,9 @@ function renderMultiEnd(){
         ${z.free ? `<button class="btn sec" data-act="freeMulti">🔁 Otra ronda mezclada</button><button class="btn" data-act="practice">Volver</button>`
         : `${failedIdx.length && failedIdx.length < section(z.cId,z.sId).multi.length ? `<button class="btn warn" data-act="retryMultiFailed" data-c="${z.cId}" data-s="${z.sId}" data-only="${failedIdx.join(',')}">🔁 Solo las ${failedIdx.length} falladas</button>` : ''}
            <button class="btn sec" data-act="multi" data-c="${z.cId}" data-s="${z.sId}">🔁 Reintentar todo</button>
-           <button class="btn" data-act="course" data-c="${z.cId}">Volver al curso</button>`}
+           <button class="btn ${cta ? 'sec' : ''}" data-act="course" data-c="${z.cId}">Volver al curso</button>`}
       </div>
+      ${cta}
       ${reportBody(entries, rec)}
     </div>
   </div>`;
@@ -2143,7 +3027,8 @@ function startCode(cId, sId, only){
   let src = s.code.map((x,i) => ({x,i}));
   if(only) src = src.filter(o => only.includes(o.i));
   leave();
-  codeSession = {cId, sId, qs: shuffle(src).map(o => Object.assign(mkC(o.x, c, s), {idx:o.i})), i:0,
+  const ORD = {predict:0, bug:1, fill:2, line:3, order:4};   // PRIMM: primero leer código, después escribirlo
+  codeSession = {cId, sId, qs: shuffle(src).sort((a, b) => (ORD[a.x.type] ?? 9) - (ORD[b.x.type] ?? 9)).map(o => Object.assign(mkC(o.x, c, s), {idx:o.i})), i:0,
                  title:s.title, partial: !!only};
   renderCode();
 }
@@ -2340,6 +3225,7 @@ function renderCodeEnd(){
   }
   const {entries, rec} = finishRound('code', z);
   recordSession(); save();
+  const cta = !z.free && !z.partial ? lessonHook(z.cId, z.sId, 'code', pct, z.lesson).cta : '';
   const failed = z.qs.filter(q => !codeOk(q));
   const msg = pct>=90?'¡Excelente! 🏆':pct>=70?'¡Muy bien! 💪':pct>=50?'Vas bien, revisa los fallos 📖':'Toca repasar esta sección 🔄';
   const failedIdx = failed.map(q => q.idx).filter(x => x!==undefined);
@@ -2354,8 +3240,9 @@ function renderCodeEnd(){
         ${z.free ? `<button class="btn sec" data-act="freeCode">🔁 Otra ronda</button><button class="btn" data-act="practice">Volver</button>`
         : `${failedIdx.length && failedIdx.length < section(z.cId,z.sId).code.length ? `<button class="btn warn" data-act="retryCodeFailed" data-c="${z.cId}" data-s="${z.sId}" data-only="${failedIdx.join(',')}">🔁 Solo los ${failedIdx.length} fallados</button>` : ''}
            <button class="btn sec" data-act="code" data-c="${z.cId}" data-s="${z.sId}">🔁 Reintentar todo</button>
-           <button class="btn" data-act="course" data-c="${z.cId}">Volver al curso</button>`}
+           <button class="btn ${cta ? 'sec' : ''}" data-act="course" data-c="${z.cId}">Volver al curso</button>`}
       </div>
+      ${cta}
       ${reportBody(entries, rec)}
     </div>
   </div>`;
@@ -2674,7 +3561,7 @@ function startMix(list, meta){   // list: [{kind, x, c, s, i, sib}]
   leave();
   MIX = {items: shuffle(list).map(o => { const it = mkItem(o.kind, o.x, o.c, o.s, o.i, o.sid);
            if(o.sib) it.sib = true; if(o.sub) it.sub = o.sub; return {kind:o.kind, it}; }),
-         pos:0, title: meta.title, mode: meta.mode || 'bank', exam: meta.exam || null, plan: meta.plan || null};
+         pos:0, title: meta.title, mode: meta.mode || 'bank', exam: meta.exam || null, plan: meta.plan || null, maintC: meta.maintC || null};
   if(MIX.exam){ MIX.endAt = Date.now() + MIX.exam.secs * 1000; }
   setTab(MIX.exam ? 'courses' : 'practice');
   mixStep();
@@ -2701,11 +3588,14 @@ function renderMixEnd(){
   if(m.exam){
     if(!state.exam) state.exam = {};
     const k = m.exam.c+':'+m.exam.cp, prev = state.exam[k] || {best:0};
-    state.exam[k] = {best: Math.max(prev.best, pct), last: pct, date: today()};
+    state.exam[k] = {best: Math.max(prev.best, pct), last: pct, date: today(), ts: Date.now()};
     bestTxt = ' · mejor marca: ' + state.exam[k].best + '%';
   }
+  if(m.mode === 'maint' && !m.quit && !m.maintC){ (state.maint = state.maint || {})[today()] = 1; }
   recordSession(); save();
-  const msg = m.exam ? (pct>=80?'¡Checkpoint superado! 🏆':pct>=60?'Casi: repasa lo que fallaste 💪':'Toca repasar antes de seguir leyendo 🔄')
+  const isL = m.exam && m.exam.cp === 'L';
+  const msg = isL ? (pct>=80?'¡Lo aprendido está firme! 🏆':pct>=60?'Casi: lo que fallaste vuelve mañana 💪':'Toca repasar: lo fallado vuelve mañana 🔄')
+            : m.exam ? (pct>=80?'¡Checkpoint superado! 🏆':pct>=60?'Casi: repasa lo que fallaste 💪':'Toca repasar antes de seguir leyendo 🔄')
             : pct>=90?'¡Excelente! 🏆':pct>=70?'¡Muy bien! 💪':pct>=50?'Vas mejorando 📖':'Todavía cuestan: mañana vuelven 🔄';
   const nSib = entries.filter(e => e.it.sib).length;
   const nNone = entries.filter(e => !itemDone(e.kind, e.it)).length;
@@ -2719,8 +3609,12 @@ function renderMixEnd(){
       <p class="sub">${okN} de ${entries.length} bien${nSib ? ` · incluye ${nSib} ${plural(nSib,'ejercicio hermano','ejercicios hermanos')}` : ''}${nNone ? ` · ${nNone} sin responder` : ''}${bestTxt}${m.timeout ? ' · ⏱ se acabó el tiempo' : ''}</p>
       <h2 style="margin:8px 0">${msg}</h2>
       <div class="mrow noprint" style="justify-content:center">
-        ${m.exam ? `<button class="btn sec" data-act="cpExam" data-c="${m.exam.c}" data-cp="${m.exam.cp}">🔁 Otro examen</button>
+        ${isL ? `<button class="btn sec" data-act="learnedExam" data-c="${m.exam.c}">🔁 Otro examen</button>
+                    <button class="btn sec" data-act="course" data-c="${m.exam.c}">Volver al curso</button>
+                    <button class="btn" data-act="home">Ir a Hoy</button>`
+         : m.exam ? `<button class="btn sec" data-act="cpExam" data-c="${m.exam.c}" data-cp="${m.exam.cp}">🔁 Otro examen</button>
                     <button class="btn" data-act="course" data-c="${m.exam.c}">Volver al libro</button>`
+         : m.mode === 'maint' ? `<button class="btn sec" data-act="maint" ${m.maintC ? `data-c="${m.maintC}"` : ''}>🔁 Otra ronda</button>${m.maintC ? `<button class="btn sec" data-act="course" data-c="${m.maintC}">Volver al curso</button>` : ''}<button class="btn" data-act="home">Ir a Hoy</button>`
                  : `<button class="btn sec" data-act="practice">Volver a Practicar</button>
                     <button class="btn" data-act="home">Ir a Hoy</button>`}
       </div>
@@ -2733,7 +3627,7 @@ function renderMixEnd(){
 function exitMix(){
   const done = MIX.items.filter(e => itemDone(e.kind, e.it));
   MIX.quit = true;
-  if(!done.length){ const ex = MIX.exam; leave(); if(ex) goCourse(ex.c); else goPractice(); return; }
+  if(!done.length){ const ex = MIX.exam, md = MIX.mode, mc = MIX.maintC; leave(); if(ex) goCourse(ex.c); else if(mc) goCourse(mc); else if(md === 'maint') goHome(); else goPractice(); return; }
   if(MIX.exam){ MIX.pos = MIX.items.length; renderMixEnd(); return; }   // en un examen, lo no respondido cuenta como fallado
   MIX.items = done; MIX.pos = done.length;
   renderMixEnd();
@@ -2835,9 +3729,10 @@ function cpPool(c, cp){
 }
 function cpCard(c, cp){
   const best = (state.exam || {})[c.id+':'+cp.id], p = cp.project && PROJECTS.find(x => x.id === cp.project);
-  return `<div class="cpbox"><b>🎯 ${esc(cp.title)}</b> <span class="hint" style="margin:0">· pp. ${cp.pages[0]}–${cp.pages[1]} · ${cpPool(c, cp).length} preguntas y ejercicios para el examen</span>
+  const nL = cp.sections.filter(id => lessonDone(c.id, id)).length;
+  return `<div class="cpbox"><b>🎯 ${esc(cp.title)}</b> <span class="hint" style="margin:0">· pp. ${cp.pages[0]}–${cp.pages[1]} · ${cpPool(c, cp).length} preguntas y ejercicios · ${nL} de ${cp.sections.length} secciones aprendidas${nL === cp.sections.length ? ' ✓' : ''}</span>
     <div class="mrow" style="margin-top:6px">
-      <button class="btn small" data-act="cpExam" data-c="${c.id}" data-cp="${cp.id}">🎓 Examen del ${esc(cp.title)}</button>
+      <button class="btn small ${cpReady(c, cp) ? '' : 'sec'}" data-act="cpExam" data-c="${c.id}" data-cp="${cp.id}">🎓 Examen del ${esc(cp.title)}</button>
       ${p ? `<button class="btn small sec" data-act="project" data-p="${p.id}">🛠 Su proyecto (${projProgress(p).pct}%)</button>` : ''}
       ${best ? `<span class="badge">mejor ${best.best}% · último ${best.last}% (${fmtDate(best.date)})</span>` : ''}
     </div></div>`;
@@ -3241,7 +4136,9 @@ function askMany(){
   copyText(txt, '💬 Pedirle a Claude que me explique las que fallé');
 }
 function askBtn(act, i){
-  return `<button class="btn small ghost" data-act="${act}"${i != null ? ` data-i="${i}"` : ''}>💬 Pedirle a Claude que me lo explique</button>`;
+  const di = i != null ? ` data-i="${i}"` : '';
+  return aiOn() ? `<button class="btn small sec" data-act="aiAsk" data-src="${act}"${di}>🤖 Explícamelo</button><button class="btn small ghost" data-act="${act}"${di}>💬 Para Claude</button>`
+    : `<button class="btn small ghost" data-act="${act}"${di}>💬 Pedirle a Claude que me lo explique</button>`;
 }
 
 /* =====================================================================
@@ -3360,6 +4257,7 @@ function refresh(){ // vuelve a dibujar la vista actual tras un cambio pequeño
     if(sel){ renderCourse(sel.value); if(open){ const d = document.getElementById(open.id); if(d) d.open = true; } } else renderCourses(); }
   else if(view==='projects') renderProjects();
   else if(view==='calendar') renderCalendar();
+  else if(view==='lesson' && LESSON) renderLesson(LESSON.c, LESSON.s);
 }
 function toast(msg){
   const t = document.createElement('div');
@@ -3456,7 +4354,8 @@ function whenCard(c){ return c.ts || noon(c.last); }   // sin hora exacta (progr
 function whenBank(e){ return e.ts || Math.max(noon(e.last), noon(e.okLast)); }
 function whenPlan(p){ return p.upd || noon(p.created); }
 function whenNote(n){ return n.uts || noon(n.updated || n.created); }
-function planSig(p){ return p.from === 'book' ? 'book#' + p.secs.join(',') : [p.date, p.src, p.secs.slice().sort().join(','), JSON.stringify(p.n), p.from || ''].join('#'); }
+function planSig(p){ return p.from === 'book' ? 'book#' + p.secs.join(',') : p.from === 'lesson' ? 'lesson#' + p.secs.join(',') + '#' + p.step
+  : [p.date, p.src, p.secs.slice().sort().join(','), JSON.stringify(p.n), p.from || ''].join('#'); }
 function mergeNote(a, b){
   if(!a) return b; if(!b) return a;
   const x = a.t || '', y = b.t || '', ts = Math.max(a.ts || 0, b.ts || 0);
@@ -3468,7 +4367,7 @@ function mergeNote(a, b){
 }
 function mergeStates(L0, R0){
   const L = JSON.parse(JSON.stringify(L0)), R = JSON.parse(JSON.stringify(R0));
-  const sum = {cards:0, reports:0, plans:0, done:0, bank:0, notes:0, days:0, proj:0, other:0};
+  const sum = {cards:0, reports:0, plans:0, done:0, bank:0, notes:0, days:0, proj:0, lessons:0, other:0};
   const gone = L.gone = L.gone || {};
   const normQ = v => String(v || '').toLowerCase().replace(/\W+/g, ' ').trim();
 
@@ -3520,6 +4419,29 @@ function mergeStates(L0, R0){
   L.knownSecs = L.knownSecs || {};
   Object.entries(R.knownSecs || {}).forEach(([k, d]) => { if(!L.knownSecs[k] || d < L.knownSecs[k]) L.knownSecs[k] = d; });
   ['planDone', 'planCards'].forEach(k => { if(R[k] && (!L[k] || R[k] > L[k])) L[k] = R[k]; });
+
+  // 3b) 🧭 el método: lecciones (cada paso con su primera fecha; "reiniciar" deja lápida), estado de cada curso (gana el cambio más reciente) y mantenimiento
+  const ll = L.lessons = L.lessons || {};
+  const goneL = (k, l) => { const g = gone['lesson:' + k]; return g != null && g >= ((l && l.ts) || 0); };
+  Object.entries(R.lessons || {}).forEach(([k, rl]) => {
+    if(!rl || goneL(k, rl)) return;
+    const a = ll[k];
+    if(!a || goneL(k, a)){ ll[k] = rl; sum.lessons++; return; }
+    const m = Object.assign({}, a);
+    Object.entries(rl).forEach(([f, v]) => { if(f === 'ts') m.ts = Math.max(a.ts || 0, v || 0); else if(f === 'doneTs') m.doneTs = a.doneTs ? Math.min(a.doneTs, v || a.doneTs) : v; else if(typeof v === 'string' && (!m[f] || v < m[f])) m[f] = v; });
+    if(!sameJ(m, a)){ ll[k] = m; sum.lessons++; }
+  });
+  Object.keys(ll).forEach(k => { if(goneL(k, ll[k])) delete ll[k]; });
+  const lcs = L.courseStatus = L.courseStatus || {};
+  Object.entries(R.courseStatus || {}).forEach(([c, r]) => { if(r && (!lcs[c] || (r.ts || 0) > (lcs[c].ts || 0))){ if(!lcs[c] || lcs[c].s !== r.s) sum.other++; lcs[c] = r; } });
+  L.maint = Object.assign({}, R.maint || {}, L.maint || {});
+  // ✍️ explicaciones con tus palabras: se juntan (las 5 más recientes de cada sección)
+  const le = L.explains = L.explains || {};
+  Object.entries(R.explains || {}).forEach(([k, arr]) => {
+    const have = new Set((le[k] || []).map(x => x.ts)), add = (arr || []).filter(x => x && !have.has(x.ts));
+    if(add.length){ le[k] = (le[k] || []).concat(add).sort((a, b) => a.ts - b.ts).slice(-5); sum.other += add.length; }
+  });
+  if(R.methodV && !L.methodV) L.methodV = R.methodV;
   if(R.planQuiz && (!L.planQuiz || R.planQuiz.date > L.planQuiz.date)) L.planQuiz = R.planQuiz;
 
   // 4) banco de errores: en cada pregunta gana lo último que pasó (una graduación deja lápida)
@@ -3536,6 +4458,7 @@ function mergeStates(L0, R0){
   const goneP = p => (gone['plan:' + p.id] || 0) >= whenPlan(p) || (gone['plansig:' + planSig(p)] || 0) >= whenPlan(p);
   (R.plans || []).forEach(rp => {
     if(goneP(rp)) return;
+    if(rp.from === 'book' && !rp.done && L.methodV) return;   // con el método, las secciones nuevas de un libro son lecciones, no repasos
     const same = lp.find(p => p.id === rp.id), dup = same || lp.find(p => planSig(p) === planSig(rp));
     if(!dup){ lp.push(rp); sum.plans++; return; }
     const newer = same && whenPlan(rp) > whenPlan(dup) ? rp : dup;
@@ -3611,6 +4534,7 @@ function mergeSummary(s){
   if(s.days) bits.push(`${s.days} ${plural(s.days, 'día', 'días')} del diario`);
   if(s.notes) bits.push(`${s.notes} ${plural(s.notes, 'apunte', 'apuntes')}`);
   if(s.proj) bits.push(`${s.proj} ${plural(s.proj, 'paso', 'pasos')} de proyectos`);
+  if(s.lessons) bits.push(`${s.lessons} ${plural(s.lessons, 'lección', 'lecciones')}`);
   if(s.other) bits.push(`${s.other} ${plural(s.other, 'marca y dato más', 'marcas y datos más')}`);
   return bits;
 }
@@ -3711,7 +4635,7 @@ function applyImport(replace){
       diary: me.diary || {}, log: me.log || {}, graduated: me.graduated || 0});
   }
   const {state: merged, sum} = mergeStates(base, R);
-  state = merged; syncCustom(); save();
+  state = merged; syncCustom(); migrateMethod(); normalizeLessons(); save();
   IMPORT = null;
   const bits = mergeSummary(sum);
   document.querySelector('.modal-bg')?.remove();
@@ -3729,7 +4653,7 @@ function applyImport(replace){
 function undoImport(){
   const b = lastBackup(); if(!b || !b.state) return;
   if(!confirm('¿Volver a como estaba este dispositivo antes de la última importación?')) return;
-  state = b.state; syncCustom(); save();
+  state = b.state; syncCustom(); migrateMethod(); normalizeLessons(); save();
   try{ localStorage.removeItem(KEY + '.antes'); }catch(e){}
   document.querySelector('.modal-bg')?.remove();
   toast('↶ Importación deshecha'); goHome();
@@ -3758,10 +4682,13 @@ function showSettings(){
     <h3 style="font-size:.98rem; margin-top:22px">Sesiones de estudio</h3>
     <div class="setrow"><div class="rt"><b>Tarjetas por sesión</b><small>Cuántas flashcards trae la tarea "Tarjetas del día"</small></div>
       <select data-set="cap">${[30,40,60,80,100].map(n => `<option value="${n}" ${cfg().cap===n?'selected':''}>${n}</option>`).join('')}</select></div>
+    <div class="setrow"><div class="rt"><b>Preguntas "Para no olvidar" por día</b><small>Quiz, múltiple y código de tus cursos terminados, mezclados</small></div>
+      <select data-set="maintN">${[5,10,15,20].map(n => `<option value="${n}" ${+(cfg().maintN || 10)===n?'selected':''}>${n}</option>`).join('')}</select></div>
     <div class="setrow"><div class="rt"><b>Ejercicio hermano al repasar lo fallado</b><small>Suma uno nuevo del mismo concepto para comprobar que entendiste la idea</small></div>
       <input type="checkbox" data-set="siblings" ${cfg().siblings !== false ? 'checked' : ''} style="width:18px; height:18px; accent-color:var(--accent)"></div>
     <div class="setrow"><div class="rt"><b>Repetir en la ronda las tarjetas que falle</b><small>La ronda se alarga hasta que las aciertes</small></div>
       <input type="checkbox" data-set="repeatFailed" ${cfg().repeatFailed ? 'checked' : ''} style="width:18px; height:18px; accent-color:var(--accent)"></div>
+    ${aiSettingsHtml()}
     <div class="mrow" style="margin-top:22px"><button class="btn" data-act="closeModal">Listo</button><button class="btn ghost" data-act="help">Cómo funciona</button>
       <span style="flex:1"></span><button class="btn small ghost" data-act="reset" style="color:var(--bad)">Borrar todo el progreso…</button></div>
   </div>`;
@@ -3774,15 +4701,27 @@ function showHelp(){
   const sec = (t, body, open) => `<details class="plain" style="margin-top:12px" ${open ? 'open' : ''}><summary>${t}</summary><div style="margin-top:8px">${body}</div></details>`;
   div.innerHTML = `<div class="modal wide">
     <h3>Cómo funciona</h3>
-    <p>La idea es repasar poco y seguido, justo antes de olvidar. El dashboard decide qué te toca: tú solo sigues la lista de <b>Hoy</b>.</p>
+    <p>La idea es aprender una cosa a la vez y repasar poco y seguido, justo antes de olvidar. El dashboard decide qué te toca: tú solo sigues la lista de <b>Hoy</b>.</p>
+    ${sec('🧭 El método: repasa, aprende, ponte a prueba', `
+      <p>Cada día haces tres cosas, en este orden:</p>
+      <ol><li><b>Repasa</b> lo que toca: lo que fallaste, los repasos programados, las tarjetas que vencen y, de los cursos que ya terminaste, unas preguntas <b>Para no olvidar</b>. Recuperar algo justo cuando empieza a olvidarse es lo que más lo fija.</li>
+      <li><b>Aprende</b> una lección de cada curso <b>En curso</b>, en el orden de su ruta. Una lección lleva una sección por 4 pasos: <b>Entender</b> (resumen y puntos clave) → <b>Recordar</b> (sus flashcards, de memoria) → <b>Distinguir</b> (quiz y múltiple respuesta) → <b>Aplicar</b> (código: primero predices la salida y encuentras errores, después escribes). El siguiente paso siempre es el botón azul, pero nada se bloquea.</li>
+      <li><b>Ponte a prueba</b> al cerrar un bloque: tras 3 lecciones nuevas (o una semana), un examen mezclado de lo aprendido; y cuando aprendes todas las secciones de un checkpoint, su examen.</li></ol>
+      <p>Al terminar una lección, la sección queda <b>aprendida</b> y se programan sus 3 repasos: mañana, en 3 días y en 7 (10 tarjetas y unas preguntas de quiz, múltiple y código, primero las que menos has visto). Con los tres hechos queda <b>dominada</b>. Sus tarjetas entran a tu repaso diario desde ese momento: a las tarjetas del día no llega nada que no hayas estudiado primero.</p>
+      <p><b>Estados de un curso</b> (los cambias dentro de cada curso): <b>En curso</b>, lo estás aprendiendo y te propongo su siguiente lección · <b>Para no olvidar</b>, ya lo estudiaste y lo mantienen sus tarjetas y el repaso mezclado · <b>En pausa</b>, no avanza, pero lo que ya viste sigue repasándose.</p>
+      <p><b>Por qué así:</b> recuperar (tarjetas, preguntas) enseña más que releer; espaciar los repasos y volver a aprender en varias sesiones es lo que pasa las ideas a la memoria de largo plazo; lo nuevo se aprende una sección a la vez, y lo que se repasa va mezclado entre temas, porque mezclar te obliga a elegir qué idea aplica. En código, leer antes de escribir.</p>`, true)}
     ${sec('✅ Hoy: tu día en una lista', `
-      <p>Todo lo que te toca, en orden. La primera tarea pendiente tiene el botón azul: empieza por ahí.</p>
-      <ol><li><b>Lo que fallaste</b> y vuelve hoy (tu banco de errores).</li>
-      <li><b>Repasos programados</b> para hoy o atrasados (los que programaste tú, los 1-3-7 y las secciones nuevas de un libro).</li>
-      <li><b>Tarjetas del día</b>: las más olvidadas de todos tus cursos, completadas con nuevas (el tamaño lo eliges ahí mismo o en Ajustes).</li>
-      <li><b>Quiz de tu sección más floja</b> (y, si quieres, la versión de múltiple respuesta).</li>
-      <li><b>Relee sus puntos clave y cierra el día</b>: cerrar el día suma a tu racha semanal.</li></ol>
-      <p>Debajo ves lo que llevas hoy y lo que viene los próximos días.</p>`, true)}
+      <p>Los tres bloques del método, en orden. La primera tarea pendiente tiene el botón azul: empieza por ahí.</p>
+      <ul><li><b>Repasa:</b> lo que fallaste (tu banco de errores), los repasos programados (los 1-3-7 de tus lecciones y los que programes tú), las tarjetas del día (el tamaño lo eliges ahí mismo o en Ajustes) y Para no olvidar.</li>
+      <li><b>Aprende:</b> la siguiente lección de cada curso En curso. Una al día es buen ritmo; si terminas y te sobra energía, puedes seguir con otra.</li>
+      <li><b>Ponte a prueba:</b> aparece solo cuando toca un examen.</li></ul>
+      <p>Debajo ves lo que llevas hoy y lo que viene los próximos días.</p>`)}
+    ${sec('🔙 Si faltas unos días', `
+      <p>No se pierde nada y nada te castiga: el dashboard se reacomoda.</p>
+      <ul><li><b>Tarjetas:</b> primero va todo lo que vence, empezando por lo que más se te estaba olvidando. Si vencen más de las que caben en la sesión, la tarea dice <b>Ponte al día</b> y ese día no entran tarjetas nuevas (te dejarían más atrasado). Las nuevas vuelven solas cuando te pones al día. Si tienes tiempo, sube el tamaño de la sesión unos días.</li>
+      <li><b>Repasos en serie</b> (los 1-3-7 de una lección, de lo que estudiaste o los que programas tú): el siguiente no te aparece hasta que hagas el anterior. Si lo haces tarde, los siguientes se corren para que sigan separados, porque hacer dos el mismo día desperdicia uno.</li>
+      <li><b>Lo que fallaste:</b> vuelve todo junto; al acertarlo, el siguiente repaso se cuenta desde ese día.</li>
+      <li><b>Para no olvidar</b> y <b>Aprende</b> no se acumulan: al volver son las mismas 10 preguntas y la lección donde la dejaste. La racha es semanal: basta un día de la semana.</li></ul>`)}
     ${sec('🃏 Flashcards y repaso espaciado', `
       <p>7 niveles que reprograman la tarjeta a 1, 3, 7, 14, 35, 70 y 120 días. <b>✓ La sabía</b> sube un nivel · <b>~ A medias</b> baja uno (vuelve antes) · <b>✗ No la sabía</b> vuelve al nivel 1 (mañana otra vez). Si dudaste, marca "A medias": la honestidad es lo que hace que el espaciado funcione.</p>
       <p>Las tarjetas rotan entre redacciones, modo inverso (🔄) y completar la frase (✏️) para que aprendas la idea y no la forma de la pregunta. Al voltear ves el <b>🎓 por qué</b>; al final de la ronda, las que fallaste o sabías a medias con su respuesta.</p>`)}
@@ -3797,12 +4736,19 @@ function showHelp(){
       <p>Al terminar una ronda de quiz, múltiple respuesta o código ves un diagnóstico: cuántas fallaste <b>creyendo saber</b> (❌, la prioridad) y cuántas <b>no sabías</b> (🤔), cómo te fue por tipo y por concepto, qué hacer mañana y cada pregunta con su explicación. Puedes pedirle a Claude un plan de estudio con ese diagnóstico, imprimirlo o practicar sus fallados. Quedan en <i>Practicar → Mis informes</i>.</p>`)}
     ${sec('📅 Calendario y repasos programados', `
       <p>Cada día queda anotado solo: cuántas flashcards, preguntas y ejercicios hiciste, de qué sección y cuántas bien. Toca un día para ver el detalle, escribir una nota o programar algo.</p>
-      <p><b>＋ Programar repaso</b>: eliges <b>qué</b> (secciones de cualquier curso, lo que estudiaste un día o lo que fallaste), <b>cuánto</b> de cada tipo y <b>cuándo</b> (mañana, en 3 o 7 días, una fecha o <b>1-3-7</b>: tres repasos de una vez). Ese día aparece en <i>Tu día</i>. Marcar <b>📌 Estudié esto hoy</b> en una sección programa solo su 1-3-7.</p>`)}
+      <p><b>＋ Programar repaso</b>: eliges <b>qué</b> (secciones de cualquier curso, lo que estudiaste un día o lo que fallaste), <b>cuánto</b> de cada tipo y <b>cuándo</b> (mañana, en 3 o 7 días, una fecha o <b>1-3-7</b>: tres repasos de una vez). Ese día aparece en <i>Tu día</i>. Al terminar una lección se programan solos sus 3 repasos.</p>`)}
     ${sec('📚 Cursos, libros y checkpoints', `
-      <p>Cada curso muestra su dominio y un cuadrito por sección (gris sin empezar → rojo → naranja → morado → verde dominada). Toca una sección para ver sus puntos clave y elegir cómo practicarla. Una tarjeta cuenta como dominada desde el nivel 3; una sección se marca <b>repasada</b> sola cuando su quiz llega a 90% y viste todas sus tarjetas.</p>
-      <p>Los <b>libros</b> van aparte, con la página hasta donde has leído. Cada "Día" de tu guía de lectura es una sección; los Días nuevos llegan con 🆕 y se programan solos, uno por día. Cada <b>🎯 checkpoint</b> tiene un examen mixto con tiempo y su proyecto.</p>`)}
-    ${sec('🎓 Exámenes', `<p>Preguntas al azar de todo un curso, con tiempo (45 s por pregunta) y sin explicaciones hasta el final. Los de checkpoint mezclan quiz (45 s), múltiple (60 s) y código (90 s). Guardan tu mejor marca.</p>`)}
+      <p>Los cursos se agrupan por estado. En los <b>En curso</b> ves su ruta: un cuadrito por sección (gris nueva → naranja aprendiendo → morado en repaso → verde dominada); toca uno para abrir su lección. En los <b>Para no olvidar</b> ves el dominio de sus tarjetas (gris sin empezar → rojo → naranja → morado → verde). Una tarjeta cuenta como dominada desde el nivel 3.</p>
+      <p>Dentro de cada sección tienes su lección y, aparte, la <b>práctica suelta</b>: flashcards, quiz, múltiple o código cuando quieras. Terminar una ronda completa de la sección también cuenta como el paso de su lección.</p>
+      <p>Los <b>libros</b> muestran la página hasta donde has leído. Cada "Día" de tu guía de lectura es una sección; los Días nuevos llegan con 🆕 y entran a la ruta como lecciones nuevas. Cada <b>🎯 checkpoint</b> tiene un examen mixto con tiempo (te lo propongo en Hoy cuando aprendes todas sus secciones) y su proyecto.</p>`)}
+    ${sec('🎓 Exámenes', `<p><b>De lo aprendido:</b> mezcla quiz (45 s), múltiple (60 s) y código (90 s) de las secciones que ya aprendiste de un curso, sin explicaciones hasta el final. Te lo propongo en Hoy tras 3 lecciones nuevas o una semana. <b>De checkpoint:</b> igual, con las secciones de ese tramo del libro. <b>De todo el curso:</b> quiz al azar de todas sus secciones (práctica suelta). Todos guardan tu mejor marca, y lo que fallas entra a tu banco de errores.</p>`)}
     ${sec('📝 Mis apuntes', `<p>Un curso que armas tú para lo que estudias por fuera. Cada apunte tiene notas, puntos clave y fichas (a mano, una por línea como <i>pregunta => respuesta</i>, o generadas por Claude pegando su JSON). Entran al mismo repaso espaciado.</p>`)}
+    ${sec('🤖 Tutor con Gemini (opcional)', `
+      <p>Con tu clave de la API de Gemini (<i>Ajustes → Tutor con Gemini</i>), el dashboard suma un tutor. Hace tres cosas, y ninguna cambia tu progreso por su cuenta:</p>
+      <ul><li><b>🤖 Explícamelo:</b> después de responder una pregunta, un ejercicio o voltear una tarjeta, te lo explica ahí mismo y te deja una pregunta para comprobar. Puedes responderle o repreguntarle.</li>
+      <li><b>✍️ Explícalo con tus palabras:</b> en el paso Entender de cada lección, cierras los puntos clave y escribes la idea de memoria. El tutor te dice qué cubriste, qué te faltó y qué dijiste mal. Sin tutor, lo comparas tú marcando los puntos que dijiste.</li>
+      <li><b>🎯 Tengo un parcial:</b> escribes de qué es y la fecha. El tutor te propone las secciones y tú quitas o agregas. El dashboard reparte los repasos hasta el día antes: cada sección una o dos veces, espaciadas, y un repaso general al final. Sin tutor, eliges las secciones tú.</li></ul>
+      <p>La clave queda solo en ese navegador: no va en el archivo de exportar ni en GitHub, así que en cada dispositivo la pegas una vez. Necesita internet; sin conexión, lo demás sigue igual. Lo que le envías va a Google: sin facturación, Google puede usarlo para mejorar sus productos; con facturación activada (por ejemplo, con los créditos de Google AI Pro), no.</p>`)}
     ${sec('⌨️ Atajos de teclado (computador)', `<p><kbd>espacio</kbd> voltea la tarjeta · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> califican · <kbd>k</kbd> puntos clave · <kbd>z</kbd> deshacer · <kbd>1</kbd>–<kbd>6</kbd> eligen opción · <kbd>0</kbd> no lo sé · <kbd>↵</kbd> comprueba y avanza · <kbd>/</kbd> buscar · <kbd>Esc</kbd> cierra.</p>`)}
     ${sec('🔄 Tu progreso en el iPhone y en la Mac', `
       <p>Cada navegador guarda su propio progreso. Para pasarlo de uno a otro: en el dispositivo donde acabas de estudiar, <b>Ajustes → Compartir (AirDrop…)</b> o <b>Exportar</b>; en el otro, <b>Importar un archivo… → Combinar</b>.</p>
@@ -3920,7 +4866,48 @@ document.addEventListener('click', e => {
     case 'failRun': startFailed(a.m, null, a.c || null); break;
     case 'failRep': startFailed(null, a.id); break;
     case 'openReport': showSavedReport(a.id); break;
-    case 'cpExam': startCpExam(a.c, a.cp); break;
+    case 'cpExam': if(a.cp === 'L') startLearnedExam(a.c); else startCpExam(a.c, a.cp); break;
+    case 'learnedExam': startLearnedExam(a.c); break;
+    case 'aiAsk': { const x = aiItemFrom(a.src, a.i); if(x) aiExplainItem(x[0], x[1]); break; }
+    case 'aiCard': aiExplainCard(); break;
+    case 'aiSend': aiChatUser(); break;
+    case 'aiRetry': aiChatSend(); break;
+    case 'aiCopy': if(AICHAT && AICHAT.copy) AICHAT.copy(); break;
+    case 'aiKeySave': { const v = (document.getElementById('aiKeyIn') || {}).value || '', k = v.trim();
+      if(k.length < 20 || /\s/.test(k)){ aiSay('Eso no parece una clave de Gemini: cópiala completa desde Google AI Studio.', false); break; }
+      aiSet({key: k, on: true}); showSettings(); document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'}); aiTest(); break; }
+    case 'aiKeyDel': if(confirm('¿Quitar la clave de Gemini de este navegador? El tutor se apaga aquí (en tus otros dispositivos sigue).')){ try{ localStorage.removeItem(AIKEY); }catch(e){} showSettings(); document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'}); } break;
+    case 'aiTest': aiTest(); break;
+    case 'explain': explainOpen(a.c, a.s); break;
+    case 'explSend': explSend(); break;
+    case 'explSelf': { const t = explText(); if(t.length < 20){ EXPL.err = 'Escribe un poco más (al menos una o dos frases) antes de comparar.'; renderExplain(); break; } EXPL.err = null; EXPL.selfShow = true; renderExplain(); break; }
+    case 'explBack': EXPL.selfShow = false; renderExplain(); break;
+    case 'explSelfSave': { const z = EXPL, n = section(z.c, z.s).keyPoints.length; explSave(z, z.self.size, n, false); document.querySelector('.modal-bg')?.remove();
+      toast(`✍️ Guardado: dijiste ${z.self.size} de ${n} puntos clave`); EXPL = null; refresh(); break; }
+    case 'explAgain': EXPL.res = null; EXPL.err = null; renderExplain(); break;
+    case 'explNext': { const z = EXPL; document.querySelector('.modal-bg')?.remove(); EXPL = null; if(z) lessonGo(z.c, z.s); break; }
+    case 'explChat': explChat(); break;
+    case 'parcial': parcialOpen(); break;
+    case 'pcAI': parcialAI(); break;
+    case 'pcCreate': parcialCreate(); break;
+    case 'pcDel': parcialDelete(a.id); break;
+    case 'maint': startMaint(a.c || null); break;
+    case 'lesson': goLesson(a.c, a.s); break;
+    case 'lessonGo': lessonGo(a.c, a.s); break;
+    case 'lessonStep': {
+      if(a.k === 'read'){
+        const learned = markStep(a.c, a.s, 'read'); recordSession();
+        renderLesson(a.c, a.s);
+        if(learned) toast('🎉 Sección aprendida: sus 3 repasos quedaron programados');
+        else { toast('✓ Paso 1 listo: ahora, de memoria'); const nx = app.querySelector('.task.next'); if(nx) nx.scrollIntoView({block: 'center', behavior: 'smooth'}); }
+      } else startLessonStep(a.c, a.s, a.k);
+      break; }
+    case 'lessonLearned': {
+      const s = section(a.c, a.s); let learned = false;
+      lessonKeys(s).forEach(k => { learned = markStep(a.c, a.s, k) || learned; });
+      renderLesson(a.c, a.s); if(learned) toast('✓ Marcada como aprendida: sus 3 repasos quedaron programados'); break; }
+    case 'lessonReset': if(confirm('¿Reiniciar esta lección? Se borran sus pasos y los repasos pendientes que programó. Tus tarjetas y marcas no se tocan.')){ resetLesson(a.c, a.s); renderLesson(a.c, a.s); toast('Lección reiniciada'); } break;
+    case 'courseStatus': setCourseStatus(a.c, a.v); renderCourse(a.c); toast(`${COURSE_STATUS[a.v]}: ${COURSE_STATUS_SUB[a.v]}`); break;
     case 'askMore': showMoreModal(a.c, a.k); break;
     case 'moreAdd': { const r = importMore(MORE.c, MORE.k, document.getElementById('moreJson').value), m = document.getElementById('moreMsg');
       if(r.err){ m.className = 'errmsg'; m.textContent = r.err; break; }
@@ -3943,6 +4930,7 @@ document.addEventListener('click', e => {
     case 'toggleKp': fcSession.showKp = !fcSession.showKp; renderCard(); break;
     case 'exit': {
       if(MIX){ exitMix(); break; }
+      { const z = fcSession || quizSession || multiSession || codeSession; if(z && z.lesson && z.cId && z.sId){ goLesson(z.cId, z.sId); break; } }
       const back = fcSession ? fcSession.cId : quizSession ? quizSession.cId : multiSession ? multiSession.cId : codeSession ? codeSession.cId : null;
       const wasFree = (fcSession && (fcSession.free||fcSession.recent)) || (quizSession && quizSession.free) || (multiSession && multiSession.free) || (codeSession && codeSession.free && !codeSession.cId);
       if(back) goCourse(back); else if(wasFree) goPractice(); else goHome(); break; }
@@ -3965,7 +4953,7 @@ document.addEventListener('click', e => {
     case 'copyNow': copyNow(); break;
     case 'closeModal': document.querySelector('.modal-bg')?.remove(); break;
     case 'closeBg': if(e.target===el) el.remove(); break;
-    case 'reset': if(confirm('¿Seguro? Se borra todo tu progreso, incluidos tus apuntes.')){ state = freshState(); syncCustom(); save(); document.querySelector('.modal-bg')?.remove(); goHome(); } break;
+    case 'reset': if(confirm('¿Seguro? Se borra todo tu progreso, incluidos tus apuntes.')){ state = freshState(); syncCustom(); migrateMethod(); save(); document.querySelector('.modal-bg')?.remove(); goHome(); } break;
   }
 });
 document.getElementById('importFile').addEventListener('change', e => {
@@ -3975,6 +4963,13 @@ document.getElementById('importFile').addEventListener('change', e => {
 document.addEventListener('change', e => {
   const ds = e.target.dataset || {};
   if(ds.set === 'cap'){ cfg().cap = +e.target.value; save(); refresh(); }
+  else if(ds.set === 'maintN'){ cfg().maintN = +e.target.value; save(); refresh(); }
+  else if(ds.set === 'aiModel'){ aiSet({model: e.target.value}); aiSay('Modelo cambiado: pulsa "Probar conexión" para comprobarlo.'); }
+  else if(ds.set === 'aiOn'){ aiSet({on: e.target.checked}); showSettings(); document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'}); refresh(); }
+  else if(ds.set === 'explChk' && EXPL){ const i = +e.target.value; if(e.target.checked) EXPL.self.add(i); else EXPL.self.delete(i);
+    const b = document.getElementById('explSelfBtn'); if(b) b.textContent = `Listo: dije ${EXPL.self.size} de ${section(EXPL.c, EXPL.s).keyPoints.length}`; }
+  else if(ds.set === 'pcSec' && PARC){ const k = e.target.value; if(e.target.checked){ PARC.sel.add(k); if(!PARC.order.includes(k)) PARC.order.push(k); } else PARC.sel.delete(k); parcialRefresh(); }
+  else if(ds.set === 'pcDate' && PARC){ if(e.target.value) PARC.date = e.target.value; parcialRefresh(); }
   else if(ds.set === 'freeN'){ freeCfg().n = e.target.value==='all' ? 'all' : +e.target.value; save(); renderPractice(); }
   else if(ds.set === 'repeatFailed'){ cfg().repeatFailed = e.target.checked; save(); if(e.target.closest('.modal')) refresh(); }
   else if(ds.set === 'siblings'){ cfg().siblings = e.target.checked; save(); if(e.target.closest('.modal')) refresh(); }
@@ -3994,6 +4989,12 @@ document.addEventListener('change', e => {
   }
   else if(ds.pfield){ const ps = projState(ds.p); ps[ds.pfield] = e.target.value; (ps.fts = ps.fts || {})[ds.pfield] = Date.now(); save(); }
   else if(ds.set === 'devName'){ state.devName = e.target.value.trim().slice(0, 30) || null; save(); }
+});
+/* modales del tutor: lo que escribes se guarda al vuelo (sin redibujar) */
+document.addEventListener('input', e => {
+  const id = e.target.id;
+  if(id === 'explIn' && EXPL) EXPL.text = e.target.value;
+  else if((id === 'pcName' || id === 'pcTemas') && PARC) PARC[id === 'pcName' ? 'name' : 'temas'] = e.target.value;
 });
 /* nota del día en el calendario: se guarda sola mientras escribes */
 let noteTimer = null;
@@ -4022,6 +5023,7 @@ qInput.addEventListener('input', () => {
 qInput.addEventListener('keydown', e => { if(e.key==='Escape'){ qInput.value=''; qInput.blur(); goHome(); } });
 /* teclado */
 document.addEventListener('keydown', e => {
+  if(e.target.id === 'aiQ' && e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); aiChatUser(); return; }
   if(e.target.classList && e.target.classList.contains('cin')){
     if(e.key === 'Enter'){ e.preventDefault(); checkCode(); }
     return;
@@ -4029,6 +5031,7 @@ document.addEventListener('keydown', e => {
   if(e.target === qInput || e.target.tagName==='TEXTAREA' || e.target.tagName==='INPUT' || e.target.tagName==='SELECT') return;
   if(e.key === '/' ){ e.preventDefault(); qInput.focus(); return; }
   if(e.key === 'Escape'){ document.querySelector('.modal-bg')?.remove(); return; }
+  if(document.querySelector('.modal-bg')) return;   // con un modal abierto, las teclas no responden la pregunta de atrás
   if(fcSession){
     if(e.code==='Space' && !fcSession.flipped){ e.preventDefault(); fcSession.flipped=true; renderCard(); }
     else if(fcSession.flipped && ['1','2','3'].includes(e.key)) rate({'1':'again','2':'hard','3':'good'}[e.key]);
@@ -4062,6 +5065,8 @@ window.addEventListener('beforeprint', () => document.querySelectorAll('details.
 migrateReminders();
 backfillDiary();
 migrateNotes();
+migrateMethod();
+normalizeLessons();
 devId();
 scheduleNewSections();
 goHome();

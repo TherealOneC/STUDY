@@ -1,6 +1,6 @@
 /* Service worker del Repaso Dominical: deja la app disponible sin internet.
-   build.py reemplaza c9bba45a14 en cada build para que el teléfono descargue la versión nueva. */
-const CACHE = 'repaso-c9bba45a14';
+   build.py reemplaza a2e1140aae en cada build para que el teléfono descargue la versión nueva. */
+const CACHE = 'repaso-a2e1140aae';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -12,6 +12,8 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request;
   if(req.method !== 'GET') return;
+  // Lo que no es de este sitio (p. ej. la API del tutor con Gemini) va directo a internet: nunca se guarda en caché.
+  if(new URL(req.url).origin !== self.location.origin) return;
   // La página: primero red (para recibir versiones nuevas), si no hay internet, caché.
   if(req.mode === 'navigate' || req.destination === 'document'){
     e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put('./index.html', copy)); return r; })
