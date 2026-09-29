@@ -252,6 +252,8 @@ pre.aicode code{background:none; border:none; padding:0; font-size:inherit; colo
 .lswrow:hover{border-color:var(--accent)} .lswrow.cur{border-color:color-mix(in srgb,var(--accent) 50%,var(--line)); background:color-mix(in srgb,var(--accent) 5%,var(--card))}
 .lswrow .stitle{font-weight:650; font-size:.9rem} .lswrow .smeta{font-size:.78rem; color:var(--muted)}
 .cday .cl.ls i{background:var(--accent2)}
+.todorow{display:flex; gap:8px; align-items:center; flex-wrap:wrap; border-bottom:1px solid var(--line); padding:2px 0}
+.todorow:last-child{border-bottom:none} .todorow.on span{font-weight:600} .todorow select{max-width:100%}
 .mixsecs{margin-top:6px} .mixsecs details{border-top:1px solid var(--line); padding:6px 0} .mixsecs summary{font-size:.86rem; font-weight:600; cursor:pointer}
 .lswrow.mixopt{border-style:dashed; border-color:color-mix(in srgb,var(--accent) 45%,var(--line))} .cday .cl.ls.late{color:var(--bad)} .cdots i.ls{background:var(--accent2)}
 .lplan input[type=date]{font:inherit; font-size:.85rem; padding:5px 8px; border:1px solid var(--line); border-radius:9px; background:var(--card); color:var(--ink); max-width:100%}
@@ -937,6 +939,13 @@ function planPick(list, n, seenFn){
   const l = shuffle(list).sort((a,b) => { const x = seenFn(a), y = seenFn(b); return x < y ? -1 : x > y ? 1 : 0; });
   return n === 'all' ? shuffle(l) : shuffle(l.slice(0, n));
 }
+function planPickRR(list, n, seenFn, secOf){
+  if(!n) return [];
+  if(n === 'all') return shuffle(list);
+  const by = {}; shuffle(list).forEach(x => (by[secOf(x)] = by[secOf(x)] || []).push(x));
+  const groups = shuffle(Object.values(by)).map(g => g.sort((a, b) => { const x = seenFn(a), y = seenFn(b); return x < y ? -1 : x > y ? 1 : 0; }));
+  return shuffle(pickRR(groups, n));
+}
 function startUserPlan(id){
   const p = planById(id); if(!p) return;
   const title = '📝 ' + planTitle(p);
@@ -946,10 +955,11 @@ function startUserPlan(id){
   const items = {quiz:[], multi:[], code:[]};
   planSecObjs(p).forEach(({c, s}) => ['quiz','multi','code'].forEach(k => (s[k] || []).forEach((x, i) =>
     items[k].push({kind:k, x, c, s, i, sid:s.id, key:k+'|'+c.id+'|'+s.id+'|'+i}))));
-  // tarjetas: primero las que tocan hoy y las de nivel más bajo
-  const fc = planPick(cards, p.n.fc, k => { const st = state.cards[k.id]; return !st ? '1' : (st.due <= today() ? '0' : '2') + String(st.box).padStart(2, '0'); });
+  // tarjetas: primero las que tocan hoy y las de nivel más bajo; con varias secciones, repartidas entre todas
+  const pick = p.secs.length > 1 ? (list, n, fn, secOf) => planPickRR(list, n, fn, secOf) : (list, n, fn) => planPick(list, n, fn);
+  const fc = pick(cards, p.n.fc, k => { const st = state.cards[k.id]; return !st ? '1' : (st.due <= today() ? '0' : '2') + String(st.box).padStart(2, '0'); }, k => k.sectionId);
   const seen = x => seenEx()[x.key] || '';
-  const mix = [...planPick(items.quiz, p.n.quiz, seen), ...planPick(items.multi, p.n.multi, seen), ...planPick(items.code, p.n.code, seen)];
+  const mix = [...pick(items.quiz, p.n.quiz, seen, x => x.sid), ...pick(items.multi, p.n.multi, seen, x => x.sid), ...pick(items.code, p.n.code, seen, x => x.sid)];
   PLANRUN = {id, mix, title};
   if(fc.length) beginCards(fc, {label: title, userPlan: id});
   else if(mix.length) startMix(mix, {title, mode:'plan', plan:id});
@@ -2122,7 +2132,29 @@ function planCounts(secs){
 }
 function planUISecs(){
   if(PUI.src === 'day') return diarySecs(PUI.day);
+  if(PUI.src === 'todo') return todoSecs();
   return [...PUI.secs];
+}
+/* 🔀 un poco de todo: cursos enteros (o una parte, o lo que ya aprendiste) sin marcar sección por sección */
+function todoScopeSecs(c, scope){
+  if(scope === 'learned') return learnedSecs(c);
+  if(scope && scope.startsWith('group:')) return c.sections.filter(s => s.group === scope.slice(6));
+  return c.sections;
+}
+function todoSecs(){ const out = []; Object.entries(PUI.todo || {}).forEach(([cId, sc]) => { const c = course(cId); if(c) todoScopeSecs(c, sc).forEach(s => out.push(skey(cId, s.id))); }); return out; }
+function todoLabel(){
+  const parts = Object.entries(PUI.todo || {}).map(([cId, sc]) => { const c = course(cId); if(!c) return '';
+    return sc === 'learned' ? `lo aprendido de ${c.title}` : sc && sc.startsWith('group:') ? sc.slice(6) : c.title; }).filter(Boolean);
+  return '🔀 Un poco de todo: ' + (parts.length > 2 ? parts.slice(0, 2).join(', ') + ` y ${parts.length - 2} más` : parts.join(' y '));
+}
+function renderTodoList(){
+  const el = document.getElementById('pTodo'); if(!el) return;
+  el.innerHTML = COURSES.filter(c => c.sections.length).map(c => { const on = PUI.todo[c.id] !== undefined, sc = PUI.todo[c.id] || 'all',
+      groups = [...new Set(c.sections.map(s => s.group).filter(Boolean))], ls = learnedSecs(c).length;
+    return `<div class="todorow ${on ? 'on' : ''}"><label class="pitem" style="flex:1"><input type="checkbox" data-set="pTodoC" value="${c.id}" ${on ? 'checked' : ''}><span>${c.emoji || '📘'} ${esc(c.title)}</span></label>
+      ${on ? `<select data-set="pTodoScope" data-c="${c.id}"><option value="all" ${sc === 'all' ? 'selected' : ''}>Todo el curso (${c.sections.length})</option>
+        ${ls ? `<option value="learned" ${sc === 'learned' ? 'selected' : ''}>Lo que ya aprendiste (${ls})</option>` : ''}
+        ${groups.map(g => `<option value="${esc('group:' + g)}" ${sc === 'group:' + g ? 'selected' : ''}>${esc(g)}</option>`).join('')}</select>` : ''}</div>`; }).join('');
 }
 function failedCount(secs){
   const refs = [...bankEntries().map(e => ({kind:e.k, c:e.c, s:e.s, i:e.i})), ...failedBetween(addDays(today(), -13), today())];
@@ -2133,7 +2165,7 @@ function failedCount(secs){
 function showPlanModal(o){
   o = o || {};
   const firstC = (o.secs && o.secs[0] ? o.secs[0].split('|')[0] : null) || (COURSES.find(c => c.sections.length) || COURSES[0]).id;
-  PUI = {src: o.src || 'secs', day: o.day || today(), secs: new Set(o.secs || []), c: firstC,
+  PUI = {src: o.src || 'secs', day: o.day || today(), secs: new Set(o.secs || []), c: firstC, todo: {},
          n: Object.assign({}, DEFAULT_N), when: o.when || (o.date && o.date > today() ? 'date' : 'd1'), date: o.date && o.date > today() ? o.date : addDays(today(), 1)};
   renderPlanModal();
 }
@@ -2150,13 +2182,17 @@ function renderPlanModal(){
     <div class="qlabel">1. ¿Qué?</div>
     <div class="mrow" style="margin-top:4px">
       ${srcBtn('secs', '📚 Secciones que elijo')}
+      ${srcBtn('todo', '🔀 Un poco de todo')}
       ${srcBtn('day', `📅 Lo que estudié ${dayTxt} (${dayN})`)}
       ${srcBtn('failed', '🔁 Lo que fallé')}
     </div>
-    ${PUI.src === 'day' ? `<div class="hint" style="text-align:left">${dayN ? diarySecs(PUI.day).map(k => { const [c, s] = k.split('|'); return esc(section(c, s).title); }).join(' · ') : 'Ese día no hay nada registrado todavía.'}</div>`
+    ${PUI.src === 'todo' ? `<div class="hint" style="text-align:left">Marca uno o varios cursos (enteros, una parte o lo que ya aprendiste). Tomo un poco de cada sección, repartido entre todas: primero lo que vence o llevas más tiempo sin ver. ¿Lo prefieres como lección de 4 pasos? <a class="linkbtn" data-act="mixNew" data-c="${Object.keys(PUI.todo)[0] || PUI.c}">🔀 Lección de repaso mezclada</a></div>
+      <div class="plist" id="pTodo"></div>`
+    : PUI.src === 'day' ? `<div class="hint" style="text-align:left">${dayN ? diarySecs(PUI.day).map(k => { const [c, s] = k.split('|'); return esc(section(c, s).title); }).join(' · ') : 'Ese día no hay nada registrado todavía.'}</div>`
       : `<div class="hint" style="text-align:left">${PUI.src === 'failed' ? 'Si eliges secciones, solo lo que fallaste en ellas; si no eliges ninguna, todo lo que tengas fallado.' : 'Puedes elegir secciones de varios cursos: cambia de curso y sigue marcando.'}</div>
       <div class="mrow" style="margin-top:6px">
         <select data-set="pCourse">${COURSES.filter(c => c.sections.length).map(c => `<option value="${c.id}" ${c.id === PUI.c ? 'selected' : ''}>${c.emoji || '📘'} ${esc(c.title)}</option>`).join('')}</select>
+        <button class="btn small ghost" data-act="pAll" id="pAllBtn">Marcar todas</button>
         <span class="hint" style="margin:0" id="pChosen"></span>
       </div>
       <div class="plist" id="pList"></div>`}
@@ -2171,7 +2207,7 @@ function renderPlanModal(){
     <p id="planMsg" class="errmsg"></p>
   </div>`;
   document.body.appendChild(div);
-  renderPlanList(); renderPlanHow();
+  renderPlanList(); renderTodoList(); renderPlanHow();
 }
 function renderPlanList(){
   const el = document.getElementById('pList'); if(!el) return;
@@ -2180,6 +2216,8 @@ function renderPlanList(){
     return `<label class="pitem"><input type="checkbox" data-set="pSec" value="${esc(k)}" ${PUI.secs.has(k) ? 'checked' : ''}> <span>${esc(s.title)}</span></label>`; }).join('');
   const ch = document.getElementById('pChosen');
   if(ch) ch.textContent = PUI.secs.size ? `${PUI.secs.size} ${plural(PUI.secs.size, 'sección elegida', 'secciones elegidas')}` : 'ninguna elegida';
+  const ab = document.getElementById('pAllBtn');
+  if(ab) ab.textContent = c.sections.every(s => PUI.secs.has(c.id + '|' + s.id)) ? 'Quitar todas' : 'Marcar todas';
 }
 function renderPlanHow(){
   const el = document.getElementById('pHow'); if(!el) return;
@@ -2194,13 +2232,14 @@ function renderPlanHow(){
     <select data-set="pN" data-k="${k}" ${av[k] ? '' : 'disabled'}>${opts.map(v => `<option value="${v}" ${String(PUI.n[k]) === String(v) ? 'selected' : ''}>${v === 'all' ? 'todas' : v}</option>`).join('')}</select>
     ${secs.length ? `<small>de ${av[k]}</small>` : ''}</label>`;
   el.innerHTML = `<div class="qlabel">2. ¿Cuánto?</div>
-    <div class="mrow" style="margin-top:4px">${sel('fc', [0,5,10,15,20,30,'all'])}${sel('quiz', [0,3,5,8,'all'])}${sel('multi', [0,3,5,10,'all'])}${av.code ? sel('code', [0,3,5,8,'all']) : ''}</div>
-    <div class="hint" style="text-align:left">Primero haces las flashcards (las que te toquen o estén más flojas) y después una ronda mezclada con el resto, con su informe.</div>`;
+    <div class="mrow" style="margin-top:4px">${sel('fc', [0,5,10,15,20,30,40,'all'])}${sel('quiz', [0,3,5,6,8,10,'all'])}${sel('multi', [0,3,4,5,8,10,'all'])}${av.code ? sel('code', [0,2,3,5,8,'all']) : ''}</div>
+    <div class="hint" style="text-align:left">${PUI.src === 'todo' && secs.length ? `${secs.length} ${plural(secs.length, 'sección', 'secciones')} en juego. ` : ''}Primero haces las flashcards (las que te toquen o estén más flojas) y después una ronda mezclada con el resto, con su informe.${secs.length > 1 ? ' Con varias secciones, se reparte un poco de cada una.' : ''}</div>`;
 }
 function savePlanFromUI(){
   const msg = document.getElementById('planMsg');
   const secs = planUISecs();
   if(PUI.src === 'secs' && !secs.length){ msg.textContent = 'Elige al menos una sección.'; return; }
+  if(PUI.src === 'todo' && !secs.length){ msg.textContent = 'Marca al menos un curso.'; return; }
   if(PUI.src === 'day' && !secs.length){ msg.textContent = 'Ese día no hay nada registrado para repasar.'; return; }
   if(PUI.src === 'failed' && !failedCount(secs)){ msg.textContent = 'No tienes preguntas falladas ahí 🎉'; return; }
   const n = {};
@@ -2212,7 +2251,8 @@ function savePlanFromUI(){
   else if(PUI.when === '137') dates = [1, 3, 7].map(d => addDays(today(), d));
   else dates = [addDays(today(), {d1:1, d3:3, d7:7}[PUI.when])];
   const series = dates.length > 1 ? newId() : null;
-  dates.forEach((d, i) => addPlan({date: d, secs, n, src: PUI.src === 'failed' ? 'failed' : 'secs', series, step: series ? i + 1 : null, from: 'user'}));
+  const label = PUI.src === 'todo' ? todoLabel() : null;
+  dates.forEach((d, i) => addPlan(Object.assign({date: d, secs, n, src: PUI.src === 'failed' ? 'failed' : 'secs', series, step: series ? i + 1 : null, from: 'user'}, label ? {label} : {})));
   document.querySelector('.modal-bg')?.remove();
   toast(`📝 Programado: ${dates.map(dayLabel).join(', ')}`);
   refresh();
@@ -5090,7 +5130,7 @@ function showHelp(){
       <p>Al terminar una ronda de quiz, múltiple respuesta o código ves un diagnóstico: cuántas fallaste <b>creyendo saber</b> (❌, la prioridad) y cuántas <b>no sabías</b> (🤔), cómo te fue por tipo y por concepto, qué hacer mañana y cada pregunta con su explicación. Puedes pedirle a Claude un plan de estudio con ese diagnóstico, imprimirlo o practicar sus fallados. Quedan en <i>Practicar → Mis informes</i>.</p>`)}
     ${sec('📅 Calendario y repasos programados', `
       <p>Cada día queda anotado solo: cuántas flashcards, preguntas y ejercicios hiciste, de qué sección y cuántas bien. Toca un día para ver el detalle, escribir una nota o programar algo.</p>
-      <p><b>＋ Programar repaso</b>: eliges <b>qué</b> (secciones de cualquier curso, lo que estudiaste un día o lo que fallaste), <b>cuánto</b> de cada tipo y <b>cuándo</b> (mañana, en 3 o 7 días, una fecha o <b>1-3-7</b>: tres repasos de una vez). Ese día aparece en <i>Tu día</i>. Al terminar una lección se programan solos sus 3 repasos.</p>`)}
+      <p><b>＋ Programar repaso</b>: eliges <b>qué</b> (secciones de cualquier curso, <b>🔀 un poco de todo</b> de uno o varios cursos, lo que estudiaste un día o lo que fallaste), <b>cuánto</b> de cada tipo y <b>cuándo</b> (mañana, en 3 o 7 días, una fecha o <b>1-3-7</b>: tres repasos de una vez). Ese día aparece en <i>Tu día</i>. Al terminar una lección se programan solos sus 3 repasos.</p>`)}
     ${sec('📚 Cursos, libros y checkpoints', `
       <p>Los cursos se agrupan por estado. En los <b>En curso</b> ves su ruta: un cuadrito por sección (gris nueva → naranja aprendiendo → morado en repaso → verde dominada); toca uno para abrir su lección. En los <b>Para no olvidar</b> ves el dominio de sus tarjetas (gris sin empezar → rojo → naranja → morado → verde). Una tarjeta cuenta como dominada desde el nivel 3.</p>
       <p>Dentro de cada sección tienes su lección y, aparte, la <b>práctica suelta</b>: flashcards, quiz, múltiple o código cuando quieras. Terminar una ronda completa de la sección también cuenta como el paso de su lección.</p>
@@ -5156,7 +5196,11 @@ document.addEventListener('click', e => {
     case 'calNext': calInit(); CAL.m++; if(CAL.m > 11){ CAL.m = 0; CAL.y++; } renderCalendar(); break;
     case 'calToday': CAL = null; calInit(); renderCalendar(); break;
     case 'planNew': showPlanModal({src: a.src, day: a.src === 'day' ? a.d : null, date: a.src === 'day' ? null : a.d, when: a.when}); break;
-    case 'pSrc': PUI.src = a.v; renderPlanModal(); break;
+    case 'pSrc': if(a.v === 'todo' && PUI.src !== 'todo'){ if(!Object.keys(PUI.todo).length) PUI.todo[PUI.c] = 'all'; PUI.n = {fc: 20, quiz: 6, multi: 4, code: 3}; }
+      else if(a.v !== 'todo' && PUI.src === 'todo') PUI.n = Object.assign({}, DEFAULT_N);
+      PUI.src = a.v; renderPlanModal(); break;
+    case 'pAll': { const c = course(PUI.c), all = c.sections.every(s => PUI.secs.has(c.id + '|' + s.id));
+      c.sections.forEach(s => { const k = c.id + '|' + s.id; if(all) PUI.secs.delete(k); else PUI.secs.add(k); }); renderPlanList(); renderPlanHow(); break; }
     case 'pWhen': { const d = document.getElementById('pDate'); if(d && d.value) PUI.date = d.value; PUI.when = a.v; renderPlanModal(); break; }
     case 'planSave': savePlanFromUI(); break;
     case 'planGo': startUserPlan(a.id); break;
@@ -5357,6 +5401,8 @@ document.addEventListener('change', e => {
   else if(ds.set === 'siblings'){ cfg().siblings = e.target.checked; save(); if(e.target.closest('.modal')) refresh(); }
   else if(ds.set === 'pCourse'){ PUI.c = e.target.value; renderPlanList(); }
   else if(ds.set === 'pSec'){ if(e.target.checked) PUI.secs.add(e.target.value); else PUI.secs.delete(e.target.value); renderPlanList(); renderPlanHow(); }
+  else if(ds.set === 'pTodoC'){ if(e.target.checked) PUI.todo[e.target.value] = 'all'; else delete PUI.todo[e.target.value]; renderTodoList(); renderPlanHow(); }
+  else if(ds.set === 'pTodoScope'){ PUI.todo[ds.c] = e.target.value; renderPlanHow(); }
   else if(ds.set === 'pN'){ PUI.n[ds.k] = e.target.value === 'all' ? 'all' : +e.target.value; }
   else if(ds.set === 'moreC'){ const l = conceptList(e.target.value); if(l.length) showMoreModal(e.target.value, l[0].k); }
   else if(ds.set === 'moreK'){ showMoreModal(MORE.c, e.target.value); }
