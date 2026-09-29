@@ -246,6 +246,13 @@ pre.aicode code{background:none; border:none; padding:0; font-size:inherit; colo
 .pcbanner{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px; padding:9px 12px; border-radius:12px;
   background:color-mix(in srgb,var(--accent) 7%,var(--card)); border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line)); font-size:.87rem}
 .pcbanner .spacer{flex:1}
+.lswlist{max-height:46vh; display:flex; flex-direction:column; gap:6px; padding:8px}
+.lswrow{display:flex; flex-direction:column; align-items:flex-start; gap:3px; text-align:left; width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:12px;
+  background:var(--card); color:var(--ink); font:inherit; cursor:pointer}
+.lswrow:hover{border-color:var(--accent)} .lswrow.cur{border-color:color-mix(in srgb,var(--accent) 50%,var(--line)); background:color-mix(in srgb,var(--accent) 5%,var(--card))}
+.lswrow .stitle{font-weight:650; font-size:.9rem} .lswrow .smeta{font-size:.78rem; color:var(--muted)}
+.cday .cl.ls i{background:var(--accent2)} .cday .cl.ls.late{color:var(--bad)} .cdots i.ls{background:var(--accent2)}
+.lplan input[type=date]{font:inherit; font-size:.85rem; padding:5px 8px; border:1px solid var(--line); border-radius:9px; background:var(--card); color:var(--ink); max-width:100%}
 
 /* ---------- cursos ---------- */
 .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px}
@@ -932,7 +939,8 @@ function startUserPlan(id){
   const p = planById(id); if(!p) return;
   const title = '📝 ' + planTitle(p);
   if(p.src === 'failed'){ startFailed('plan', null, null, p); return; }
-  const cards = ALL.filter(k => p.secs.includes(skey(k.courseId, k.sectionId)));
+  // tarjetas de sus secciones, menos las que ya calificaste hoy (nada se repite el mismo día)
+  const cards = ALL.filter(k => p.secs.includes(skey(k.courseId, k.sectionId)) && !(state.cards[k.id] && state.cards[k.id].last === today()));
   const items = {quiz:[], multi:[], code:[]};
   planSecObjs(p).forEach(({c, s}) => ['quiz','multi','code'].forEach(k => (s[k] || []).forEach((x, i) =>
     items[k].push({kind:k, x, c, s, i, sid:s.id, key:k+'|'+c.id+'|'+s.id+'|'+i}))));
@@ -1112,7 +1120,7 @@ function lessonHook(cId, sId, key, pct, fromLesson){
 function lessonCta(cId, sId, learned, pct){
   const c = course(cId), s = c && section(cId, sId); if(!s) return '';
   if(learned){
-    const nx = nextLessonSec(c);
+    const nx = currentLessonSec(c);
     return `<div class="plan lessoncta"><b>🎉 Sección aprendida: ${esc(shortSec(s.title))}</b>
       <p>Sus 3 repasos quedaron programados: mañana, en 3 días y en 7 (te aparecen en Hoy). Así la pasas a la memoria de largo plazo.</p>
       <div class="mrow" style="margin-top:8px"><button class="btn" data-act="home">Ir a Hoy</button>
@@ -1126,6 +1134,138 @@ function lessonCta(cId, sId, learned, pct){
     ${pct !== undefined && pct < 60 ? `<p>Te costó (${pct}%): si quieres, repite las falladas antes de seguir. Igual vuelven mañana en <i>Lo que fallaste</i>.</p>` : ''}
     <div class="mrow" style="margin-top:8px"><button class="btn" data-act="lessonGo" data-c="${c.id}" data-s="${s.id}">Seguir la lección →</button>
       <button class="btn ghost" data-act="lesson" data-c="${c.id}" data-s="${s.id}">Ver la lección</button></div></div>`;
+}
+
+/* ---------- 📅 planear lecciones: qué lección toca qué día (y cambiar la de hoy) ----------
+   state.lessonDates['curso|sección'] = {d: 'AAAA-MM-DD' | null, ts}. Al combinar dispositivos gana el cambio más reciente. */
+function lessonDate(cId, sId){ const x = (state.lessonDates || {})[skey(cId, sId)]; return (x && x.d) || null; }
+function setLessonDate(cId, sId, d){ (state.lessonDates = state.lessonDates || {})[skey(cId, sId)] = {d: d || null, ts: Date.now()}; }
+function plannedLessons(c){   // las que tienen fecha y aún no aprendes, por fecha
+  return c.sections.filter(s => !lessonDone(c.id, s.id) && lessonDate(c.id, s.id)).map(s => ({s, d: lessonDate(c.id, s.id)}))
+    .sort((a, b) => a.d < b.d ? -1 : a.d > b.d ? 1 : c.sections.indexOf(a.s) - c.sections.indexOf(b.s));
+}
+function lessonsOn(ds){ const out = []; COURSES.forEach(c => { if(!c.custom) c.sections.forEach(s => { if(lessonDate(c.id, s.id) === ds) out.push({c, s, done: lessonDone(c.id, s.id)}); }); }); return out; }
+function inProgressSec(c){   // la lección empezada y sin terminar que tocaste más recientemente
+  let best = null, bt = -1;
+  c.sections.forEach(s => { const l = lessonOf(c.id, s.id); if(l && !l.done && lessonKeys(s).some(k => l[k]) && (l.ts || 0) > bt){ best = s; bt = l.ts || 0; } });
+  return best;
+}
+/* la lección que toca en un curso: la planeada para hoy (o atrasada) → la que dejaste a medias → la próxima planeada → la siguiente de la ruta */
+function currentLessonSec(c){
+  const t = today(), pl = plannedLessons(c), due = pl.filter(x => x.d <= t);
+  return (due[0] && due[0].s) || inProgressSec(c) || (pl[0] && pl[0].s) || nextLessonSec(c);
+}
+function lessonTask(c, s, why){
+  const l = lessonOf(c.id, s.id) || {}, started = lessonKeys(s).some(k => l[k]), k = lessonNext(c, s), gs = lessonGroups(s), no = lessonStepNo(c, s);
+  return {title: `${started ? 'Sigue' : 'Empieza'}: ${esc(s.title)}`,
+    meta: `${c.emoji || '📘'} ${esc(c.title)}${why ? ' · ' + why : ''} · paso ${no} de ${gs.length}${k ? `: <b>${STEP_INFO[k].n}</b> (${esc(STEP_INFO[k].what(s))})` : ''}`,
+    acts: cls => `<button class="${cls}" data-act="lessonGo" data-c="${c.id}" data-s="${s.id}">${started ? 'Continuar' : 'Empezar'}</button>
+      <button class="btn small ghost" data-act="lessonSwap" data-c="${c.id}" data-s="${s.id}" title="Hacer hoy otra lección de este curso">Cambiar</button>
+      <button class="btn small ghost" data-act="lesson" data-c="${c.id}" data-s="${s.id}">Ver</button>`};
+}
+/* las filas de "Aprende" de un curso */
+function learnTasks(c){
+  const t = today(), pl = plannedLessons(c), due = pl.filter(x => x.d <= t), fut = pl.filter(x => x.d > t);
+  const learnedToday = learnedSecs(c).filter(s => lessonOf(c.id, s.id).done === t);
+  if(!c.sections.some(s => !lessonDone(c.id, s.id))) return [{done: true, title: `${c.emoji || '📘'} Terminaste la ruta de ${esc(c.title)}`, meta: 'Ya aprendiste todas sus secciones. Cuando quieras, márcalo "Para no olvidar" en el curso.',
+    doneActs: `<button class="btn small ghost" data-act="course" data-c="${c.id}">Ver el curso</button>`}];
+  if(due.length){
+    const rows = due.slice(0, 3).map(x => lessonTask(c, x.s, x.d < t ? `<span class="late">planeada para ${esc(dayLabel(x.d))}</span>` : '📅 planeada para hoy'));
+    if(due.length > 3) rows[rows.length - 1].meta += ` · y ${due.length - 3} más atrasadas: <a data-act="lessonPlanner" data-c="${c.id}">reorganiza tu plan</a>`;
+    return rows;
+  }
+  const cur = inProgressSec(c);
+  if(fut.length && !cur){   // tienes un plan y hoy no toca lección de este curso
+    const x = fut[0];
+    return [learnedToday.length
+      ? {done: true, title: `Aprendiste hoy: ${esc(shortSec(learnedToday[learnedToday.length - 1].title))}`, meta: `${c.emoji || '📘'} ${esc(c.title)} · la próxima planeada: ${esc(dayLabel(x.d))}, ${esc(shortSec(x.s.title))}`,
+         doneActs: `<button class="btn small ghost" data-act="lessonToday" data-c="${c.id}" data-s="${x.s.id}">Adelantarla</button>`}
+      : {done: true, title: `Hoy no tienes lección de ${esc(c.title)}`, meta: `${c.emoji || '📘'} Según tu plan, la próxima es ${esc(dayLabel(x.d))}: ${esc(x.s.title)}`,
+         doneActs: `<button class="btn small ghost" data-act="lessonToday" data-c="${c.id}" data-s="${x.s.id}">Adelantarla</button><button class="btn small ghost" data-act="lessonSwap" data-c="${c.id}" data-s="">Hacer otra</button>`}];
+  }
+  const nx = cur || nextLessonSec(c);
+  if(learnedToday.length && !cur) return [{done: true, title: `Aprendiste hoy: ${esc(shortSec(learnedToday[learnedToday.length - 1].title))}`,
+    meta: `${c.emoji || '📘'} ${esc(c.title)} · buen ritmo: una lección al día. Si te sobra energía, la siguiente es ${esc(shortSec(nx.title))}.`,
+    doneActs: `<button class="btn small ghost" data-act="lessonGo" data-c="${c.id}" data-s="${nx.id}">Otra lección</button>`}];
+  return [lessonTask(c, nx, '')];
+}
+function lessonToday(cId, sId){ setLessonDate(cId, sId, today()); save(); lessonGo(cId, sId); }
+
+/* ---------- cambiar la lección de hoy por otra del mismo curso ---------- */
+function showLessonSwap(cId, fromId){
+  const c = course(cId); if(!c) return;
+  const t = today(), bg = aiModal('lswap');
+  bg.innerHTML = `<div class="modal wide"><h3>Cambiar la lección de hoy</h3>
+    <p>Elige qué sección de <b style="color:var(--ink)">${esc(c.title)}</b> quieres aprender hoy. ${fromId ? `Si la que tenías estaba planeada, intercambian fechas.` : ''} Lo que ya empezaste no se pierde.</p>
+    <div class="plist lswlist">${c.sections.filter(s => !lessonDone(cId, s.id)).map(s => { const st = secStatus(c, s), d = lessonDate(cId, s.id);
+      return `<button class="lswrow ${s.id === fromId ? 'cur' : ''}" data-act="lessonSwapTo" data-c="${cId}" data-from="${fromId || ''}" data-s="${s.id}">
+        <span class="stitle">${esc(s.title)}</span><span class="smeta"><span class="stchip st-${st.k}">${esc(st.lbl)}</span>${d ? ` · 📅 ${esc(dayLabel(d))}` : ''}${s.id === fromId ? ' · la de hoy' : ''}</span></button>`; }).join('')}</div>
+    <div class="mrow"><button class="btn ghost" data-act="closeModal">Cancelar</button></div></div>`;
+}
+function lessonSwapTo(cId, fromId, toId){
+  const t = today(), dTo = lessonDate(cId, toId), dFrom = fromId ? lessonDate(cId, fromId) : null;
+  document.querySelector('.modal-bg')?.remove();
+  if(fromId === toId){ return; }
+  setLessonDate(cId, toId, t);
+  if(fromId && dFrom && dFrom <= t) setLessonDate(cId, fromId, dTo && dTo > t ? dTo : null);   // intercambian fechas
+  save();
+  const s = section(cId, toId);
+  toast(`📘 Hoy: ${shortSec(s.title)}${fromId && dFrom && dFrom <= t ? (dTo && dTo > t ? ` · la otra pasó al ${fmtDate(dTo)}` : ' · la otra quedó sin fecha') : ''}`);
+  refresh();
+}
+
+/* ---------- 📅 planear las próximas lecciones de un curso ---------- */
+let LPL = null;
+const WDAYS = [['L', 1], ['M', 2], ['X', 3], ['J', 4], ['V', 5], ['S', 6], ['D', 0]];
+function lessonPlannerOpen(cId){
+  const rc = COURSES.filter(c => !c.custom && c.sections.some(s => !lessonDone(c.id, s.id)));
+  const c = course(cId) && rc.includes(course(cId)) ? course(cId) : (routeCourses().find(x => rc.includes(x)) || rc[0]);
+  if(!c){ toast('No tienes secciones por aprender'); return; }
+  LPL = {c: c.id, n: 5, days: new Set([1, 2, 3, 4, 5]), start: today()};
+  renderLessonPlanner();
+}
+function plannerOrder(c){   // primero la que dejaste a medias, luego la ruta en orden
+  const cur = inProgressSec(c), pend = c.sections.filter(s => !lessonDone(c.id, s.id));
+  return cur ? [cur].concat(pend.filter(s => s !== cur)) : pend;
+}
+function plannerDates(){
+  const z = LPL, c = course(z.c), secs = plannerOrder(c).slice(0, z.n === 'all' ? 999 : z.n), out = [];
+  if(!z.days.size) return out;
+  let d = z.start < today() ? today() : z.start, guard = 0;
+  secs.forEach(s => { while(!z.days.has(new Date(d + 'T12:00:00').getDay()) && guard++ < 400) d = addDays(d, 1); out.push({s, d}); d = addDays(d, 1); });
+  return out;
+}
+function renderLessonPlanner(){
+  const z = LPL, c = course(z.c), bg = aiModal('lplan'), pv = plannerDates(), had = plannedLessons(c).length;
+  const rc = COURSES.filter(x => !x.custom && x.sections.some(s => !lessonDone(x.id, s.id)));
+  bg.innerHTML = `<div class="modal wide"><h3>📅 Planear lecciones</h3>
+    <p>Reparte las próximas lecciones de un curso en los días que vas a estudiar. Te aparecen en <b style="color:var(--ink)">Hoy → Aprende</b> el día que tocan y en el calendario. Si un día no puedes, la cambias o la adelantas.</p>
+    <div class="pcrow"><label>Curso<select data-set="lplC">${rc.map(x => `<option value="${x.id}" ${x.id === z.c ? 'selected' : ''}>${x.emoji || '📘'} ${esc(x.title)}</option>`).join('')}</select></label>
+      <label>¿Cuántas?<select data-set="lplN">${[3, 5, 8, 10, 'all'].map(n => `<option value="${n}" ${String(z.n) === String(n) ? 'selected' : ''}>${n === 'all' ? 'todas las que faltan' : n + ' lecciones'}</option>`).join('')}</select></label>
+      <label>Desde<input type="date" data-set="lplStart" min="${today()}" value="${z.start}"></label></div>
+    <div class="qlabel">¿Qué días estudias? <small style="font-weight:400; color:var(--muted)">una lección por día</small></div>
+    <div class="seg">${WDAYS.map(([l, n]) => `<button class="chipbtn ${z.days.has(n) ? 'on' : ''}" data-act="lplDay" data-v="${n}">${l}</button>`).join('')}</div>
+    <div class="qlabel">Así quedaría</div>
+    ${pv.length ? pv.map(x => `<div class="pcday"><b>${esc(dayLabel(x.d).replace(/^./, ch => ch.toUpperCase()))}</b><span>${esc(x.s.title)}</span></div>`).join('')
+      : `<p class="errmsg">Elige al menos un día de la semana.</p>`}
+    ${had ? `<p class="hint" style="text-align:left">Esto reemplaza el plan que ya tenías para este curso (${had} ${plural(had, 'lección', 'lecciones')} con fecha).</p>` : ''}
+    <div class="mrow"><button class="btn" data-act="lplSave" ${pv.length ? '' : 'disabled'}>Guardar el plan</button>
+      ${had ? `<button class="btn sec" data-act="lplClear" style="color:var(--bad)">Quitar el plan de este curso</button>` : ''}
+      <button class="btn ghost" data-act="closeModal">Cancelar</button></div></div>`;
+}
+function lessonPlannerSave(){
+  const z = LPL, c = course(z.c), pv = plannerDates(); if(!pv.length) return;
+  plannedLessons(c).forEach(x => setLessonDate(c.id, x.s.id, null));
+  pv.forEach(x => setLessonDate(c.id, x.s.id, x.d));
+  save(); document.querySelector('.modal-bg')?.remove(); LPL = null;
+  toast(`📅 Plan listo: ${pv.length} ${plural(pv.length, 'lección', 'lecciones')} de ${c.title}, hasta el ${fmtDate(pv[pv.length - 1].d)}`);
+  refresh();
+}
+function lessonPlannerClear(){
+  const c = course(LPL.c), n = plannedLessons(c).length;
+  plannedLessons(c).forEach(x => setLessonDate(c.id, x.s.id, null));
+  save(); document.querySelector('.modal-bg')?.remove(); LPL = null;
+  toast(`Plan quitado (${n} ${plural(n, 'lección', 'lecciones')}): vuelves a la ruta en orden`); refresh();
 }
 
 /* ---------- la vista de una lección ---------- */
@@ -1170,6 +1310,10 @@ function renderLesson(cId, sId){
     <div class="tasks">${rows}</div>
     ${l.done ? `<div class="alldone">✅ <span><b>Aprendida.</b> ${ps.length ? 'Repasos: ' + ps.map(p => `${p.done ? '✓' : '○'} ${dayLabel(p.date)}`).join(' · ') + '.' : ''} Te aparecen en Hoy el día que tocan.</span></div>` : ''}
   </div>
+  ${!l.done ? (() => { const d = lessonDate(cId, sId); return `<div class="card todaybar lplan">📅 <span>${d ? `Planeada para <b>${esc(dayLabel(d))}</b>` : 'Sin fecha en tu plan'}</span>
+    <input type="date" data-set="lessonDate" data-c="${cId}" data-s="${sId}" min="${today()}" value="${d && d >= today() ? d : ''}" title="Elegir el día">
+    ${d ? `<button class="btn small ghost" data-act="lessonUnplan" data-c="${cId}" data-s="${sId}">Quitar la fecha</button>` : ''}
+    <span class="spacer"></span><button class="btn small ghost" data-act="lessonPlanner" data-c="${cId}">📅 Planear varias</button></div>`; })() : ''}
   <div class="card todaybar">
     <button class="btn small ghost" data-act="askAI" data-c="${cId}" data-s="${sId}">💬 Pedirle a Claude que me la explique</button>
     <button class="btn small ghost" data-act="remEdit" data-c="${cId}" data-s="${sId}">📅 Programar un repaso</button>
@@ -1708,24 +1852,7 @@ function dayBlocks(){
   // 2) APRENDE: la siguiente lección de cada curso que estás estudiando
   const learn = [];
   const rc = routeCourses();
-  rc.forEach(c => {
-    const nx = nextLessonSec(c);
-    const today_ = learnedSecs(c).filter(s => lessonOf(c.id, s.id).done === t);
-    if(!nx){ learn.push({done: true, title: `${c.emoji || '📘'} Terminaste la ruta de ${esc(c.title)}`, meta: 'Ya aprendiste todas sus secciones. Cuando quieras, márcalo "Para no olvidar" en el curso.',
-      doneActs: `<button class="btn small ghost" data-act="course" data-c="${c.id}">Ver el curso</button>`}); return; }
-    const l = lessonOf(c.id, nx.id) || {}, started = lessonKeys(nx).some(k => l[k]);
-    const k = lessonNext(c, nx), gs = lessonGroups(nx), no = lessonStepNo(c, nx);
-    if(today_.length && !started){
-      learn.push({done: true, title: `Aprendiste hoy: ${esc(shortSec(today_[today_.length - 1].title))}`,
-        meta: `${c.emoji || '📘'} ${esc(c.title)} · buen ritmo: una lección al día. Si te sobra energía, la siguiente es ${esc(shortSec(nx.title))}.`,
-        doneActs: `<button class="btn small ghost" data-act="lessonGo" data-c="${c.id}" data-s="${nx.id}">Otra lección</button>`});
-      return;
-    }
-    learn.push({title: `${started ? 'Sigue' : 'Empieza'}: ${esc(nx.title)}`,
-      meta: `${c.emoji || '📘'} ${esc(c.title)} · paso ${no} de ${gs.length}${k ? `: <b>${STEP_INFO[k].n}</b> (${esc(STEP_INFO[k].what(nx))})` : ''}`,
-      acts: cls => `<button class="${cls}" data-act="lessonGo" data-c="${c.id}" data-s="${nx.id}">${started ? 'Continuar' : 'Empezar'}</button>
-        <button class="btn small ghost" data-act="lesson" data-c="${c.id}" data-s="${nx.id}">Ver la lección</button>`});
-  });
+  rc.forEach(c => learnTasks(c).forEach(x => learn.push(x)));
   if(!rc.length) learn.push({title: 'Elige qué estás estudiando', meta: 'En Cursos, marca como <b>En curso</b> lo que estás aprendiendo ahora: aquí te aparece su siguiente lección.',
     acts: cls => `<button class="${cls}" data-act="courses">Ir a Cursos</button>`});
   // 3) PONTE A PRUEBA: examen mezclado cuando cierras un bloque
@@ -1925,11 +2052,13 @@ function renderCalendar(){
     if(i >= 35 && !inMonth && i % 7 === 0) break;
     const tot = ds <= t ? diaryTotals(ds) : {n:0}, ps = plansOn(ds), pend = ps.filter(p => !p.done).length, done = ps.filter(p => p.done).length;
     const bk = ds >= t ? bankOn(ds) : 0, note = noteOf(ds), late = ds < t && ps.some(p => !p.done && !seriesWaiting(p));
-    const dots = [tot.n ? 'st' : '', pend ? (late ? 'late' : 'pl') : '', bk ? 'bk' : ''].filter(Boolean);
+    const lsn = lessonsOn(ds), lsp = lsn.filter(x => !x.done).length, lsd = lsn.length - lsp;
+    const dots = [tot.n ? 'st' : '', pend ? (late ? 'late' : 'pl') : '', lsp ? 'ls' : '', bk ? 'bk' : ''].filter(Boolean);
     cells.push(`<button class="cday ${inMonth ? '' : 'out'} ${ds === t ? 'today' : ''} ${ds === CAL.sel ? 'sel' : ''} ${ds < t ? 'past' : ''}" data-act="calDay" data-d="${ds}">
       <span class="cn">${d.getDate()}</span>
       ${tot.n ? `<span class="cst">${['fc','quiz','multi','code'].filter(k => tot[k]).map(k => `<i>${KIND_ICON[k]}${tot[k]}</i>`).join('')}</span>` : ''}
       ${pend ? `<span class="cl ${late ? 'late' : 'pl'}"><i></i>${pend} ${plural(pend,'repaso')}</span>` : ''}${done ? `<span class="cl ok"><i></i>${done} ${plural(done,'hecho')}</span>` : ''}
+      ${lsp ? `<span class="cl ls ${ds < t ? 'late' : ''}"><i></i>📘 ${lsp} ${plural(lsp, 'lección', 'lecciones')}</span>` : ''}${lsd ? `<span class="cl ok"><i></i>📘 ${lsd} ${plural(lsd, 'aprendida', 'aprendidas')}</span>` : ''}
       ${bk ? `<span class="cl bk"><i></i>${bk} ${plural(bk,'fallo')}</span>` : ''}${note ? '<span class="cnote">✎</span>' : ''}
       ${dots.length ? `<span class="cdots">${dots.map(x => `<i class="${x}"></i>`).join('')}</span>` : ''}
     </button>`);
@@ -1947,7 +2076,7 @@ function renderCalendar(){
       <button class="btn small" data-act="planNew" data-d="${CAL.sel}">＋ Programar repaso</button>
     </div>
     <div class="calgrid">${['L','M','X','J','V','S','D'].map(x => `<div class="cdh">${x}</div>`).join('')}${cells.join('')}</div>
-    <div class="legend" style="margin-top:10px"><span class="lg"><i style="background:var(--ok)"></i>estudiaste (🃏 flashcards · 📝 quiz · ☑ múltiple · 💻 código)</span><span class="lg"><i style="background:var(--accent)"></i>repasos programados</span><span class="lg"><i style="background:var(--bad)"></i>atrasados</span><span class="lg"><i style="background:var(--warn)"></i>fallos que vuelven</span><span>✎ nota</span></div>
+    <div class="legend" style="margin-top:10px"><span class="lg"><i style="background:var(--ok)"></i>estudiaste (🃏 flashcards · 📝 quiz · ☑ múltiple · 💻 código)</span><span class="lg"><i style="background:var(--accent)"></i>repasos programados</span><span class="lg"><i style="background:var(--accent2)"></i>📘 lecciones planeadas</span><span class="lg"><i style="background:var(--bad)"></i>atrasados</span><span class="lg"><i style="background:var(--warn)"></i>fallos que vuelven</span><span>✎ nota</span></div>
   </div>
   ${renderDayPanel(CAL.sel)}
   <div class="card">
@@ -1972,8 +2101,17 @@ function renderDayPanel(ds){
     ${bk ? taskRow({title: `${bk} ${plural(bk, 'pregunta que fallaste vuelve', 'preguntas que fallaste vuelven')}`, meta: ds === t ? 'pendientes hoy (banco de errores)' : 'ese día (banco de errores)',
         acts: () => ds === t ? '<button class="btn small" data-act="failRun" data-m="due">Empezar</button>' : ''}, '🔁', false) : ''}
     ${ps.length ? ps.map(p => planRow(p, {showDate: p.date !== ds})).join('') : (bk ? '' : `<div class="empty">Nada programado.</div>`)}
+    ${(() => { const L = lessonsOn(ds).concat(ds === t ? COURSES.filter(c => !c.custom).flatMap(c => plannedLessons(c).filter(x => x.d < t).map(x => ({c, s: x.s, done: false, late: x.d}))) : []);
+      if(!L.length && ds < t) return '';
+      return `<div class="qlabel" style="margin-top:16px">📘 ${ds < t ? 'Lecciones de este día' : 'Lecciones'}</div>` + (L.length ? L.map(x => taskRow({done: x.done, title: esc(x.s.title),
+        meta: `${x.c.emoji || '📘'} ${esc(x.c.title)} · ${x.done ? 'aprendida' : x.late ? `<span class="late">planeada para ${esc(dayLabel(x.late))}</span>` : esc(secStatus(x.c, x.s).lbl)}`,
+        acts: cls => `${ds <= t ? `<button class="btn small" data-act="lessonGo" data-c="${x.c.id}" data-s="${x.s.id}">Empezar</button>` : `<button class="btn small sec" data-act="lesson" data-c="${x.c.id}" data-s="${x.s.id}">Ver</button>`}
+          <button class="btn small ghost" data-act="lessonUnplan" data-c="${x.c.id}" data-s="${x.s.id}" title="Quitarle la fecha">Quitar</button>`,
+        doneActs: `<button class="btn small ghost" data-act="lesson" data-c="${x.c.id}" data-s="${x.s.id}">Ver</button>`}, '📘', false)).join('')
+        : `<div class="empty">Ninguna lección planeada.</div>`); })()}
     <div class="mrow">
       <button class="btn small sec" data-act="planNew" data-d="${ds}">＋ Programar repaso${ds > t ? ' para este día' : ''}</button>
+      ${ds >= t ? `<button class="btn small sec" data-act="lessonPlanner">📅 Planear lecciones</button>` : ''}
       ${tot.n ? `<button class="btn small ghost" data-act="planNew" data-src="day" data-d="${ds}" data-when="137">🔁 Programar 1-3-7 de lo que estudiaste ${ds === t ? 'hoy' : 'este día'}</button>` : ''}
     </div>
     ${ds <= t ? `<div class="qlabel" style="margin-top:20px">📚 Lo que estudiaste</div>
@@ -2122,7 +2260,7 @@ function courseCards(list){
   return `<div class="grid">
     ${list.map(c => {
       const d = dueIn(c.id).length, m = mastery(c.id), nn = newSecs(c).length, st = courseStatus(c.id);
-      const route = !c.custom && st !== 'terminado' && c.sections.length, ls = learnedSecs(c).length, nx = route ? nextLessonSec(c) : null;
+      const route = !c.custom && st !== 'terminado' && c.sections.length, ls = learnedSecs(c).length, nx = route ? currentLessonSec(c) : null;
       const bar = route ? `<div><div class="barlbl"><span>Ruta</span><span>${ls} de ${c.sections.length} ${plural(c.sections.length, 'aprendida', 'aprendidas')}</span></div><div class="bar"><i style="width:${Math.round(100*ls/c.sections.length)}%"></i></div></div>`
         : `<div><div class="barlbl"><span>Dominio</span><span>${m}%</span></div><div class="bar g"><i style="width:${m}%"></i></div></div>`;
       const foot = route && st === 'activo' ? (nx ? `<span class="dot acc"></span>Sigue: ${esc(shortSec(nx.title))}` : `<span class="dot ok"></span>Ruta completa`)
@@ -2166,7 +2304,7 @@ function renderCourse(cId){
   const c = course(cId);
   const due = dueIn(cId).length, cap = cfg().cap || 60, m = mastery(cId);
   const ex = (state.exam||{})[cId], st = courseStatus(cId), route = !c.custom && st !== 'terminado';
-  const ls = learnedSecs(c).length, nx = route ? nextLessonSec(c) : null, exL = examL(c);
+  const ls = learnedSecs(c).length, nx = route ? currentLessonSec(c) : null, exL = examL(c), pln = route ? plannedLessons(c) : [];
   const statusCtl = c.custom ? '' : `<div class="stctl"><span class="seg">${Object.entries(COURSE_STATUS).map(([k, lbl]) =>
       `<button class="chipbtn ${st === k ? 'on' : ''}" data-act="courseStatus" data-c="${cId}" data-v="${k}">${lbl}</button>`).join('')}</span>
       <span class="hint" style="margin:0; text-align:left">${esc(COURSE_STATUS_SUB[st])}</span></div>`;
@@ -2178,7 +2316,9 @@ function renderCourse(cId){
       <div class="bar"><i style="width:${Math.round(100*ls/c.sections.length)}%"></i></div>
       ${nx ? `<div class="mrow" style="margin-top:10px">
           <button class="btn" data-act="lessonGo" data-c="${cId}" data-s="${nx.id}">▶ ${started ? 'Continuar' : 'Empezar'} la lección: ${esc(shortSec(nx.title))}</button>
-          <span class="hint" style="margin:0">paso ${lessonStepNo(c, nx)} de ${lessonGroups(nx).length}${k ? ': ' + STEP_INFO[k].n : ''}</span></div>`
+          <span class="hint" style="margin:0">paso ${lessonStepNo(c, nx)} de ${lessonGroups(nx).length}${k ? ': ' + STEP_INFO[k].n : ''}${lessonDate(cId, nx.id) ? ' · 📅 ' + esc(dayLabel(lessonDate(cId, nx.id))) : ''}</span></div>
+        <div class="mrow" style="margin-top:6px"><button class="btn small sec" data-act="lessonPlanner" data-c="${cId}">📅 Planear lecciones</button>
+          <span class="hint" style="margin:0; text-align:left">${pln.length ? `${pln.length} ${plural(pln.length, 'planeada', 'planeadas')}, hasta el ${esc(fmtDate(pln[pln.length - 1].d))}` : 'sin plan: te propongo una al día, en orden'}</span></div>`
         : `<p class="hint" style="text-align:left; margin-top:8px">🎉 Aprendiste todas las secciones. ${st === 'activo' ? 'Cuando quieras, márcalo <b>Para no olvidar</b>: entra al repaso diario mezclado.' : ''}</p>`}
     </div>`;
   }
@@ -2633,7 +2773,7 @@ function rate(r){
   const st = state.cards[k.id] || {box:0};
   if(r==='again'){ st.box = 1; if(cfg().repeatFailed) f.queue.push(k); f.again++; if(!f.failed.includes(k)) f.failed.push(k); }
   else if(r==='hard'){ st.box = Math.max(1, (st.box||1) - 1); f.hard++; if(!f.hardList.includes(k) && !f.failed.includes(k)) f.hardList.push(k); }   // baja un nivel → vuelve antes
-  else { st.box = Math.min(MAXBOX, (st.box||0)+1); f.good++; }
+  else { st.box = prev ? Math.min(MAXBOX, (st.box||0)+1) : 2; f.good++; }   // nueva que ya sabías: directo a 3 días (no mañana)
   st.due = addDays(today(), INTERVAL[st.box]);
   st.seen = (st.seen||0)+1; st.last = today(); st.ts = Date.now();
   state.cards[k.id] = st;
@@ -4432,6 +4572,8 @@ function mergeStates(L0, R0){
     if(!sameJ(m, a)){ ll[k] = m; sum.lessons++; }
   });
   Object.keys(ll).forEach(k => { if(goneL(k, ll[k])) delete ll[k]; });
+  const lld = L.lessonDates = L.lessonDates || {};
+  Object.entries(R.lessonDates || {}).forEach(([k, r]) => { if(r && (!lld[k] || (r.ts || 0) > (lld[k].ts || 0))){ if(!lld[k] || lld[k].d !== r.d) sum.other++; lld[k] = r; } });
   const lcs = L.courseStatus = L.courseStatus || {};
   Object.entries(R.courseStatus || {}).forEach(([c, r]) => { if(r && (!lcs[c] || (r.ts || 0) > (lcs[c].ts || 0))){ if(!lcs[c] || lcs[c].s !== r.s) sum.other++; lcs[c] = r; } });
   L.maint = Object.assign({}, R.maint || {}, L.maint || {});
@@ -4713,7 +4855,7 @@ function showHelp(){
     ${sec('✅ Hoy: tu día en una lista', `
       <p>Los tres bloques del método, en orden. La primera tarea pendiente tiene el botón azul: empieza por ahí.</p>
       <ul><li><b>Repasa:</b> lo que fallaste (tu banco de errores), los repasos programados (los 1-3-7 de tus lecciones y los que programes tú), las tarjetas del día (el tamaño lo eliges ahí mismo o en Ajustes) y Para no olvidar.</li>
-      <li><b>Aprende:</b> la siguiente lección de cada curso En curso. Una al día es buen ritmo; si terminas y te sobra energía, puedes seguir con otra.</li>
+      <li><b>Aprende:</b> la siguiente lección de cada curso En curso. Una al día es buen ritmo; si terminas y te sobra energía, puedes seguir con otra. Con <b>Cambiar</b> eliges otra sección para hoy (si estaba planeada, intercambian fechas). Con <b>📅 Planear lecciones</b> (en el curso, en la lección o en el calendario) repartes las próximas en los días que vas a estudiar: ese día te aparece en Aprende; los días sin lección planeada, no (puedes <b>Adelantarla</b>). Una planeada que no hiciste sale en rojo al día siguiente.</li>
       <li><b>Ponte a prueba:</b> aparece solo cuando toca un examen.</li></ul>
       <p>Debajo ves lo que llevas hoy y lo que viene los próximos días.</p>`)}
     ${sec('🔙 Si faltas unos días', `
@@ -4723,7 +4865,7 @@ function showHelp(){
       <li><b>Lo que fallaste:</b> vuelve todo junto; al acertarlo, el siguiente repaso se cuenta desde ese día.</li>
       <li><b>Para no olvidar</b> y <b>Aprende</b> no se acumulan: al volver son las mismas 10 preguntas y la lección donde la dejaste. La racha es semanal: basta un día de la semana.</li></ul>`)}
     ${sec('🃏 Flashcards y repaso espaciado', `
-      <p>7 niveles que reprograman la tarjeta a 1, 3, 7, 14, 35, 70 y 120 días. <b>✓ La sabía</b> sube un nivel · <b>~ A medias</b> baja uno (vuelve antes) · <b>✗ No la sabía</b> vuelve al nivel 1 (mañana otra vez). Si dudaste, marca "A medias": la honestidad es lo que hace que el espaciado funcione.</p>
+      <p>7 niveles que reprograman la tarjeta a 1, 3, 7, 14, 35, 70 y 120 días. Una tarjeta nueva que ya sabías (la primera vez que la ves) entra directo a 3 días. Nada se repite el mismo día: un repaso programado no te vuelve a sacar tarjetas que ya calificaste hoy. <b>✓ La sabía</b> sube un nivel · <b>~ A medias</b> baja uno (vuelve antes) · <b>✗ No la sabía</b> vuelve al nivel 1 (mañana otra vez). Si dudaste, marca "A medias": la honestidad es lo que hace que el espaciado funcione.</p>
       <p>Las tarjetas rotan entre redacciones, modo inverso (🔄) y completar la frase (✏️) para que aprendas la idea y no la forma de la pregunta. Al voltear ves el <b>🎓 por qué</b>; al final de la ronda, las que fallaste o sabías a medias con su respuesta.</p>`)}
     ${sec('📝 Quiz, ☑ múltiple respuesta y 💻 código', `
       <p><b>Quiz:</b> una respuesta correcta. <b>Múltiple respuesta:</b> 4 opciones, 2 o 3 correctas; cuenta como buena solo si marcas exactamente las correctas, y cada opción trae la retro de un profesor.</p>
@@ -4893,6 +5035,14 @@ document.addEventListener('click', e => {
     case 'pcDel': parcialDelete(a.id); break;
     case 'maint': startMaint(a.c || null); break;
     case 'lesson': goLesson(a.c, a.s); break;
+    case 'lessonSwap': showLessonSwap(a.c, a.s || null); break;
+    case 'lessonSwapTo': lessonSwapTo(a.c, a.from || null, a.s); break;
+    case 'lessonToday': lessonToday(a.c, a.s); break;
+    case 'lessonUnplan': setLessonDate(a.c, a.s, null); save(); toast('Fecha quitada'); refresh(); break;
+    case 'lessonPlanner': lessonPlannerOpen(a.c || null); break;
+    case 'lplDay': { const n = +a.v; if(LPL.days.has(n)) LPL.days.delete(n); else LPL.days.add(n); renderLessonPlanner(); break; }
+    case 'lplSave': lessonPlannerSave(); break;
+    case 'lplClear': lessonPlannerClear(); break;
     case 'lessonGo': lessonGo(a.c, a.s); break;
     case 'lessonStep': {
       if(a.k === 'read'){
@@ -4964,6 +5114,10 @@ document.addEventListener('change', e => {
   const ds = e.target.dataset || {};
   if(ds.set === 'cap'){ cfg().cap = +e.target.value; save(); refresh(); }
   else if(ds.set === 'maintN'){ cfg().maintN = +e.target.value; save(); refresh(); }
+  else if(ds.set === 'lplC' && LPL){ LPL.c = e.target.value; renderLessonPlanner(); }
+  else if(ds.set === 'lplN' && LPL){ LPL.n = e.target.value === 'all' ? 'all' : +e.target.value; renderLessonPlanner(); }
+  else if(ds.set === 'lplStart' && LPL){ if(e.target.value) LPL.start = e.target.value; renderLessonPlanner(); }
+  else if(ds.set === 'lessonDate'){ if(e.target.value){ setLessonDate(ds.c, ds.s, e.target.value); save(); toast('📅 Planeada para ' + dayLabel(e.target.value)); refresh(); } }
   else if(ds.set === 'aiModel'){ aiSet({model: e.target.value}); aiSay('Modelo cambiado: pulsa "Probar conexión" para comprobarlo.'); }
   else if(ds.set === 'aiOn'){ aiSet({on: e.target.checked}); showSettings(); document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'}); refresh(); }
   else if(ds.set === 'explChk' && EXPL){ const i = +e.target.value; if(e.target.checked) EXPL.self.add(i); else EXPL.self.delete(i);
