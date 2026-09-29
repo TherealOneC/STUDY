@@ -1,6 +1,6 @@
 /* Service worker del Repaso Dominical: deja la app disponible sin internet.
-   build.py reemplaza e736d7a2b7 en cada build para que el teléfono descargue la versión nueva. */
-const CACHE = 'repaso-e736d7a2b7';
+   build.py reemplaza 647aecc31a en cada build para que el teléfono descargue la versión nueva. */
+const CACHE = 'repaso-647aecc31a';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

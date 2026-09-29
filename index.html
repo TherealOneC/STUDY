@@ -251,7 +251,9 @@ pre.aicode code{background:none; border:none; padding:0; font-size:inherit; colo
   background:var(--card); color:var(--ink); font:inherit; cursor:pointer}
 .lswrow:hover{border-color:var(--accent)} .lswrow.cur{border-color:color-mix(in srgb,var(--accent) 50%,var(--line)); background:color-mix(in srgb,var(--accent) 5%,var(--card))}
 .lswrow .stitle{font-weight:650; font-size:.9rem} .lswrow .smeta{font-size:.78rem; color:var(--muted)}
-.cday .cl.ls i{background:var(--accent2)} .cday .cl.ls.late{color:var(--bad)} .cdots i.ls{background:var(--accent2)}
+.cday .cl.ls i{background:var(--accent2)}
+.mixsecs{margin-top:6px} .mixsecs details{border-top:1px solid var(--line); padding:6px 0} .mixsecs summary{font-size:.86rem; font-weight:600; cursor:pointer}
+.lswrow.mixopt{border-style:dashed; border-color:color-mix(in srgb,var(--accent) 45%,var(--line))} .cday .cl.ls.late{color:var(--bad)} .cdots i.ls{background:var(--accent2)}
 .lplan input[type=date]{font:inherit; font-size:.85rem; padding:5px 8px; border:1px solid var(--line); border-radius:9px; background:var(--card); color:var(--ink); max-width:100%}
 
 /* ---------- cursos ---------- */
@@ -1144,10 +1146,13 @@ function plannedLessons(c){   // las que tienen fecha y aún no aprendes, por fe
   return c.sections.filter(s => !lessonDone(c.id, s.id) && lessonDate(c.id, s.id)).map(s => ({s, d: lessonDate(c.id, s.id)}))
     .sort((a, b) => a.d < b.d ? -1 : a.d > b.d ? 1 : c.sections.indexOf(a.s) - c.sections.indexOf(b.s));
 }
-function lessonsOn(ds){ const out = []; COURSES.forEach(c => { if(!c.custom) c.sections.forEach(s => { if(lessonDate(c.id, s.id) === ds) out.push({c, s, done: lessonDone(c.id, s.id)}); }); }); return out; }
+function lessonsOn(ds){ const out = []; COURSES.forEach(c => { if(!c.custom) c.sections.forEach(s => { if(lessonDate(c.id, s.id) === ds) out.push({c, s, done: lessonDone(c.id, s.id)}); }); });
+  mixLessons().filter(m => m.date === ds).forEach(m => out.push({c: course(m.c), s: {id: m.id, title: '🔀 Repaso mezclado: ' + mixScopeLbl(m)}, done: !!m.done, mix: m.id}));
+  return out; }
 function inProgressSec(c){   // la lección empezada y sin terminar que tocaste más recientemente
   let best = null, bt = -1;
-  c.sections.forEach(s => { const l = lessonOf(c.id, s.id); if(l && !l.done && lessonKeys(s).some(k => l[k]) && (l.ts || 0) > bt){ best = s; bt = l.ts || 0; } });
+  const t = today();
+  c.sections.forEach(s => { const l = lessonOf(c.id, s.id), d = lessonDate(c.id, s.id); if(l && !l.done && !(d && d > t) && lessonKeys(s).some(k => l[k]) && (l.ts || 0) > bt){ best = s; bt = l.ts || 0; } });
   return best;
 }
 /* la lección que toca en un curso: la planeada para hoy (o atrasada) → la que dejaste a medias → la próxima planeada → la siguiente de la ruta */
@@ -1160,11 +1165,13 @@ function lessonTask(c, s, why){
   return {title: `${started ? 'Sigue' : 'Empieza'}: ${esc(s.title)}`,
     meta: `${c.emoji || '📘'} ${esc(c.title)}${why ? ' · ' + why : ''} · paso ${no} de ${gs.length}${k ? `: <b>${STEP_INFO[k].n}</b> (${esc(STEP_INFO[k].what(s))})` : ''}`,
     acts: cls => `<button class="${cls}" data-act="lessonGo" data-c="${c.id}" data-s="${s.id}">${started ? 'Continuar' : 'Empezar'}</button>
-      <button class="btn small ghost" data-act="lessonSwap" data-c="${c.id}" data-s="${s.id}" title="Hacer hoy otra lección de este curso">Cambiar</button>
+      <button class="btn small ghost" data-act="lessonSwap" data-c="${c.id}" data-s="${s.id}" title="Hacer hoy otra lección (de este u otro curso) o un repaso mezclado">Cambiar</button>
+      <button class="btn small ghost" data-act="lessonMove" data-kind="sec" data-c="${c.id}" data-s="${s.id}" title="Pasarla a otro día">Mover</button>
       <button class="btn small ghost" data-act="lesson" data-c="${c.id}" data-s="${s.id}">Ver</button>`};
 }
 /* las filas de "Aprende" de un curso */
 function learnTasks(c){
+  const mx = mixDue(c); if(mx.length) return mx.map(mixTask);   // hoy toca un repaso mezclado de este curso
   const t = today(), pl = plannedLessons(c), due = pl.filter(x => x.d <= t), fut = pl.filter(x => x.d > t);
   const learnedToday = learnedSecs(c).filter(s => lessonOf(c.id, s.id).done === t);
   if(!c.sections.some(s => !lessonDone(c.id, s.id))) return [{done: true, title: `${c.emoji || '📘'} Terminaste la ruta de ${esc(c.title)}`, meta: 'Ya aprendiste todas sus secciones. Cuando quieras, márcalo "Para no olvidar" en el curso.',
@@ -1192,14 +1199,20 @@ function learnTasks(c){
 function lessonToday(cId, sId){ setLessonDate(cId, sId, today()); save(); lessonGo(cId, sId); }
 
 /* ---------- cambiar la lección de hoy por otra del mismo curso ---------- */
-function showLessonSwap(cId, fromId){
-  const c = course(cId); if(!c) return;
-  const t = today(), bg = aiModal('lswap');
-  bg.innerHTML = `<div class="modal wide"><h3>Cambiar la lección de hoy</h3>
-    <p>Elige qué sección de <b style="color:var(--ink)">${esc(c.title)}</b> quieres aprender hoy. ${fromId ? `Si la que tenías estaba planeada, intercambian fechas.` : ''} Lo que ya empezaste no se pierde.</p>
-    <div class="plist lswlist">${c.sections.filter(s => !lessonDone(cId, s.id)).map(s => { const st = secStatus(c, s), d = lessonDate(cId, s.id);
-      return `<button class="lswrow ${s.id === fromId ? 'cur' : ''}" data-act="lessonSwapTo" data-c="${cId}" data-from="${fromId || ''}" data-s="${s.id}">
-        <span class="stitle">${esc(s.title)}</span><span class="smeta"><span class="stchip st-${st.k}">${esc(st.lbl)}</span>${d ? ` · 📅 ${esc(dayLabel(d))}` : ''}${s.id === fromId ? ' · la de hoy' : ''}</span></button>`; }).join('')}</div>
+let SWAP = null;
+function showLessonSwap(cId, fromId, showC){
+  const c0 = course(cId); if(!c0) return;
+  SWAP = {c: cId, from: fromId || null, show: showC || cId};
+  const c = course(SWAP.show), bg = aiModal('lswap'), same = SWAP.show === cId;
+  bg.innerHTML = `<div class="modal wide"><h3>¿Qué quieres aprender hoy?</h3>
+    <button class="lswrow mixopt" data-act="mixNew" data-c="${c.id}" data-d="${today()}"><span class="stitle">🔀 Un repaso mezclado de ${esc(c.title)}</span>
+      <span class="smeta">Los 4 pasos con todo el curso (o una parte) mezclado, en vez de una sola sección</span></button>
+    <div class="pcrow" style="margin-top:12px"><label>O una sección de<select data-set="swapC">${COURSES.filter(x => !x.custom && x.sections.some(s => !lessonDone(x.id, s.id))).map(x =>
+      `<option value="${x.id}" ${x.id === SWAP.show ? 'selected' : ''}>${x.emoji || '📘'} ${esc(x.title)}</option>`).join('')}</select></label></div>
+    <p class="hint" style="text-align:left">${same && fromId ? 'Si la que tenías estaba planeada para hoy, intercambian fechas.' : same ? '' : `Se suma a tu día; la de ${esc(c0.title)} sigue ahí (con <b>Mover</b> la pasas a otro día).`} Lo que ya empezaste no se pierde.</p>
+    <div class="plist lswlist">${c.sections.filter(s => !lessonDone(c.id, s.id)).map(s => { const st = secStatus(c, s), d = lessonDate(c.id, s.id);
+      return `<button class="lswrow ${same && s.id === fromId ? 'cur' : ''}" data-act="lessonSwapTo" data-c="${c.id}" data-s="${s.id}">
+        <span class="stitle">${esc(s.title)}</span><span class="smeta"><span class="stchip st-${st.k}">${esc(st.lbl)}</span>${d ? ` · 📅 ${esc(dayLabel(d))}` : ''}${same && s.id === fromId ? ' · la de hoy' : ''}</span></button>`; }).join('')}</div>
     <div class="mrow"><button class="btn ghost" data-act="closeModal">Cancelar</button></div></div>`;
 }
 function lessonSwapTo(cId, fromId, toId){
@@ -1266,6 +1279,186 @@ function lessonPlannerClear(){
   plannedLessons(c).forEach(x => setLessonDate(c.id, x.s.id, null));
   save(); document.querySelector('.modal-bg')?.remove(); LPL = null;
   toast(`Plan quitado (${n} ${plural(n, 'lección', 'lecciones')}): vuelves a la ruta en orden`); refresh();
+}
+
+/* ---------- 🔀 lección de repaso mezclada: los mismos 4 pasos, con todo un curso (o una parte, o las secciones que elijas) ----------
+   state.mixLessons[id] = {id, c, scope, secs:[ids], size, date, read, recall, dist, apply, done, ts, created}
+   El contenido se elige al empezar cada paso: primero lo que vence o más se te olvida, repartido entre todas las secciones. */
+const MIXL_SIZE = {corta: {fc: 10, quiz: 4, multi: 3, code: 2, lbl: 'Corta · ~15 min'}, normal: {fc: 20, quiz: 6, multi: 4, code: 4, lbl: 'Normal · ~30 min'},
+  larga: {fc: 30, quiz: 10, multi: 6, code: 6, lbl: 'Larga · ~45 min'}};
+const MIXL_STEPS = [{k: 'read', g: 'Entender'}, {k: 'recall', g: 'Recordar'}, {k: 'dist', g: 'Distinguir'}, {k: 'apply', g: 'Aplicar'}];
+function mixLessons(){ return Object.values(state.mixLessons || {}).filter(m => course(m.c)); }
+function mixL(id){ return (state.mixLessons || {})[id] || null; }
+function mixSecs(m){ const c = course(m.c); return c ? c.sections.filter(s => m.secs.includes(s.id)) : []; }
+function mixScopeLbl(m){
+  const c = course(m.c), n = m.secs.length;
+  return m.scope === 'all' ? `todo ${c.title}` : m.scope === 'learned' ? `lo que aprendiste de ${c.title}` : m.scope.startsWith('group:') ? m.scope.slice(6) : `${n} ${plural(n, 'sección', 'secciones')} de ${c.title}`;
+}
+function mixPools(m){
+  const secs = mixSecs(m), sz = MIXL_SIZE[m.size] || MIXL_SIZE.normal, has = k => secs.some(s => (s[k] || []).length);
+  return {secs, sz, fc: secs.some(s => s.flashcards.length), dist: has('quiz') || has('multi'), code: has('code')};
+}
+function mixKeys(m){ const p = mixPools(m); return ['read', p.fc && 'recall', p.dist && 'dist', p.code && 'apply'].filter(Boolean); }
+function mxlNext(m){ return mixKeys(m).find(k => !m[k]) || null; }
+function mixMark(id, k){
+  const m = mixL(id); if(!m) return false;
+  if(!m[k]) m[k] = today(); m.ts = Date.now();
+  let fin = false;
+  if(!m.done && mixKeys(m).every(x => m[x])){ m.done = today(); fin = true; }
+  recordSession(); save(); return fin;
+}
+/* reparte n entre las secciones (por turnos), en cada una primero lo más urgente */
+function pickRR(groups, n){
+  const lists = groups.map(g => g.slice()), out = []; let i = 0;
+  while(out.length < n && lists.some(l => l.length)){ const l = lists[i++ % lists.length]; if(l.length) out.push(l.shift()); }
+  return out;
+}
+function mixCards(m){
+  const {secs, sz} = mixPools(m), t = today();
+  const rank = k => { const st = state.cards[k.id]; if(!st) return '2'; if(st.last === t) return '9'; return (st.due <= t ? '0' : '1') + String(st.box).padStart(2, '0') + st.due; };
+  const groups = shuffle(secs).map(s => shuffle(ALL.filter(k => k.courseId === m.c && k.sectionId === s.id)).sort((a, b) => rank(a) < rank(b) ? -1 : rank(a) > rank(b) ? 1 : 0));
+  return shuffle(pickRR(groups, sz.fc));
+}
+function mixItems(m, kinds, n){
+  const {secs} = mixPools(m), c = course(m.c), seen = x => (errbank()[x.key] ? '0' : '1') + (seenEx()[x.key] || '');
+  return kinds.map(kind => pickRR(shuffle(secs).map(s => shuffle((s[kind] || []).map((x, i) => ({kind, x, c, s, i, sid: s.id, key: kind + '|' + c.id + '|' + s.id + '|' + i}))).sort((a, b) => seen(a) < seen(b) ? -1 : seen(a) > seen(b) ? 1 : 0)), n[kind]));
+}
+function mixStart(id, k){
+  const m = mixL(id); if(!m) return;
+  const sz = MIXL_SIZE[m.size] || MIXL_SIZE.normal, title = `🔀 ${mixScopeLbl(m)}`;
+  if(k === 'read'){ mixMark(id, 'read'); renderMixLesson(id); toast('✓ Paso 1 listo: ahora, de memoria'); return; }
+  leave();
+  if(k === 'recall'){ const cards = mixCards(m); if(!cards.length){ toast('Estas secciones no tienen tarjetas'); return; } beginCards(cards, {label: title + ' · Recordar', mixLesson: id}); return; }
+  if(k === 'dist'){ const [q, mm] = mixItems(m, ['quiz', 'multi'], {quiz: sz.quiz, multi: sz.multi}); startMix(q.concat(mm), {title: title + ' · Distinguir', mode: 'mixl', mixLesson: {id, k}}); return; }
+  if(k === 'apply'){
+    const ORD = {predict: 0, bug: 1, fill: 2, line: 3, order: 4};
+    const [cd] = mixItems(m, ['code'], {code: sz.code});
+    startMix(cd.sort((a, b) => (ORD[a.x.type] ?? 9) - (ORD[b.x.type] ?? 9)), {title: title + ' · Aplicar', mode: 'mixl', mixLesson: {id, k}, keepOrder: true});
+  }
+}
+function mixGo(id){ const m = mixL(id); if(!m) return; const k = mxlNext(m); if(!k || k === 'read') return goMixLesson(id); mixStart(id, k); }
+function mixCta(id, fin){
+  const m = mixL(id); if(!m) return '';
+  if(fin) return `<div class="plan lessoncta"><b>🎉 Repaso mezclado completo: ${esc(mixScopeLbl(m))}</b>
+    <p>Lo que fallaste entró a tu banco de errores y vuelve mañana; las tarjetas siguen su propio espaciado.</p>
+    <div class="mrow" style="margin-top:8px"><button class="btn" data-act="home">Ir a Hoy</button><button class="btn sec" data-act="mixLesson" data-id="${m.id}">Ver la lección</button></div></div>`;
+  const k = mxlNext(m); if(!k) return '';
+  const ks = mixKeys(m), no = ks.indexOf(k) + 1;
+  return `<div class="plan lessoncta"><b>🔀 Repaso mezclado · paso ${no} de ${ks.length}</b>
+    <p>Sigue con <b>${MIXL_STEPS.find(x => x.k === k).g}</b>: ${esc(mixStepWhat(m, k))}.</p>
+    <div class="mrow" style="margin-top:8px"><button class="btn" data-act="mixGo" data-id="${m.id}">Seguir →</button><button class="btn ghost" data-act="mixLesson" data-id="${m.id}">Ver la lección</button></div></div>`;
+}
+function mixStepWhat(m, k){
+  const {secs, sz} = mixPools(m), n = secs.length;
+  const cnt = kind => Math.min(sz[kind], secs.reduce((t, s) => t + (s[kind] || []).length, 0));
+  return k === 'read' ? `lo esencial de ${n} ${plural(n, 'sección', 'secciones')}` : k === 'recall' ? `${Math.min(sz.fc, ALL.filter(x => x.courseId === m.c && m.secs.includes(x.sectionId)).length)} tarjetas mezcladas`
+    : k === 'dist' ? `${cnt('quiz')} de quiz y ${cnt('multi')} de múltiple, mezcladas` : `${cnt('code')} ejercicios de código: primero leer, después escribir`;
+}
+let MIXLV = null;
+function goMixLesson(id){ leave(); setTab('courses'); view = 'mixlesson'; MIXLV = id; renderMixLesson(id); window.scrollTo(0, 0); }
+function renderMixLesson(id){
+  const m = mixL(id); if(!m) return goHome();
+  const c = course(m.c), secs = mixSecs(m), ks = mixKeys(m), nx = mxlNext(m), doneN = ks.filter(k => m[k]).length;
+  const rows = ks.map((k, i) => {
+    const done = !!m[k], isNext = k === nx, st = MIXL_STEPS.find(x => x.k === k);
+    const body = k === 'read' ? `<div class="tmeta">Antes de recuperar, repasa lo esencial de cada sección (ábrela para ver sus puntos clave).</div>
+        <div class="mixsecs">${secs.map(s => `<details class="plain"><summary>${esc(s.title)}</summary><div class="lsum">${fmt(s.summary)}</div><ul class="kp">${s.keyPoints.map(p => `<li>${fmt(p)}</li>`).join('')}</ul></details>`).join('')}</div>`
+      : `<div class="tmeta">${esc(mixStepWhat(m, k))} · ${k === 'recall' ? 'primero las que vencen o más se te olvidan, repartidas entre todas las secciones' : k === 'dist' ? 'mezclar temas te obliga a elegir qué idea aplica' : 'lo que fallas entra a tu banco de errores'}</div>`;
+    const acts = done ? (k === 'read' ? `<span class="badge done">✓ ${fmtDate(m[k])}</span>` : `<button class="btn small ghost" data-act="mixStep" data-id="${id}" data-k="${k}">✓ Otra vez</button>`)
+      : `<button class="btn small ${isNext ? '' : 'sec'}" data-act="mixStep" data-id="${id}" data-k="${k}">${k === 'read' ? 'Ya lo repasé ✓' : 'Empezar'}</button>`;
+    return `<div class="task ${done ? 'done' : ''} ${isNext ? 'next' : ''}"><span class="tnum">${done ? '✓' : i + 1}</span>
+      <div class="tbody"><div class="ttitle">${i + 1}. ${st.g}</div>${body}</div><div class="tact">${acts}</div></div>`;
+  }).join('');
+  app.innerHTML = `
+  <div class="crumb"><a data-act="course" data-c="${c.id}">‹ ${c.emoji || '📘'} ${esc(c.title)}</a></div>
+  <div class="card">
+    <div class="phead" style="margin:0"><div class="eyebrow">🔀 Lección de repaso mezclada · ${esc(MIXL_SIZE[m.size].lbl)}</div>
+      <h1 style="font-size:1.4rem">${esc(mixScopeLbl(m).replace(/^./, x => x.toUpperCase()))}</h1>
+      <p>${secs.length} ${plural(secs.length, 'sección', 'secciones')} · ${m.done ? `completa el ${fmtDate(m.done)}` : `${doneN} de ${ks.length} pasos`}${m.date && !m.done ? ` · 📅 ${esc(dayLabel(m.date))}` : ''}</p></div>
+    <div class="dayprog" style="margin-top:10px"><span class="bar g" style="max-width:none"><i style="width:${Math.round(100 * doneN / ks.length)}%"></i></span></div>
+    <div class="tasks">${rows}</div>
+    ${m.done ? `<div class="alldone">✅ <span><b>Completa.</b> Si quieres, haz otra con contenido distinto: cada vez elige lo que más te hace falta.</span></div>` : ''}
+  </div>
+  <div class="card todaybar"><button class="btn small ghost" data-act="mixNew" data-c="${c.id}">🔀 Crear otra</button>
+    ${!m.done ? `<button class="btn small ghost" data-act="lessonMove" data-kind="mix" data-id="${id}">📅 Mover</button>` : ''}
+    <span class="spacer"></span><button class="btn small ghost" data-act="mixDel" data-id="${id}" style="color:var(--bad)">Borrar esta lección</button></div>`;
+}
+function mixDelete(id){ if(state.mixLessons) delete state.mixLessons[id]; markGone('mixl:' + id); save(); }
+
+/* ---------- crear una lección mezclada ---------- */
+let MIXNEW = null;
+function mixNewOpen(cId, date){
+  const cs = COURSES.filter(c => !c.custom && c.sections.length), c = course(cId) && !course(cId).custom ? course(cId) : (routeCourses()[0] || cs[0]);
+  MIXNEW = {c: c.id, scope: 'all', pick: new Set(), size: 'normal', date: date || today()};
+  renderMixNew();
+}
+function mixNewSecs(){
+  const z = MIXNEW, c = course(z.c);
+  if(z.scope === 'all') return c.sections;
+  if(z.scope === 'learned') return learnedSecs(c);
+  if(z.scope.startsWith('group:')) return c.sections.filter(s => s.group === z.scope.slice(6));
+  return c.sections.filter(s => z.pick.has(s.id));
+}
+function renderMixNew(){
+  const z = MIXNEW, c = course(z.c), bg = aiModal('mixnew'), groups = [...new Set(c.sections.map(s => s.group).filter(Boolean))], ls = learnedSecs(c).length, secs = mixNewSecs();
+  const sz = MIXL_SIZE[z.size], tot = k => Math.min(sz[k], secs.reduce((t, s) => t + (s[k] || []).length, 0)), nfc = Math.min(sz.fc, ALL.filter(k => k.courseId === c.id && secs.some(s => s.id === k.sectionId)).length);
+  const opt = (v, lbl) => `<option value="${esc(v)}" ${z.scope === v ? 'selected' : ''}>${esc(lbl)}</option>`;
+  bg.innerHTML = `<div class="modal wide"><h3>🔀 Lección de repaso mezclada</h3>
+    <p>Los mismos 4 pasos de una lección, pero con todo un curso (o una parte) mezclado: entender → recordar → distinguir → aplicar. Cada vez que la haces elige lo que más te hace falta: lo que vence, lo que se te olvida y lo que fallaste.</p>
+    <div class="pcrow"><label>Curso<select data-set="mxC">${COURSES.filter(x => !x.custom && x.sections.length).map(x => `<option value="${x.id}" ${x.id === z.c ? 'selected' : ''}>${x.emoji || '📘'} ${esc(x.title)}</option>`).join('')}</select></label>
+      <label>¿De qué?<select data-set="mxScope">${opt('all', `Todo el curso (${c.sections.length} secciones)`)}${ls ? opt('learned', `Lo que ya aprendiste (${ls})`) : ''}${groups.map(g => opt('group:' + g, g)).join('')}${opt('pick', 'Elegir secciones…')}</select></label></div>
+    ${z.scope === 'pick' ? `<div class="plist pclist" style="margin-top:8px">${c.sections.map(s => `<label class="pitem"><input type="checkbox" data-set="mxPick" value="${s.id}" ${z.pick.has(s.id) ? 'checked' : ''}><span>${esc(s.title)}</span></label>`).join('')}</div>` : ''}
+    <div class="qlabel">Tamaño</div>
+    <div class="seg">${Object.entries(MIXL_SIZE).map(([k, v]) => `<button class="chipbtn ${z.size === k ? 'on' : ''}" data-act="mxSize" data-v="${k}">${v.lbl}</button>`).join('')}</div>
+    <div class="qlabel">¿Cuándo?</div>
+    <div class="seg">${[[today(), 'Hoy'], [addDays(today(), 1), 'Mañana']].map(([d, l]) => `<button class="chipbtn ${z.date === d ? 'on' : ''}" data-act="mxDate" data-v="${d}">${l}</button>`).join('')}
+      <input type="date" data-set="mxDate" min="${today()}" value="${z.date}" style="font:inherit; font-size:.85rem; padding:5px 8px; border:1px solid var(--line); border-radius:9px; background:var(--card); color:var(--ink)"></div>
+    <p class="hint" style="text-align:left; margin-top:12px">${secs.length ? `${secs.length} ${plural(secs.length, 'sección', 'secciones')} · ${nfc} tarjetas · ${tot('quiz')} de quiz · ${tot('multi')} de múltiple${tot('code') ? ` · ${tot('code')} de código` : ''}` : 'Elige al menos una sección.'}</p>
+    <div class="mrow"><button class="btn" data-act="mxCreate" ${secs.length ? '' : 'disabled'}>${z.date === today() ? 'Crear y empezar' : 'Guardar para ' + esc(dayLabel(z.date))}</button><button class="btn ghost" data-act="closeModal">Cancelar</button></div></div>`;
+}
+function mixCreate(){
+  const z = MIXNEW, secs = mixNewSecs(); if(!secs.length) return;
+  const id = 'mx' + newId(), L = state.mixLessons = state.mixLessons || {};
+  L[id] = {id, c: z.c, scope: z.scope, secs: secs.map(s => s.id), size: z.size, date: z.date, created: today(), ts: Date.now()};
+  save(); document.querySelector('.modal-bg')?.remove(); MIXNEW = null;
+  if(z.date === today()) goMixLesson(id);
+  else { toast(`🔀 Guardada para ${dayLabel(z.date)}: te aparece en Aprende ese día`); refresh(); }
+}
+function mixDue(c){ const t = today(); return mixLessons().filter(m => m.c === c.id && m.date && m.date <= t && (!m.done || m.done === t)).sort((a, b) => a.date < b.date ? -1 : 1); }
+function mixTask(m){
+  const t = today(), ks = mixKeys(m), nx = mxlNext(m), c = course(m.c), started = ks.some(k => m[k]);
+  if(m.done) return {done: true, title: `🔀 Repaso mezclado: ${esc(mixScopeLbl(m))}`, meta: `${c.emoji || '📘'} Completo · lo que fallaste vuelve mañana`,
+    doneActs: `<button class="btn small ghost" data-act="mixLesson" data-id="${m.id}">Ver</button>`};
+  return {title: `🔀 ${started ? 'Sigue' : 'Empieza'} el repaso mezclado: ${esc(mixScopeLbl(m))}`,
+    meta: `${c.emoji || '📘'} ${esc(MIXL_SIZE[m.size].lbl)}${m.date < t ? ` · <span class="late">planeado para ${esc(dayLabel(m.date))}</span>` : ''} · paso ${ks.indexOf(nx) + 1} de ${ks.length}: <b>${MIXL_STEPS.find(x => x.k === nx).g}</b> (${esc(mixStepWhat(m, nx))})`,
+    acts: cls => `<button class="${cls}" data-act="mixGo" data-id="${m.id}">${started ? 'Continuar' : 'Empezar'}</button>
+      <button class="btn small ghost" data-act="lessonMove" data-kind="mix" data-id="${m.id}">Mover</button>
+      <button class="btn small ghost" data-act="mixLesson" data-id="${m.id}">Ver</button>`};
+}
+
+/* ---------- mover una lección (de sección o mezclada) a otro día ---------- */
+function showLessonMove(kind, a){
+  const t = today(), wd = new Date(t + 'T12:00:00').getDay(), nextMon = addDays(t, ((8 - wd) % 7) || 7);
+  const name = kind === 'mix' ? '🔀 ' + mixScopeLbl(mixL(a.id)) : section(a.c, a.s).title;
+  const cur = kind === 'mix' ? mixL(a.id).date : lessonDate(a.c, a.s);
+  const attrs = kind === 'mix' ? `data-kind="mix" data-id="${a.id}"` : `data-kind="sec" data-c="${a.c}" data-s="${a.s}"`;
+  const bg = aiModal('lmove');
+  bg.innerHTML = `<div class="modal"><h3>📅 Mover la lección</h3><p><b style="color:var(--ink)">${esc(name)}</b>${cur ? ` · hoy está para ${esc(dayLabel(cur))}` : ''}</p>
+    <div class="seg">${[[addDays(t, 1), 'Mañana'], [addDays(t, 2), 'Pasado mañana'], [nextMon, 'El próximo lunes'], [addDays(t, 7), 'En una semana']].map(([d, l]) =>
+      `<button class="chipbtn" data-act="lessonMoveTo" ${attrs} data-d="${d}">${l}</button>`).join('')}</div>
+    <div class="mrow"><input type="date" id="lmDate" min="${t}" value="${addDays(t, 1)}" style="font:inherit; padding:6px 9px; border:1px solid var(--line); border-radius:9px; background:var(--card); color:var(--ink)">
+      <button class="btn small" data-act="lessonMoveTo" ${attrs} data-d="pick">Mover a esa fecha</button></div>
+    <div class="mrow">${kind === 'sec' && cur ? `<button class="btn small ghost" data-act="lessonMoveTo" ${attrs} data-d="none">Quitarle la fecha (vuelve a la ruta en orden)</button>` : ''}
+      <button class="btn small ghost" data-act="closeModal">Cancelar</button></div>
+    <p class="hint" style="text-align:left">${kind === 'sec' ? 'Hoy te propongo la siguiente de la ruta, o nada de este curso si tu plan no tiene lección para hoy.' : ''}</p></div>`;
+}
+function lessonMoveTo(a){
+  const d = a.d === 'pick' ? (document.getElementById('lmDate') || {}).value : a.d === 'none' ? null : a.d;
+  if(a.d === 'pick' && !d) return;
+  if(a.kind === 'mix'){ const m = mixL(a.id); if(m){ m.date = d; m.ts = Date.now(); } }
+  else setLessonDate(a.c, a.s, d);
+  save(); document.querySelector('.modal-bg')?.remove();
+  toast(d ? `📅 Movida a ${dayLabel(d)}` : 'Fecha quitada'); refresh();
 }
 
 /* ---------- la vista de una lección ---------- */
@@ -1853,7 +2046,10 @@ function dayBlocks(){
   const learn = [];
   const rc = routeCourses();
   rc.forEach(c => learnTasks(c).forEach(x => learn.push(x)));
-  if(!rc.length) learn.push({title: 'Elige qué estás estudiando', meta: 'En Cursos, marca como <b>En curso</b> lo que estás aprendiendo ahora: aquí te aparece su siguiente lección.',
+  // lo que planeaste de otros cursos (terminados o en pausa) también sale el día que toca
+  COURSES.filter(c => !c.custom && !rc.includes(c)).forEach(c => { mixDue(c).forEach(m => learn.push(mixTask(m)));
+    plannedLessons(c).filter(x => x.d <= t).forEach(x => learn.push(lessonTask(c, x.s, x.d < t ? `<span class="late">planeada para ${esc(dayLabel(x.d))}</span>` : '📅 planeada para hoy'))); });
+  if(!rc.length && !learn.length) learn.push({title: 'Elige qué estás estudiando', meta: 'En Cursos, marca como <b>En curso</b> lo que estás aprendiendo ahora: aquí te aparece su siguiente lección.',
     acts: cls => `<button class="${cls}" data-act="courses">Ir a Cursos</button>`});
   // 3) PONTE A PRUEBA: examen mezclado cuando cierras un bloque
   const test = [];
@@ -2105,13 +2301,15 @@ function renderDayPanel(ds){
       if(!L.length && ds < t) return '';
       return `<div class="qlabel" style="margin-top:16px">📘 ${ds < t ? 'Lecciones de este día' : 'Lecciones'}</div>` + (L.length ? L.map(x => taskRow({done: x.done, title: esc(x.s.title),
         meta: `${x.c.emoji || '📘'} ${esc(x.c.title)} · ${x.done ? 'aprendida' : x.late ? `<span class="late">planeada para ${esc(dayLabel(x.late))}</span>` : esc(secStatus(x.c, x.s).lbl)}`,
-        acts: cls => `${ds <= t ? `<button class="btn small" data-act="lessonGo" data-c="${x.c.id}" data-s="${x.s.id}">Empezar</button>` : `<button class="btn small sec" data-act="lesson" data-c="${x.c.id}" data-s="${x.s.id}">Ver</button>`}
-          <button class="btn small ghost" data-act="lessonUnplan" data-c="${x.c.id}" data-s="${x.s.id}" title="Quitarle la fecha">Quitar</button>`,
-        doneActs: `<button class="btn small ghost" data-act="lesson" data-c="${x.c.id}" data-s="${x.s.id}">Ver</button>`}, '📘', false)).join('')
+        acts: cls => x.mix ? `${ds <= t ? `<button class="btn small" data-act="mixGo" data-id="${x.mix}">Empezar</button>` : `<button class="btn small sec" data-act="mixLesson" data-id="${x.mix}">Ver</button>`}
+            <button class="btn small ghost" data-act="lessonMove" data-kind="mix" data-id="${x.mix}">Mover</button>`
+          : `${ds <= t ? `<button class="btn small" data-act="lessonGo" data-c="${x.c.id}" data-s="${x.s.id}">Empezar</button>` : `<button class="btn small sec" data-act="lesson" data-c="${x.c.id}" data-s="${x.s.id}">Ver</button>`}
+          <button class="btn small ghost" data-act="lessonMove" data-kind="sec" data-c="${x.c.id}" data-s="${x.s.id}">Mover</button>`,
+        doneActs: x.mix ? `<button class="btn small ghost" data-act="mixLesson" data-id="${x.mix}">Ver</button>` : `<button class="btn small ghost" data-act="lesson" data-c="${x.c.id}" data-s="${x.s.id}">Ver</button>`}, '📘', false)).join('')
         : `<div class="empty">Ninguna lección planeada.</div>`); })()}
     <div class="mrow">
       <button class="btn small sec" data-act="planNew" data-d="${ds}">＋ Programar repaso${ds > t ? ' para este día' : ''}</button>
-      ${ds >= t ? `<button class="btn small sec" data-act="lessonPlanner">📅 Planear lecciones</button>` : ''}
+      ${ds >= t ? `<button class="btn small sec" data-act="lessonPlanner">📅 Planear lecciones</button><button class="btn small sec" data-act="mixNew" data-d="${ds}">🔀 Repaso mezclado</button>` : ''}
       ${tot.n ? `<button class="btn small ghost" data-act="planNew" data-src="day" data-d="${ds}" data-when="137">🔁 Programar 1-3-7 de lo que estudiaste ${ds === t ? 'hoy' : 'este día'}</button>` : ''}
     </div>
     ${ds <= t ? `<div class="qlabel" style="margin-top:20px">📚 Lo que estudiaste</div>
@@ -2318,6 +2516,7 @@ function renderCourse(cId){
           <button class="btn" data-act="lessonGo" data-c="${cId}" data-s="${nx.id}">▶ ${started ? 'Continuar' : 'Empezar'} la lección: ${esc(shortSec(nx.title))}</button>
           <span class="hint" style="margin:0">paso ${lessonStepNo(c, nx)} de ${lessonGroups(nx).length}${k ? ': ' + STEP_INFO[k].n : ''}${lessonDate(cId, nx.id) ? ' · 📅 ' + esc(dayLabel(lessonDate(cId, nx.id))) : ''}</span></div>
         <div class="mrow" style="margin-top:6px"><button class="btn small sec" data-act="lessonPlanner" data-c="${cId}">📅 Planear lecciones</button>
+          <button class="btn small sec" data-act="mixNew" data-c="${cId}">🔀 Repaso mezclado</button>
           <span class="hint" style="margin:0; text-align:left">${pln.length ? `${pln.length} ${plural(pln.length, 'planeada', 'planeadas')}, hasta el ${esc(fmtDate(pln[pln.length - 1].d))}` : 'sin plan: te propongo una al día, en orden'}</span></div>`
         : `<p class="hint" style="text-align:left; margin-top:8px">🎉 Aprendiste todas las secciones. ${st === 'activo' ? 'Cuando quieras, márcalo <b>Para no olvidar</b>: entra al repaso diario mezclado.' : ''}</p>`}
     </div>`;
@@ -2328,6 +2527,7 @@ function renderCourse(cId){
     if(due) acts.push(`<button class="btn sec" data-act="cards" data-c="${cId}" data-s="">▶ Repasar ${Math.min(due,cap)} ${plural(Math.min(due,cap),'tarjeta')}${due>cap?' de '+due:''}</button>`);
   } else if(!route){
     if(maintCourses().some(x => x.id === cId)) acts.push(`<button class="btn" data-act="maint" data-c="${cId}">🔁 Para no olvidar: ${+(cfg().maintN || 10)} preguntas mezcladas</button>`);
+    if(c.sections.length) acts.push(`<button class="btn sec" data-act="mixNew" data-c="${cId}">🔀 Lección de repaso mezclada</button>`);
     if(due) acts.push(`<button class="btn sec" data-act="cards" data-c="${cId}" data-s="">▶ Repasar ${Math.min(due,cap)} ${plural(Math.min(due,cap),'tarjeta')}${due>cap?' de '+due:''}</button>`);
   } else if(ls){
     const n = learnedSinceExam(c).length;
@@ -2818,6 +3018,7 @@ function renderCardsEnd(){
     planExtra = `<p class="sub" style="margin:6px 0">✅ Tarjetas del día hechas${left ? ` · te ${left === 1 ? 'queda 1 cosa' : 'quedan ' + left + ' cosas'} en Hoy` : ''}</p>`;
   }
   if(f.sec) planExtra += lessonHook(f.cId, f.sId, 'recall', undefined, f.lesson).cta;
+  if(f.mixLesson) planExtra += mixCta(f.mixLesson, mixMark(f.mixLesson, 'recall'));
   if(f.userPlan){
     if(PLANRUN && PLANRUN.id === f.userPlan && PLANRUN.mix.length)
       planExtra = `<p class="sub" style="margin:6px 0">📝 Sigue tu repaso programado con <b>${PLANRUN.mix.length} ${plural(PLANRUN.mix.length, 'pregunta o ejercicio', 'preguntas y ejercicios')}</b></p>
@@ -3699,9 +3900,9 @@ function revCode(q, ri, showSrc){
 function startMix(list, meta){   // list: [{kind, x, c, s, i, sib}]
   if(!list.length){ toast('No hay nada fallado aquí 🎉'); return; }
   leave();
-  MIX = {items: shuffle(list).map(o => { const it = mkItem(o.kind, o.x, o.c, o.s, o.i, o.sid);
+  MIX = {items: (meta.keepOrder ? list : shuffle(list)).map(o => { const it = mkItem(o.kind, o.x, o.c, o.s, o.i, o.sid);
            if(o.sib) it.sib = true; if(o.sub) it.sub = o.sub; return {kind:o.kind, it}; }),
-         pos:0, title: meta.title, mode: meta.mode || 'bank', exam: meta.exam || null, plan: meta.plan || null, maintC: meta.maintC || null};
+         pos:0, title: meta.title, mode: meta.mode || 'bank', exam: meta.exam || null, plan: meta.plan || null, maintC: meta.maintC || null, mixLesson: meta.mixLesson || null};
   if(MIX.exam){ MIX.endAt = Date.now() + MIX.exam.secs * 1000; }
   setTab(MIX.exam ? 'courses' : 'practice');
   mixStep();
@@ -3740,6 +3941,7 @@ function renderMixEnd(){
   const nSib = entries.filter(e => e.it.sib).length;
   const nNone = entries.filter(e => !itemDone(e.kind, e.it)).length;
   if(m.plan && !m.quit) markPlanDone(m.plan);
+  const mxcta = m.mixLesson ? mixCta(m.mixLesson.id, !m.quit && mixMark(m.mixLesson.id, m.mixLesson.k)) : '';
   app.innerHTML = `
   <div class="qwrap">
     <div class="hero center">
@@ -3755,9 +3957,11 @@ function renderMixEnd(){
          : m.exam ? `<button class="btn sec" data-act="cpExam" data-c="${m.exam.c}" data-cp="${m.exam.cp}">🔁 Otro examen</button>
                     <button class="btn" data-act="course" data-c="${m.exam.c}">Volver al libro</button>`
          : m.mode === 'maint' ? `<button class="btn sec" data-act="maint" ${m.maintC ? `data-c="${m.maintC}"` : ''}>🔁 Otra ronda</button>${m.maintC ? `<button class="btn sec" data-act="course" data-c="${m.maintC}">Volver al curso</button>` : ''}<button class="btn" data-act="home">Ir a Hoy</button>`
+         : m.mixLesson ? `<button class="btn sec" data-act="home">Ir a Hoy</button>`
                  : `<button class="btn sec" data-act="practice">Volver a Practicar</button>
                     <button class="btn" data-act="home">Ir a Hoy</button>`}
       </div>
+      ${mxcta}
       ${reportBody(entries, rec)}
     </div>
   </div>`;
@@ -3767,7 +3971,7 @@ function renderMixEnd(){
 function exitMix(){
   const done = MIX.items.filter(e => itemDone(e.kind, e.it));
   MIX.quit = true;
-  if(!done.length){ const ex = MIX.exam, md = MIX.mode, mc = MIX.maintC; leave(); if(ex) goCourse(ex.c); else if(mc) goCourse(mc); else if(md === 'maint') goHome(); else goPractice(); return; }
+  if(!done.length){ const ex = MIX.exam, md = MIX.mode, mc = MIX.maintC, ml = MIX.mixLesson; leave(); if(ex) goCourse(ex.c); else if(ml) goMixLesson(ml.id); else if(mc) goCourse(mc); else if(md === 'maint') goHome(); else goPractice(); return; }
   if(MIX.exam){ MIX.pos = MIX.items.length; renderMixEnd(); return; }   // en un examen, lo no respondido cuenta como fallado
   MIX.items = done; MIX.pos = done.length;
   renderMixEnd();
@@ -4398,6 +4602,7 @@ function refresh(){ // vuelve a dibujar la vista actual tras un cambio pequeño
   else if(view==='projects') renderProjects();
   else if(view==='calendar') renderCalendar();
   else if(view==='lesson' && LESSON) renderLesson(LESSON.c, LESSON.s);
+  else if(view==='mixlesson' && MIXLV) renderMixLesson(MIXLV);
 }
 function toast(msg){
   const t = document.createElement('div');
@@ -4572,6 +4777,9 @@ function mergeStates(L0, R0){
     if(!sameJ(m, a)){ ll[k] = m; sum.lessons++; }
   });
   Object.keys(ll).forEach(k => { if(goneL(k, ll[k])) delete ll[k]; });
+  const lmx = L.mixLessons = L.mixLessons || {};
+  Object.entries(R.mixLessons || {}).forEach(([id, r]) => { if(!r || (gone['mixl:' + id] || 0) >= (r.ts || 0)) return; if(!lmx[id] || (r.ts || 0) > (lmx[id].ts || 0)){ if(!sameJ(lmx[id], r)) sum.lessons++; lmx[id] = r; } });
+  Object.keys(lmx).forEach(id => { if((gone['mixl:' + id] || 0) >= (lmx[id].ts || 0)) delete lmx[id]; });
   const lld = L.lessonDates = L.lessonDates || {};
   Object.entries(R.lessonDates || {}).forEach(([k, r]) => { if(r && (!lld[k] || (r.ts || 0) > (lld[k].ts || 0))){ if(!lld[k] || lld[k].d !== r.d) sum.other++; lld[k] = r; } });
   const lcs = L.courseStatus = L.courseStatus || {};
@@ -4855,7 +5063,7 @@ function showHelp(){
     ${sec('✅ Hoy: tu día en una lista', `
       <p>Los tres bloques del método, en orden. La primera tarea pendiente tiene el botón azul: empieza por ahí.</p>
       <ul><li><b>Repasa:</b> lo que fallaste (tu banco de errores), los repasos programados (los 1-3-7 de tus lecciones y los que programes tú), las tarjetas del día (el tamaño lo eliges ahí mismo o en Ajustes) y Para no olvidar.</li>
-      <li><b>Aprende:</b> la siguiente lección de cada curso En curso. Una al día es buen ritmo; si terminas y te sobra energía, puedes seguir con otra. Con <b>Cambiar</b> eliges otra sección para hoy (si estaba planeada, intercambian fechas). Con <b>📅 Planear lecciones</b> (en el curso, en la lección o en el calendario) repartes las próximas en los días que vas a estudiar: ese día te aparece en Aprende; los días sin lección planeada, no (puedes <b>Adelantarla</b>). Una planeada que no hiciste sale en rojo al día siguiente.</li>
+      <li><b>Aprende:</b> la siguiente lección de cada curso En curso. Una al día es buen ritmo; si terminas y te sobra energía, puedes seguir con otra. Con <b>Cambiar</b> eliges qué aprender hoy: otra sección de ese curso o de cualquier otro, o un <b>🔀 repaso mezclado</b>. Con <b>Mover</b> pasas la lección a otro día. Con <b>📅 Planear lecciones</b> (en el curso, en la lección o en el calendario) repartes las próximas en los días que vas a estudiar: ese día te aparece en Aprende; los días sin lección planeada, no (puedes <b>Adelantarla</b>). Una planeada que no hiciste sale en rojo al día siguiente.</li>
       <li><b>Ponte a prueba:</b> aparece solo cuando toca un examen.</li></ul>
       <p>Debajo ves lo que llevas hoy y lo que viene los próximos días.</p>`)}
     ${sec('🔙 Si faltas unos días', `
@@ -4864,6 +5072,10 @@ function showHelp(){
       <li><b>Repasos en serie</b> (los 1-3-7 de una lección, de lo que estudiaste o los que programas tú): el siguiente no te aparece hasta que hagas el anterior. Si lo haces tarde, los siguientes se corren para que sigan separados, porque hacer dos el mismo día desperdicia uno.</li>
       <li><b>Lo que fallaste:</b> vuelve todo junto; al acertarlo, el siguiente repaso se cuenta desde ese día.</li>
       <li><b>Para no olvidar</b> y <b>Aprende</b> no se acumulan: al volver son las mismas 10 preguntas y la lección donde la dejaste. La racha es semanal: basta un día de la semana.</li></ul>`)}
+    ${sec('🔀 Lección de repaso mezclada', `
+      <p>Los mismos 4 pasos de una lección (entender → recordar → distinguir → aplicar), pero con contenido de varias secciones a la vez: todo un curso, una parte (por ejemplo "Parte 1 — Clasificación"), lo que ya aprendiste o las secciones que elijas. Hay tres tamaños: corta (~15 min), normal (~30) y larga (~45).</p>
+      <p>Cada vez que la haces elige lo que más te hace falta: las tarjetas que vencen o más se te olvidan, las preguntas que fallaste o llevas más tiempo sin ver, repartidas entre todas las secciones. El código va primero leyendo y después escribiendo. Lo que fallas entra a tu banco de errores.</p>
+      <p>La creas desde <b>Cambiar</b> en Hoy, desde el curso (<b>🔀 Repaso mezclado</b>) o desde el día del calendario, para hoy o para otra fecha. El día que toca reemplaza la lección de sección de ese curso en Aprende. También sirve para los cursos "Para no olvidar".</p>`)}
     ${sec('🃏 Flashcards y repaso espaciado', `
       <p>7 niveles que reprograman la tarjeta a 1, 3, 7, 14, 35, 70 y 120 días. Una tarjeta nueva que ya sabías (la primera vez que la ves) entra directo a 3 días. Nada se repite el mismo día: un repaso programado no te vuelve a sacar tarjetas que ya calificaste hoy. <b>✓ La sabía</b> sube un nivel · <b>~ A medias</b> baja uno (vuelve antes) · <b>✗ No la sabía</b> vuelve al nivel 1 (mañana otra vez). Si dudaste, marca "A medias": la honestidad es lo que hace que el espaciado funcione.</p>
       <p>Las tarjetas rotan entre redacciones, modo inverso (🔄) y completar la frase (✏️) para que aprendas la idea y no la forma de la pregunta. Al voltear ves el <b>🎓 por qué</b>; al final de la ronda, las que fallaste o sabías a medias con su respuesta.</p>`)}
@@ -5036,7 +5248,17 @@ document.addEventListener('click', e => {
     case 'maint': startMaint(a.c || null); break;
     case 'lesson': goLesson(a.c, a.s); break;
     case 'lessonSwap': showLessonSwap(a.c, a.s || null); break;
-    case 'lessonSwapTo': lessonSwapTo(a.c, a.from || null, a.s); break;
+    case 'lessonSwapTo': { const Z = SWAP || {}; lessonSwapTo(a.c, Z.c === a.c ? Z.from : null, a.s); break; }
+    case 'lessonMove': showLessonMove(a.kind, a); break;
+    case 'lessonMoveTo': lessonMoveTo(a); break;
+    case 'mixNew': mixNewOpen(a.c || null, a.d || null); break;
+    case 'mixLesson': goMixLesson(a.id); break;
+    case 'mixGo': mixGo(a.id); break;
+    case 'mixStep': mixStart(a.id, a.k); break;
+    case 'mixDel': if(confirm('¿Borrar esta lección mezclada? Lo que respondiste queda en tu progreso.')){ const m = mixL(a.id); mixDelete(a.id); if(m) goCourse(m.c); else goHome(); } break;
+    case 'mxSize': MIXNEW.size = a.v; renderMixNew(); break;
+    case 'mxDate': MIXNEW.date = a.v; renderMixNew(); break;
+    case 'mxCreate': mixCreate(); break;
     case 'lessonToday': lessonToday(a.c, a.s); break;
     case 'lessonUnplan': setLessonDate(a.c, a.s, null); save(); toast('Fecha quitada'); refresh(); break;
     case 'lessonPlanner': lessonPlannerOpen(a.c || null); break;
@@ -5080,7 +5302,8 @@ document.addEventListener('click', e => {
     case 'toggleKp': fcSession.showKp = !fcSession.showKp; renderCard(); break;
     case 'exit': {
       if(MIX){ exitMix(); break; }
-      { const z = fcSession || quizSession || multiSession || codeSession; if(z && z.lesson && z.cId && z.sId){ goLesson(z.cId, z.sId); break; } }
+      { const z = fcSession || quizSession || multiSession || codeSession; if(z && z.lesson && z.cId && z.sId){ goLesson(z.cId, z.sId); break; }
+        if(fcSession && fcSession.mixLesson){ goMixLesson(fcSession.mixLesson); break; } }
       const back = fcSession ? fcSession.cId : quizSession ? quizSession.cId : multiSession ? multiSession.cId : codeSession ? codeSession.cId : null;
       const wasFree = (fcSession && (fcSession.free||fcSession.recent)) || (quizSession && quizSession.free) || (multiSession && multiSession.free) || (codeSession && codeSession.free && !codeSession.cId);
       if(back) goCourse(back); else if(wasFree) goPractice(); else goHome(); break; }
@@ -5115,6 +5338,11 @@ document.addEventListener('change', e => {
   if(ds.set === 'cap'){ cfg().cap = +e.target.value; save(); refresh(); }
   else if(ds.set === 'maintN'){ cfg().maintN = +e.target.value; save(); refresh(); }
   else if(ds.set === 'lplC' && LPL){ LPL.c = e.target.value; renderLessonPlanner(); }
+  else if(ds.set === 'swapC' && SWAP){ showLessonSwap(SWAP.c, SWAP.from, e.target.value); }
+  else if(ds.set === 'mxC' && MIXNEW){ MIXNEW.c = e.target.value; MIXNEW.scope = 'all'; MIXNEW.pick = new Set(); renderMixNew(); }
+  else if(ds.set === 'mxScope' && MIXNEW){ MIXNEW.scope = e.target.value; renderMixNew(); }
+  else if(ds.set === 'mxPick' && MIXNEW){ if(e.target.checked) MIXNEW.pick.add(e.target.value); else MIXNEW.pick.delete(e.target.value); renderMixNew(); }
+  else if(ds.set === 'mxDate' && MIXNEW){ if(e.target.value){ MIXNEW.date = e.target.value; renderMixNew(); } }
   else if(ds.set === 'lplN' && LPL){ LPL.n = e.target.value === 'all' ? 'all' : +e.target.value; renderLessonPlanner(); }
   else if(ds.set === 'lplStart' && LPL){ if(e.target.value) LPL.start = e.target.value; renderLessonPlanner(); }
   else if(ds.set === 'lessonDate'){ if(e.target.value){ setLessonDate(ds.c, ds.s, e.target.value); save(); toast('📅 Planeada para ' + dayLabel(e.target.value)); refresh(); } }
