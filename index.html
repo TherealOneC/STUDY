@@ -212,6 +212,30 @@ select:focus,input:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .aim.busy{color:var(--muted); font-size:.86rem}
 pre.aicode{background:var(--code); border:1px solid var(--line); border-radius:10px; padding:9px 11px; overflow:auto; font-size:.8rem; margin:4px 0 8px; white-space:pre}
 pre.aicode code{background:none; border:none; padding:0; font-size:inherit; color:var(--ink)}
+/* 📝 la pregunta que el tutor está explicando */
+.aiqbox{border:1px solid var(--line); border-radius:12px; background:var(--bg); margin:0 0 12px}
+.aiqbox>summary{cursor:pointer; padding:9px 12px; font-size:.86rem; font-weight:600; color:var(--ink); list-style:none; user-select:none}
+.aiqbox>summary::-webkit-details-marker{display:none}
+.aiqbox>summary::before{content:'▸'; display:inline-block; width:1em; color:var(--muted); transition:transform .15s}
+.aiqbox[open]>summary::before{transform:rotate(90deg)}
+.aiqstat{font-weight:500; color:var(--muted)}
+.aiqbody{padding:0 12px 10px; max-height:30vh; overflow:auto}
+.modal .aiqbody p.aiqq{color:var(--ink); font-size:.9rem; font-weight:500; margin:0 0 8px}
+.modal .aiqbody p.aiqa{color:var(--ink); font-size:.88rem; margin:0}
+.modal .aiqbody p.aiqlab{font-size:.78rem; margin:6px 0 4px; font-weight:600}
+.modal .aiqbody ol.aiqopts{list-style:none; margin:0; padding:0}
+.modal .aiqbody .aiqopts li{display:flex; flex-wrap:wrap; gap:4px 8px; align-items:baseline; border:1px solid var(--line); border-radius:9px;
+  padding:6px 9px; margin:0 0 5px; color:var(--ink); font-size:.86rem; background:var(--card)}
+.aiqopts .let{font-weight:700; min-width:1.1em; color:var(--muted)}
+.aiqopts .tx{flex:1 1 200px; min-width:0; overflow-wrap:anywhere}
+.aiqopts .tagx{margin-left:auto; font-size:.74rem; font-weight:600; white-space:nowrap}
+.aiqopts li.ok{border-color:var(--ok); background:color-mix(in srgb,var(--ok) 9%,var(--card))} .aiqopts li.ok .tagx{color:var(--ok)}
+.aiqopts li.bad{border-color:var(--bad); background:color-mix(in srgb,var(--bad) 8%,var(--card))} .aiqopts li.bad .tagx{color:var(--bad)}
+.aiqopts li.missed{border-style:dashed}
+.aiqbody pre.aicode{margin:2px 0 8px}
+.aiqhl{display:inline-block; min-width:100%; border-radius:4px} .aiqhl.ok{background:color-mix(in srgb,var(--ok) 18%,transparent)} .aiqhl.bad{background:color-mix(in srgb,var(--bad) 16%,transparent)}
+.aimodal.hasq .aimsgs{max-height:44vh}
+@media (max-width:640px){ .aiqbody{max-height:26vh} .aimodal.hasq .aimsgs{max-height:40vh} }
 .explmodal .rule ul{margin:4px 0 0 !important; padding-left:18px}
 .dots{display:inline-flex; gap:3px; vertical-align:middle; margin-right:4px}
 .dots i{width:5px; height:5px; border-radius:50%; background:currentColor; opacity:.35; animation:dotb 1s infinite}
@@ -1774,14 +1798,16 @@ function aiModal(cls){   // modal propio (no se cierra tocando afuera: tiene tex
 let AICHAT = null;
 function aiChat(o){
   if(!aiOn()) return aiNeedKey();
-  AICHAT = {title: o.title, sub: o.sub || '', msgs: [{role: 'user', text: o.first, hidden: true}], busy: false, err: null, copy: o.copy || null, n: 0};
+  AICHAT = {title: o.title, sub: o.sub || '', msgs: [{role: 'user', text: o.first, hidden: true}], busy: false, err: null, copy: o.copy || null, n: 0,
+    qhtml: o.qhtml || '', qstat: o.qstat || '', qOpen: true};   // qhtml: la pregunta que se está explicando (se ve arriba)
   aiChatSend();
 }
 function renderAIChat(){
   const z = AICHAT; if(!z) return;
   const bg = aiModal('aichat'), shown = z.msgs.filter(m => !m.hidden), keep = document.getElementById('aiQ') ? document.getElementById('aiQ').value : '';
-  bg.innerHTML = `<div class="modal wide aimodal">
+  bg.innerHTML = `<div class="modal wide aimodal${z.qhtml ? ' hasq' : ''}">
     <h3>🤖 ${esc(z.title)}</h3>${z.sub ? `<p class="aisub">${esc(z.sub)}</p>` : ''}
+    ${z.qhtml ? `<details class="aiqbox" data-aiq${z.qOpen ? ' open' : ''}><summary>📝 La pregunta${z.qstat ? ` <span class="aiqstat">· ${esc(z.qstat)}</span>` : ''}</summary><div class="aiqbody">${z.qhtml}</div></details>` : ''}
     <div class="aimsgs" id="aimsgs">${shown.map(m => m.role === 'ai' ? `<div class="aim ai">${mdLite(m.text)}</div>` : `<div class="aim me">${esc(m.text)}</div>`).join('')}
       ${z.busy ? `<div class="aim ai busy"><span class="dots"><i></i><i></i><i></i></span> El tutor está pensando…</div>` : ''}
       ${z.err ? `<div class="aierr">⚠️ ${esc(z.err)} <button class="btn small ghost" data-act="aiRetry">Reintentar</button></div>` : ''}</div>
@@ -1792,6 +1818,7 @@ function renderAIChat(){
       <span class="spacer"></span><span class="hint" style="margin:0">Gemini · ${esc(aiModel())}</span></div>
   </div>`;
   const q = bg.querySelector('#aiQ'); if(q && keep) q.value = keep;
+  const dq = bg.querySelector('details[data-aiq]'); if(dq) dq.addEventListener('toggle', () => { z.qOpen = dq.open; });   // se respeta al llegar cada respuesta
   const box = bg.querySelector('#aimsgs'); if(box) box.scrollTop = box.scrollHeight;
   if(q && !z.busy && shown.length) q.focus({preventScroll: true});
 }
@@ -1818,15 +1845,62 @@ function aiItemPrompt(kind, it){
     `3. ${ok && !idk ? 'Qué detalle me podría hacer fallarla la próxima vez.' : `La confusión más probable que me llevó a ${idk ? 'no saberla' : 'equivocarme'} y cómo evitarla.`}\n` +
     `Termina con UNA pregunta corta para comprobar que lo entendí, sin la respuesta: te la contesto aquí y me corriges.`;
 }
+/* 📝 la pregunta que el tutor está explicando, tal como la viste: enunciado, código, opciones con la MISMA letra que usa el
+   tutor (A, B, C…), cuál era la correcta y qué respondiste tú */
+function aiQOpt(i, txt, cls, tag){
+  return `<li class="${cls}"><span class="let">${LET(i)}</span><span class="tx">${fmt(txt)}</span>${tag ? `<span class="tagx">${tag}</span>` : ''}</li>`;
+}
+function aiQCode(code, hi, mine){   // hi: línea del error (bug) · mine: la que marcaste
+  const ls = String(code || '').split('\n');
+  if(!hi) return `<pre class="aicode"><code>${esc(code)}</code></pre>`;
+  return `<pre class="aicode"><code>${ls.map((l, i) => { const n = i + 1, row = `${String(n).padStart(2)}  ${esc(l)}`;
+    return n === hi ? `<span class="aiqhl ok">${row}</span>` : n === mine ? `<span class="aiqhl bad">${row}</span>` : row; }).join('\n')}</code></pre>`;
+}
+function aiQStat(kind, it){
+  const idk = itemIdk(kind, it), ok = itemOk(kind, it);
+  return idk ? 'marcaste «No lo sé»' : ok ? 'la respondiste bien' : 'la fallaste';
+}
+function aiQHtml(kind, it){
+  const idk = itemIdk(kind, it);
+  let h = `<p class="aiqq">${fmt(it.q || '')}</p>`;
+  const pick1 = (opts, sel) => `<ol class="aiqopts">${opts.map((o, i) => {
+      const mine = !idk && sel === i;
+      return aiQOpt(i, o.t, o.ok ? 'ok' : mine ? 'bad' : '', o.ok ? (mine ? '✓ tu respuesta' : '✓ correcta') : mine ? '✗ tu respuesta' : '');
+    }).join('')}</ol>`;
+  if(kind === 'quiz') return h + pick1(it.opts, it.answered);
+  if(kind === 'multi') return h + `<ol class="aiqopts">${it.opts.map((o, i) => {
+      const m = !idk && it.sel && it.sel.has(i);
+      return aiQOpt(i, o.t, o.ok ? (m || idk ? 'ok' : 'ok missed') : m ? 'bad' : '',
+        o.ok ? (idk ? '✓ correcta' : m ? '✓ la marcaste' : '✓ correcta · se te pasó') : m ? '✗ la marcaste' : '');
+    }).join('')}</ol>`;
+  const q = it;   // ejercicio de código
+  if(q.type === 'predict') return h + aiQCode(q.code) + pick1(q.opts, q.selOpt);
+  if(q.type === 'fill') return h + aiQCode(q.code) + `<ol class="aiqopts num">${q.blanks.map((b, i) => {
+      const v = (q.vals && q.vals[i] || '').trim(), good = !idk && fillOk(q, i);
+      return `<li class="${good ? 'ok' : idk ? '' : 'bad'}"><span class="let">${i + 1}</span><span class="tx">Va <code>${esc(b.ans[0])}</code>${idk ? '' : ` · escribiste <code>${esc(v || '(vacío)')}</code>`}</span><span class="tagx">${idk ? '' : good ? '✓' : '✗'}</span></li>`;
+    }).join('')}</ol>`;
+  if(q.type === 'line') return h + `<p class="aiqlab">Línea correcta</p>` + aiQCode(q.tokens.join('')) +
+    (idk ? '' : `<p class="aiqlab">La que armaste${codeOk(q) ? ' ✓' : ''}</p>` + aiQCode(q.pick.map(p => p.t).join('') || '(nada)'));
+  if(q.type === 'order') return h + `<ol class="aiqopts num">${q.steps.map((st, i) => {
+      const p = !idk && q.pick[i], good = p && p.sol === i;
+      return `<li class="${idk ? '' : good ? 'ok' : 'bad'}"><span class="let">${i + 1}</span><span class="tx">${fmt(st.t)}${!idk && !good ? `<br><small>pusiste aquí: ${p ? fmt(p.t) : '(nada)'}</small>` : ''}</span><span class="tagx">${idk ? '' : good ? '✓' : '✗'}</span></li>`;
+    }).join('')}</ol>`;
+  if(q.type === 'bug') return h + aiQCode(q.code, q.line, idk ? null : q.sel) +
+    `<p class="aiqlab">El error está en la línea ${q.line}${idk || q.sel == null ? '' : q.sel === q.line ? ' · la marcaste ✓' : ` · marcaste la ${q.sel} ✗`}</p>`;
+  return h;
+}
 function aiExplainItem(kind, it){
   if(!it) return;
   const s = it.cId && it.sId ? section(it.cId, it.sId) : null;
-  aiChat({title: 'Explícamelo', sub: s ? s.title : '', first: aiItemPrompt(kind, it), copy: () => askOne(kind, it)});
+  let qhtml = '', qstat = '';
+  try{ qhtml = aiQHtml(kind, it); qstat = aiQStat(kind, it); }catch(e){}   // si algo raro pasa, el tutor funciona igual
+  aiChat({title: 'Explícamelo', sub: s ? s.title : '', first: aiItemPrompt(kind, it), copy: () => askOne(kind, it), qhtml, qstat});
 }
 function aiExplainCard(){
   const k = fcSession && curCard(); if(!k) return;
   const c = course(k.courseId), s = section(k.courseId, k.sectionId);
   aiChat({title: 'Explícame esta tarjeta', sub: s.title, copy: askCardPrompt,
+    qhtml: `<p class="aiqq">${fmt(k.card.q)}</p><p class="aiqlab">Respuesta</p><p class="aiqa">${fmt(k.card.a)}</p>`,
     first: `Estoy repasando "${s.title}" del curso "${c.title}" en mi dashboard de repaso espaciado. No tengo clara esta flashcard:\n\nPregunta: ${k.card.q}\nRespuesta: ${k.card.a}` +
       (k.card.why ? `\nExplicación del dashboard: ${cleanWhy(k.card.why)}` : '') +
       `\n\nNo me repitas la explicación igual. En máximo 150 palabras explícamela de otra forma, con un ejemplo concreto (código si aplica), y termina con UNA pregunta corta para comprobar que la entendí, sin la respuesta.`});
@@ -5435,7 +5509,7 @@ function showHelp(){
     ${sec('📝 Mis apuntes', `<p>Un curso que armas tú para lo que estudias por fuera. Cada apunte tiene notas, puntos clave y fichas (a mano, una por línea como <i>pregunta => respuesta</i>, o generadas por Claude pegando su JSON). Entran al mismo repaso espaciado.</p>`)}
     ${sec('🤖 Tutor con Gemini (opcional)', `
       <p>Con tu clave de la API de Gemini (<i>Ajustes → Tutor con Gemini</i>), el dashboard suma un tutor. Hace tres cosas, y ninguna cambia tu progreso por su cuenta:</p>
-      <ul><li><b>🤖 Explícamelo:</b> después de responder una pregunta, un ejercicio o voltear una tarjeta, te lo explica ahí mismo y te deja una pregunta para comprobar. Puedes responderle o repreguntarle.</li>
+      <ul><li><b>🤖 Explícamelo:</b> después de responder una pregunta, un ejercicio o voltear una tarjeta, te lo explica ahí mismo (arriba ves la pregunta, con la correcta y lo que respondiste) y te deja una pregunta para comprobar. Puedes responderle o repreguntarle.</li>
       <li><b>✍️ Explícalo con tus palabras:</b> en el paso Entender de cada lección, cierras los puntos clave y escribes la idea de memoria. El tutor te dice qué cubriste, qué te faltó y qué dijiste mal. Sin tutor, lo comparas tú marcando los puntos que dijiste.</li>
       <li><b>🎯 Tengo un parcial:</b> escribes de qué es y la fecha. El tutor te propone las secciones y tú quitas o agregas. El dashboard reparte los repasos hasta el día antes: cada sección una o dos veces, espaciadas, y un repaso general al final. Sin tutor, eliges las secciones tú.</li></ul>
       <p>La clave queda solo en ese navegador: no va en el archivo de exportar ni en GitHub, así que en cada dispositivo la pegas una vez. Necesita internet; sin conexión, lo demás sigue igual. Lo que le envías va a Google: sin facturación, Google puede usarlo para mejorar sus productos; con facturación activada (por ejemplo, con los créditos de Google AI Pro), no.</p>`)}
