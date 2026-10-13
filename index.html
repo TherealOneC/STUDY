@@ -199,7 +199,7 @@ select:focus,input:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(
 .lstep.ok{color:var(--ok); font-weight:600}
 .lessoncta{margin-bottom:6px}
 
-/* 🤖 tutor con Gemini */
+/* 🤖 tutor (Gemini o Claude) */
 .aisub{font-size:.84rem; margin:-4px 0 10px !important}
 .aimsgs{display:flex; flex-direction:column; gap:10px; max-height:52vh; overflow:auto; padding:2px}
 .aim{border-radius:14px; padding:10px 13px; font-size:.9rem; line-height:1.55; max-width:92%}
@@ -1692,34 +1692,52 @@ function cpReady(c, cp){
 const AIKEY = KEY + '.ai';
 const AI_URL = 'https://generativelanguage.googleapis.com/v1beta/';
 const AI_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.1-flash-lite'];
+/* 🤖 el tutor puede hablar con Gemini (Google) o con Claude (Anthropic). Cada proveedor guarda su clave y DOS modelos:
+   'fast' (Explícamelo, tarjetas, chats) y 'smart' (calificar lo que explicas con tus palabras y armar el plan de un parcial). */
+const CL_URL = 'https://api.anthropic.com/v1/';
+const CL_MODELS = ['claude-haiku-5-5', 'claude-sonnet-5-5', 'claude-opus-5-5'];
+const AI_PROV = {
+  gemini: {name: 'Gemini', where: 'Google AI Studio', keyF: 'key', fastF: 'model', smartF: 'model2', listF: 'models', models: AI_MODELS},
+  claude: {name: 'Claude', where: 'la Claude Console (platform.claude.com)', keyF: 'ckey', fastF: 'cmodel', smartF: 'cmodel2', listF: 'cmodels', models: CL_MODELS}
+};
 const AI_SYS = `Eres el tutor de Carlos, un ingeniero biomédico en Colombia que estudia Machine Learning con un dashboard de repaso espaciado.
 Responde en español de Colombia, tuteando, como un profesor cercano y preciso. Sé breve (máximo unas 200 palabras, salvo que te pida más), concreto y con ejemplos; usa código en Python cuando ayude.
 Formato simple: párrafos cortos, listas con "- ", **negrita** con moderación, \`código\` en línea y bloques \`\`\`python. Sin encabezados ni tablas.
 Si no estás seguro de algo, dilo. No inventes datos del dashboard ni de sus cursos.`;
 function aiCfg(){ try{ return JSON.parse(localStorage.getItem(AIKEY)) || {}; }catch(e){ return {}; } }
 function aiSet(patch){ const c = Object.assign(aiCfg(), patch); try{ localStorage.setItem(AIKEY, JSON.stringify(c)); }catch(e){} return c; }
-function aiOn(){ const c = aiCfg(); return !!c.key && c.on !== false; }
-function aiModel(){ return String(aiCfg().model || AI_MODELS[0]).replace(/^models\//, '').trim(); }
+function aiProv(){ const c = aiCfg(); return c.provider ? (c.provider === 'claude' ? 'claude' : 'gemini') : c.key ? 'gemini' : 'claude'; }   // sin elegir: Gemini si ya tenías su clave; si no, Claude
+function aiP(p){ return AI_PROV[p || aiProv()]; }
+function aiKey(p){ return aiCfg()[aiP(p).keyF] || ''; }
+function aiOn(){ return !!aiKey() && aiCfg().on !== false; }
+/* el modelo de cada uso: 'fast' por defecto; 'smart' cae al rápido si no elegiste otro (en Claude, Sonnet) */
+function aiModel(tier, p){
+  const P = aiP(p), c = aiCfg(), fast = String(c[P.fastF] || P.models[0]).replace(/^models\//, '').trim();
+  if(tier !== 'smart') return fast;
+  return String(c[P.smartF] || (P === AI_PROV.claude ? CL_MODELS[1] : fast)).replace(/^models\//, '').trim();
+}
 function aiUsedToday(){ return (aiCfg().use || {})[today()] || 0; }
 function aiCount(){ const t = today(), u = {}; u[t] = aiUsedToday() + 1; aiSet({use: u}); }
 const AI_ERR = {
-  nokey: 'Primero pega tu clave de Gemini en Ajustes → Tutor con Gemini.',
+  nokey: 'Primero pega tu clave de {P} en Ajustes → Tutor.',
   offline: 'Sin conexión: el tutor necesita internet (lo demás del dashboard sigue funcionando).',
-  network: 'No se pudo conectar con Gemini. Revisa tu internet e intenta otra vez.',
-  timeout: 'Gemini tardó demasiado en responder. Intenta otra vez.',
-  badkey: 'Google dice que la clave no es válida. Revísala en Ajustes → Tutor con Gemini.',
-  denied: 'Google rechazó la clave (permiso denegado). Revisa en Google AI Studio que la clave esté activa.',
-  model: 'Ese modelo no está disponible para tu clave. En Ajustes → Tutor con Gemini pulsa "Probar conexión" y elige otro.',
-  quota: 'Llegaste al límite de uso de Gemini por ahora. Espera un minuto o revisa tu plan en Google AI Studio.',
-  server: 'Gemini está fallando en este momento. Intenta en un rato.',
-  request: 'Gemini rechazó la solicitud.',
-  blocked: 'Gemini no quiso responder esta vez (filtro de seguridad). Reformula e intenta otra vez.',
-  empty: 'Gemini respondió vacío. Intenta otra vez.',
-  format: 'La respuesta de Gemini llegó en un formato raro. Intenta otra vez.',
+  network: 'No se pudo conectar con {P}. Revisa tu internet e intenta otra vez.',
+  timeout: '{P} tardó demasiado en responder. Intenta otra vez.',
+  badkey: '{P} dice que la clave no es válida. Revísala en {W} y vuelve a pegarla en Ajustes → Tutor.',
+  denied: '{P} rechazó la clave (permiso denegado). Revisa en {W} que la clave esté activa.',
+  model: 'Ese modelo no está disponible para tu clave. En Ajustes → Tutor pulsa "Probar conexión" y elige otro.',
+  quota: 'Llegaste al límite de uso de {P} por ahora. Espera un minuto o revisa tus límites en {W}.',
+  credits: 'Se acabaron los créditos de la API de Claude (o todavía no están activados). Los de tu plan Max se activan en claude.ai → Ajustes → Facturación y se renuevan cada mes; mientras tanto puedes cambiar a Gemini en Ajustes → Tutor.',
+  server: '{P} está fallando o saturado en este momento. Intenta en un rato.',
+  request: '{P} rechazó la solicitud.',
+  blocked: '{P} no quiso responder esta vez (filtro de seguridad). Reformula e intenta otra vez.',
+  empty: '{P} respondió vacío. Intenta otra vez.',
+  format: 'La respuesta de {P} llegó en un formato raro. Intenta otra vez.',
 };
-function aiErr(kind, detail){ const e = new Error(AI_ERR[kind] || AI_ERR.network); e.kind = kind; e.detail = String(detail || ''); return e; }
-function aiErrText(e){ return (e && e.message || AI_ERR.network) + (e && e.detail && ['request', 'denied', 'model'].includes(e.kind) ? ` (${e.detail.slice(0, 160)})` : ''); }
-function aiHttpKind(status, data){
+function aiErrMsg(kind, p){ const P = aiP(p); return (AI_ERR[kind] || AI_ERR.network).replace(/\{P\}/g, P.name).replace(/\{W\}/g, P.where); }
+function aiErr(kind, detail){ const e = new Error(aiErrMsg(kind)); e.kind = kind; e.detail = String(detail || ''); return e; }
+function aiErrText(e){ return (e && e.message || aiErrMsg('network')) + (e && e.detail && ['request', 'denied', 'model'].includes(e.kind) ? ` (${e.detail.slice(0, 160)})` : ''); }
+function aiHttpKind(status, data){   // Gemini
   const er = (data && data.error) || {}, msg = String(er.message || '').toLowerCase();
   if(msg.includes('api key') && (msg.includes('not valid') || msg.includes('invalid') || msg.includes('expired'))) return 'badkey';
   if(status === 401 || status === 403) return 'denied';
@@ -1728,29 +1746,58 @@ function aiHttpKind(status, data){
   if(status >= 500) return 'server';
   return 'request';
 }
-async function aiFetch(path, init){
-  const c = aiCfg(); if(!c.key) throw aiErr('nokey');
+function clHttpKind(status, data){   // Claude: {type:'error', error:{type, message}}
+  const er = (data && data.error) || {}, t = er.type || '', msg = String(er.message || '').toLowerCase();
+  if(status === 402 || t === 'billing_error' || /credit balance|credits? (are|is) (too low|exhausted)|spend limit/.test(msg)) return 'credits';
+  if(status === 401 || t === 'authentication_error') return 'badkey';
+  if(status === 403 || t === 'permission_error') return 'denied';
+  if(status === 404 || t === 'not_found_error') return 'model';
+  if(status === 429 || t === 'rate_limit_error') return 'quota';
+  if(status >= 500 || t === 'overloaded_error' || t === 'api_error') return 'server';
+  return 'request';
+}
+async function aiFetch(path, init, p){
+  const prov = p || aiProv(), key = aiKey(prov); if(!key) throw aiErr('nokey');
   if(navigator.onLine === false) throw aiErr('offline');
+  const hdr = prov === 'claude'
+    ? {'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true'}
+    : {'x-goog-api-key': key};
   const ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-  const tm = setTimeout(() => { if(ctl) ctl.abort(); }, 60000);
+  const tm = setTimeout(() => { if(ctl) ctl.abort(); }, 90000);
   let r;
-  try{ r = await fetch(AI_URL + path, Object.assign({}, init, {headers: Object.assign({'x-goog-api-key': c.key}, (init || {}).headers || {}), signal: ctl ? ctl.signal : undefined})); }
+  try{ r = await fetch((prov === 'claude' ? CL_URL : AI_URL) + path, Object.assign({}, init, {headers: Object.assign(hdr, (init || {}).headers || {}), signal: ctl ? ctl.signal : undefined})); }
   catch(e){ throw aiErr(e && e.name === 'AbortError' ? 'timeout' : 'network'); }
   finally{ clearTimeout(tm); }
   let data = null; try{ data = await r.json(); }catch(e){}
-  if(!r.ok) throw aiErr(aiHttpKind(r.status, data), data && data.error && data.error.message);
+  if(!r.ok) throw aiErr((prov === 'claude' ? clHttpKind : aiHttpKind)(r.status, data), data && data.error && data.error.message);
   return data || {};
 }
-/* una consulta: msgs = [{role:'user'|'ai', text}] · json: pide y valida JSON */
+/* una consulta: msgs = [{role:'user'|'ai', text}] · json: pide y valida JSON · tier: 'fast' | 'smart' */
 async function aiAsk(o){
-  const body = {contents: o.msgs.map(m => ({role: m.role === 'ai' ? 'model' : 'user', parts: [{text: m.text}]}))};
-  if(o.system) body.systemInstruction = {parts: [{text: o.system}]};
-  if(o.json) body.generationConfig = {responseMimeType: 'application/json'};
-  const data = await aiFetch('models/' + encodeURIComponent(aiModel()) + ':generateContent', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
-  aiCount();
-  const cand = (data.candidates || [])[0];
-  const text = cand && cand.content ? (cand.content.parts || []).filter(p => !p.thought && typeof p.text === 'string').map(p => p.text).join('') : '';
-  if(!text.trim()) throw aiErr(/SAFETY|BLOCK|PROHIBITED/.test((cand && cand.finishReason) || '') || (data.promptFeedback && data.promptFeedback.blockReason) ? 'blocked' : 'empty');
+  const prov = aiProv(), model = aiModel(o.tier);
+  let text = '';
+  if(prov === 'claude'){
+    const msgs = [];   // Claude exige turnos alternados que empiecen por el usuario
+    o.msgs.forEach(m => { const role = m.role === 'ai' ? 'assistant' : 'user', last = msgs[msgs.length - 1];
+      if(last && last.role === role) last.content += '\n\n' + m.text; else msgs.push({role, content: m.text}); });
+    if(msgs.length && msgs[0].role !== 'user') msgs.unshift({role: 'user', content: '(continúa)'});
+    const sys = (o.system || '') + (o.json ? '\n\nResponde SOLO con un objeto JSON válido: sin texto antes ni después y sin bloques de código.' : '');
+    const body = {model, max_tokens: o.json ? 4096 : 2048, messages: msgs};
+    if(sys.trim()) body.system = sys.trim();
+    const data = await aiFetch('messages', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+    aiCount();
+    text = (data.content || []).filter(b => b && b.type === 'text' && typeof b.text === 'string').map(b => b.text).join('');
+    if(!text.trim()) throw aiErr(data.stop_reason === 'refusal' ? 'blocked' : 'empty');
+  } else {
+    const body = {contents: o.msgs.map(m => ({role: m.role === 'ai' ? 'model' : 'user', parts: [{text: m.text}]}))};
+    if(o.system) body.systemInstruction = {parts: [{text: o.system}]};
+    if(o.json) body.generationConfig = {responseMimeType: 'application/json'};
+    const data = await aiFetch('models/' + encodeURIComponent(model) + ':generateContent', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+    aiCount();
+    const cand = (data.candidates || [])[0];
+    text = cand && cand.content ? (cand.content.parts || []).filter(p => !p.thought && typeof p.text === 'string').map(p => p.text).join('') : '';
+    if(!text.trim()) throw aiErr(/SAFETY|BLOCK|PROHIBITED/.test((cand && cand.finishReason) || '') || (data.promptFeedback && data.promptFeedback.blockReason) ? 'blocked' : 'empty');
+  }
   if(!o.json) return text.trim();
   const j = aiParseJSON(text); if(!j) throw aiErr('format'); return j;
 }
@@ -1762,13 +1809,20 @@ function aiParseJSON(t){
   return null;
 }
 async function aiListModels(){
+  if(aiProv() === 'claude'){
+    const data = await aiFetch('models?limit=100', {method: 'GET'});
+    const fam = n => /haiku/.test(n) ? 0 : /sonnet/.test(n) ? 1 : /opus/.test(n) ? 2 : 3;
+    return (data.data || []).filter(m => /^claude-/.test(m.id || ''))
+      .sort((a, b) => fam(a.id) - fam(b.id) || String(b.created_at || '').localeCompare(String(a.created_at || '')) || (a.id < b.id ? 1 : -1))
+      .map(m => m.id);
+  }
   const data = await aiFetch('models?pageSize=200', {method: 'GET'});
   const rank = n => (/flash-lite/.test(n) ? 0 : /flash/.test(n) ? 1 : /pro/.test(n) ? 2 : 3) + (/preview|exp/.test(n) ? .5 : 0);
   return (data.models || []).filter(m => (m.supportedGenerationMethods || []).includes('generateContent') && /gemini/.test(m.name || '') &&
       !/embed|tts|image|live|audio|aqa|robotic|computer|native/i.test(m.name))
     .map(m => m.name.replace(/^models\//, '')).sort((a, b) => rank(a) - rank(b) || (a < b ? 1 : a > b ? -1 : 0));
 }
-function aiNeedKey(){ toast('🤖 ' + AI_ERR.nokey); showSettings(); setTimeout(() => document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'}), 50); }
+function aiNeedKey(){ toast('🤖 ' + aiErrMsg('nokey')); showSettings(); setTimeout(() => document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'}), 50); }
 
 /* ---------- respuestas del tutor: markdown sencillo, siempre escapado ---------- */
 function mdLite(t){
@@ -1815,7 +1869,7 @@ function renderAIChat(){
       <button class="btn" data-act="aiSend" ${z.busy ? 'disabled' : ''}>Enviar</button></div>
     <div class="mrow" style="margin-top:10px"><button class="btn small ghost" data-act="closeModal">Cerrar</button>
       ${z.copy ? `<button class="btn small ghost" data-act="aiCopy">💬 Copiar para Claude</button>` : ''}
-      <span class="spacer"></span><span class="hint" style="margin:0">Gemini · ${esc(aiModel())}</span></div>
+      <span class="spacer"></span><span class="hint" style="margin:0">${esc(aiP().name)} · ${esc(aiModel())}</span></div>
   </div>`;
   const q = bg.querySelector('#aiQ'); if(q && keep) q.value = keep;
   const dq = bg.querySelector('details[data-aiq]'); if(dq) dq.addEventListener('toggle', () => { z.qOpen = dq.open; });   // se respeta al llegar cada respuesta
@@ -1953,7 +2007,7 @@ function renderExplain(){
       <div class="mrow">${on ? `<button class="btn" data-act="explSend" ${z.busy ? 'disabled' : ''}>${z.busy ? '<span class="dots"><i></i><i></i><i></i></span> El tutor está leyendo…' : '🤖 Revisar con el tutor'}</button>` : ''}
         <button class="btn ${on ? 'ghost' : ''}" data-act="explSelf" ${z.busy ? 'disabled' : ''}>${on ? 'Compararla yo mismo' : 'Compararla con los puntos clave'}</button>
         <button class="btn ghost" data-act="closeModal">Cancelar</button></div>
-      ${on ? '' : `<p class="hint" style="text-align:left">Con el tutor de Gemini (Ajustes) te diría qué cubriste, qué te faltó y qué dijiste mal.</p>`}`;
+      ${on ? '' : `<p class="hint" style="text-align:left">Con el tutor (Ajustes → Tutor) te diría qué cubriste, qué te faltó y qué dijiste mal.</p>`}`;
   }
   bg.innerHTML = `<div class="modal wide explmodal"><h3>✍️ Explícalo con tus palabras</h3>${inner}</div>`;
   const ta = bg.querySelector('#explIn'); if(ta && !z.busy) ta.focus({preventScroll: true});
@@ -1973,7 +2027,7 @@ async function explSend(){
     `Responde SOLO con JSON: {"puntos":[{"i":1,"estado":"cubierto","nota":""}],"bien":"","corregir":[],"consejo":""}`;
   z.busy = true; z.err = null; renderExplain();
   try{
-    const j = await aiAsk({system: AI_SYS, msgs: [{role: 'user', text: msg}], json: true});
+    const j = await aiAsk({system: AI_SYS, msgs: [{role: 'user', text: msg}], json: true, tier: 'smart'});
     const by = {}; (Array.isArray(j.puntos) ? j.puntos : []).forEach(p => { if(p && +p.i >= 1 && +p.i <= kp.length) by[+p.i - 1] = p; });
     if(!Object.keys(by).length) throw aiErr('format');
     const ok = ['cubierto', 'parcial', 'error', 'falta'];
@@ -2050,7 +2104,7 @@ function renderParcial(){
     <textarea id="pcTemas" data-set="pcTemas" rows="2" placeholder="Regresión lineal, Ridge y Lasso, métricas, validación cruzada…">${esc(z.temas)}</textarea>
     <div class="qlabel">Secciones <span class="badge today" id="pcCount">${z.sel.size} ${plural(z.sel.size, 'elegida', 'elegidas')}</span></div>
     ${aiOn() ? `<div class="mrow" style="margin:0 0 8px"><button class="btn small" data-act="pcAI" ${z.busy ? 'disabled' : ''}>${z.busy ? '<span class="dots"><i></i><i></i><i></i></span> El tutor está eligiendo…' : '🤖 Que el tutor las proponga'}</button><span class="hint" style="margin:0">tú decides: quitas o agregas</span></div>`
-      : `<p class="hint" style="text-align:left">Con el tutor de Gemini (Ajustes) te las propone a partir de los temas.</p>`}
+      : `<p class="hint" style="text-align:left">Con el tutor (Ajustes → Tutor) te las propone a partir de los temas.</p>`}
     ${z.err ? `<div class="aierr">⚠️ ${esc(z.err)}</div>` : ''}${z.nota ? `<div class="rule">💡 ${fmt(z.nota)}</div>` : ''}
     <div class="plist pclist">${COURSES.filter(c => c.sections.length).map(c => { const n = c.sections.filter(s => z.sel.has(skey(c.id, s.id))).length;
       return `<details ${n ? 'open' : ''}><summary>${c.emoji || '📘'} ${esc(c.title)}${n ? ` <span class="badge today">${n}</span>` : ''}</summary>${c.sections.map(s => { const k = skey(c.id, s.id);
@@ -2079,7 +2133,7 @@ async function parcialAI(){
     `Responde SOLO con JSON: {"secciones":[{"id":"<id del catálogo>","por_que":"<máximo 12 palabras>"}],"nota":"<1-2 frases de consejo para preparar el parcial; no inventes datos del parcial>"}`;
   z.busy = true; z.err = null; renderParcial();
   try{
-    const j = await aiAsk({system: AI_SYS, msgs: [{role: 'user', text: msg}], json: true});
+    const j = await aiAsk({system: AI_SYS, msgs: [{role: 'user', text: msg}], json: true, tier: 'smart'});
     const valid = new Set(cat.map(x => x.k)), seen = new Set();
     const picks = (Array.isArray(j.secciones) ? j.secciones : []).filter(x => x && valid.has(x.id) && !seen.has(x.id) && seen.add(x.id)).slice(0, 12);
     if(!picks.length) z.err = 'El tutor no encontró secciones de tu dashboard para ese parcial. Elígelas tú abajo o describe mejor los temas.';
@@ -2121,35 +2175,70 @@ function parcialBanner(){
 }
 
 /* ---------- ajustes del tutor ---------- */
+const AI_TIER_TXT = {
+  fast: ['Modelo rápido', 'Explícamelo, tarjetas y chats: lo que más usas'],
+  smart: ['Modelo para calificar y planear', 'Explícalo con tus palabras y Tengo un parcial: necesitan más criterio']
+};
+const AI_HINT = {
+  claude: {fast: 'Haiku es el más rápido y barato', smart: 'Sonnet juzga mejor; igual cuesta centavos'},
+  gemini: {fast: 'Flash-Lite es el más rápido y barato', smart: 'Flash razona mejor; Flash-Lite también sirve'}
+};
+function aiModelSelect(tier){
+  const p = aiProv(), P = aiP(p), c = aiCfg(), cur = aiModel(tier), list = c[P.listF] && c[P.listF].length ? c[P.listF] : P.models;
+  const models = [...new Set([cur].concat(list))];
+  return `<div class="setrow"><div class="rt"><b>${AI_TIER_TXT[tier][0]}</b><small>${AI_TIER_TXT[tier][1]}. ${AI_HINT[p][tier]}.</small></div>
+    <select data-set="aiModel" data-tier="${tier}" style="max-width:48%">${models.map(m => `<option value="${esc(m)}" ${m === cur ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></div>`;
+}
 function aiSettingsHtml(){
-  const c = aiCfg(), models = [...new Set([aiModel()].concat(c.models && c.models.length ? c.models : AI_MODELS))];
-  return `<h3 data-ai style="font-size:.98rem; margin-top:22px">🤖 Tutor con Gemini <span class="badge ${aiOn() ? 'done' : ''}">${aiOn() ? 'activo' : c.key ? 'apagado' : 'sin configurar'}</span></h3>
+  const c = aiCfg(), p = aiProv(), P = aiP(p), key = aiKey(p);
+  const steps = p === 'claude'
+    ? `<ol><li>Activa los créditos de tu plan: en <a href="https://claude.ai/settings/billing" target="_blank" rel="noopener">claude.ai → Ajustes → Facturación</a>, sección <i>API credits</i> → <i>Link organization</i> (con el plan Max llegan cada mes; lo que no uses no se acumula).</li>
+      <li>En <a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener">platform.claude.com → API keys</a> crea una clave (<i>Create key</i>) solo para el repaso y cópiala. Empieza por <code>sk-ant-</code>.</li>
+      <li>Pégala aquí. En cada dispositivo se pega una vez.</li></ol>`
+    : `<ol><li>Entra a <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio → API keys</a> con tu cuenta de Google.</li>
+      <li>Crea una clave (<i>Create API key</i>) y cópiala.</li><li>Pégala aquí. En cada dispositivo se pega una vez.</li></ol>`;
+  const privacy = p === 'claude'
+    ? 'Lo que le envías (la pregunta, tu respuesta, lo que escribes) va a Anthropic; por defecto, Anthropic no usa lo que llega por la API para entrenar sus modelos. Si se acaban los créditos del mes, el tutor se detiene hasta el mes siguiente: nada se cobra a tu plan, salvo que actives la recarga automática en la Console.'
+    : 'Lo que le envías (la pregunta, tu respuesta, lo que escribes) va a Google: sin facturación, Google puede usarlo para mejorar sus productos; con facturación activada (por ejemplo, con los créditos de Google AI Pro), no.';
+  return `<h3 data-ai style="font-size:.98rem; margin-top:22px">🤖 Tutor <span class="badge ${aiOn() ? 'done' : ''}">${aiOn() ? `activo · ${P.name}` : key ? 'apagado' : 'sin configurar'}</span></h3>
     <p>Opcional. Te explica tus errores ahí mismo (y puedes repreguntarle), revisa lo que explicas con tus palabras y te propone las secciones para un parcial. Nunca cambia tu progreso por su cuenta: propone y tú decides.</p>
-    ${c.key ? `
-    <div class="setrow"><div class="rt"><b>Clave</b><small>•••• ${esc(String(c.key).slice(-4))} · guardada solo en este navegador</small></div>
+    <div class="setrow"><div class="rt"><b>Con quién habla</b><small>Cada uno guarda su clave y sus modelos: puedes cambiar cuando quieras</small></div>
+      <div class="seg">${['claude', 'gemini'].map(x => `<button class="chipbtn ${p === x ? 'on' : ''}" data-act="aiProv" data-v="${x}">${AI_PROV[x].name}${aiKey(x) ? '' : ' · sin clave'}</button>`).join('')}</div></div>
+    ${key ? `
+    <div class="setrow"><div class="rt"><b>Clave de ${P.name}</b><small>•••• ${esc(String(key).slice(-4))} · guardada solo en este navegador</small></div>
       <button class="btn small ghost" data-act="aiKeyDel" style="color:var(--bad)">Quitar</button></div>
-    <div class="setrow"><div class="rt"><b>Modelo</b><small>Flash-Lite es el más rápido y barato; alcanza para esto</small></div>
-      <select data-set="aiModel">${models.map(m => `<option value="${esc(m)}" ${m === aiModel() ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></div>
+    ${aiModelSelect('fast')}${aiModelSelect('smart')}
     <div class="setrow"><div class="rt"><b>Usar el tutor</b><small>Hoy: ${aiUsedToday()} ${plural(aiUsedToday(), 'consulta')}</small></div>
       <input type="checkbox" data-set="aiOn" ${c.on !== false ? 'checked' : ''} style="width:18px; height:18px; accent-color:var(--accent)"></div>
     <div class="mrow"><button class="btn small sec" data-act="aiTest">Probar conexión</button></div>`
-    : `<ol><li>Entra a <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio → API keys</a> con tu cuenta de Google.</li>
-      <li>Crea una clave (<i>Create API key</i>) y cópiala.</li><li>Pégala aquí. En cada dispositivo se pega una vez.</li></ol>
-    <div class="mrow"><input type="password" id="aiKeyIn" placeholder="Pega tu clave de Gemini" autocomplete="off" spellcheck="false" style="flex:1; min-width:0">
+    : `${steps}
+    <div class="mrow"><input type="password" id="aiKeyIn" placeholder="Pega tu clave de ${P.name}" autocomplete="off" spellcheck="false" style="flex:1; min-width:0">
       <button class="btn small" data-act="aiKeySave">Guardar y probar</button></div>`}
     <p id="aiMsg" class="hint" style="text-align:left"></p>
-    <p class="hint" style="text-align:left">La clave no va en el archivo de exportar ni en GitHub. Lo que le envías (la pregunta, tu respuesta, lo que escribes) va a Google: sin facturación, Google puede usarlo para mejorar sus productos; con facturación activada (por ejemplo, con los créditos de Google AI Pro), no.</p>`;
+    <p class="hint" style="text-align:left">La clave no va en el archivo de exportar ni en GitHub. ${privacy}</p>`;
 }
 function aiSay(t, ok){ const el = document.getElementById('aiMsg'); if(el){ el.className = ok === true ? 'okmsg' : ok === false ? 'errmsg' : 'hint'; el.style.textAlign = 'left'; el.textContent = t; } }
+function aiReopen(){ showSettings(); document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'}); }
 async function aiTest(){
   aiSay('Probando la conexión…');
+  const p = aiProv(), P = aiP(p);
   try{
     let list = [];
     try{ list = await aiListModels(); }catch(e){ if(!['model', 'request', 'server'].includes(e.kind)) throw e; }
-    if(list.length){ aiSet({models: list.slice(0, 30)}); if(!list.includes(aiModel())) aiSet({model: list.find(x => /flash-lite/.test(x) && !/preview|exp/.test(x)) || list[0]}); }
+    if(list.length){
+      const patch = {[P.listF]: list.slice(0, 30)}, c = aiCfg();
+      if(p === 'claude'){   // si el modelo guardado ya no existe, el Haiku y el Sonnet más nuevos
+        if(!list.includes(aiModel('fast'))) patch[P.fastF] = list.find(x => /haiku/.test(x)) || list[0];
+        if(!list.includes(aiModel('smart'))) patch[P.smartF] = list.find(x => /sonnet/.test(x)) || patch[P.fastF] || list[0];
+      } else {
+        if(!list.includes(aiModel('fast'))) patch[P.fastF] = list.find(x => /flash-lite/.test(x) && !/preview|exp/.test(x)) || list[0];
+        if(c[P.smartF] && !list.includes(c[P.smartF])) patch[P.smartF] = '';
+      }
+      aiSet(patch);
+    }
     const r = await aiAsk({msgs: [{role: 'user', text: 'Responde solo con la palabra: listo'}]});
-    showSettings(); document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'});
-    aiSay(`✓ Conectado con ${aiModel()}. Respondió: "${r.slice(0, 40)}"`, true);
+    aiReopen();
+    aiSay(`✓ Conectado con ${P.name} (${aiModel('fast')}). Respondió: "${r.slice(0, 40)}"`, true);
   }catch(e){ aiSay(aiErrText(e), false); }
 }
 
@@ -5507,12 +5596,12 @@ function showHelp(){
       <p>Los <b>libros</b> muestran la página hasta donde has leído. Cada "Día" de tu guía de lectura es una sección; los Días nuevos llegan con 🆕 y entran a la ruta como lecciones nuevas. Cada <b>🎯 checkpoint</b> tiene un examen mixto con tiempo (te lo propongo en Hoy cuando aprendes todas sus secciones) y su proyecto.</p>`)}
     ${sec('🎓 Exámenes', `<p><b>De lo aprendido:</b> mezcla quiz (45 s), múltiple (60 s) y código (90 s) de las secciones que ya aprendiste de un curso, sin explicaciones hasta el final. Te lo propongo en Hoy tras 3 lecciones nuevas o una semana. <b>De checkpoint:</b> igual, con las secciones de ese tramo del libro. <b>De todo el curso:</b> quiz al azar de todas sus secciones (práctica suelta). Todos guardan tu mejor marca, y lo que fallas entra a tu banco de errores.</p>`)}
     ${sec('📝 Mis apuntes', `<p>Un curso que armas tú para lo que estudias por fuera. Cada apunte tiene notas, puntos clave y fichas (a mano, una por línea como <i>pregunta => respuesta</i>, o generadas por Claude pegando su JSON). Entran al mismo repaso espaciado.</p>`)}
-    ${sec('🤖 Tutor con Gemini (opcional)', `
-      <p>Con tu clave de la API de Gemini (<i>Ajustes → Tutor con Gemini</i>), el dashboard suma un tutor. Hace tres cosas, y ninguna cambia tu progreso por su cuenta:</p>
+    ${sec('🤖 Tutor con Claude o Gemini (opcional)', `
+      <p>Con una clave de la API de Claude o de Gemini (<i>Ajustes → Tutor</i>), el dashboard suma un tutor. Eliges con quién habla y dos modelos: uno rápido para explicar y otro con más criterio para calificar y planear. Hace tres cosas, y ninguna cambia tu progreso por su cuenta:</p>
       <ul><li><b>🤖 Explícamelo:</b> después de responder una pregunta, un ejercicio o voltear una tarjeta, te lo explica ahí mismo (arriba ves la pregunta, con la correcta y lo que respondiste) y te deja una pregunta para comprobar. Puedes responderle o repreguntarle.</li>
       <li><b>✍️ Explícalo con tus palabras:</b> en el paso Entender de cada lección, cierras los puntos clave y escribes la idea de memoria. El tutor te dice qué cubriste, qué te faltó y qué dijiste mal. Sin tutor, lo comparas tú marcando los puntos que dijiste.</li>
       <li><b>🎯 Tengo un parcial:</b> escribes de qué es y la fecha. El tutor te propone las secciones y tú quitas o agregas. El dashboard reparte los repasos hasta el día antes: cada sección una o dos veces, espaciadas, y un repaso general al final. Sin tutor, eliges las secciones tú.</li></ul>
-      <p>La clave queda solo en ese navegador: no va en el archivo de exportar ni en GitHub, así que en cada dispositivo la pegas una vez. Necesita internet; sin conexión, lo demás sigue igual. Lo que le envías va a Google: sin facturación, Google puede usarlo para mejorar sus productos; con facturación activada (por ejemplo, con los créditos de Google AI Pro), no.</p>`)}
+      <p>La clave queda solo en ese navegador: no va en el archivo de exportar ni en GitHub, así que en cada dispositivo la pegas una vez. Necesita internet; sin conexión, lo demás sigue igual. Con Claude, lo que le envías va a Anthropic, que por defecto no usa lo de la API para entrenar; los créditos de tu plan Max se activan en claude.ai → Ajustes → Facturación y, si se acaban, el tutor se detiene hasta el mes siguiente sin cobrarte nada. Con Gemini va a Google: sin facturación, Google puede usarlo para mejorar sus productos; con facturación activada, no.</p>`)}
     ${sec('⌨️ Atajos de teclado (computador)', `<p><kbd>espacio</kbd> voltea la tarjeta · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> califican · <kbd>k</kbd> puntos clave · <kbd>z</kbd> deshacer · <kbd>1</kbd>–<kbd>6</kbd> eligen opción · <kbd>0</kbd> no lo sé · <kbd>↵</kbd> comprueba y avanza · <kbd>/</kbd> buscar · <kbd>Esc</kbd> cierra.</p>`)}
     ${sec('🔄 Tu progreso en el iPhone y en la Mac', `
       <p>Cada navegador guarda su propio progreso. Para pasarlo de uno a otro: en el dispositivo donde acabas de estudiar, <b>Ajustes → Compartir (AirDrop…)</b> o <b>Exportar</b>; en el otro, <b>Importar un archivo… → Combinar</b>.</p>
@@ -5828,10 +5917,15 @@ document.addEventListener('click', e => {
     case 'aiSend': aiChatUser(); break;
     case 'aiRetry': aiChatSend(); break;
     case 'aiCopy': if(AICHAT && AICHAT.copy) AICHAT.copy(); break;
-    case 'aiKeySave': { const v = (document.getElementById('aiKeyIn') || {}).value || '', k = v.trim();
-      if(k.length < 20 || /\s/.test(k)){ aiSay('Eso no parece una clave de Gemini: cópiala completa desde Google AI Studio.', false); break; }
-      aiSet({key: k, on: true}); showSettings(); document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'}); aiTest(); break; }
-    case 'aiKeyDel': if(confirm('¿Quitar la clave de Gemini de este navegador? El tutor se apaga aquí (en tus otros dispositivos sigue).')){ try{ localStorage.removeItem(AIKEY); }catch(e){} showSettings(); document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'}); } break;
+    case 'aiKeySave': { const v = (document.getElementById('aiKeyIn') || {}).value || '', k = v.trim(), P = aiP();
+      if(k.length < 20 || /\s/.test(k) || (aiProv() === 'claude' && !/^sk-ant-/.test(k))){
+        aiSay(aiProv() === 'claude' ? 'Eso no parece una clave de Claude: empieza por sk-ant-. Cópiala completa desde platform.claude.com → API keys.' : 'Eso no parece una clave de Gemini: cópiala completa desde Google AI Studio.', false); break; }
+      aiSet({[P.keyF]: k, on: true}); aiReopen(); aiTest(); break; }
+    case 'aiKeyDel': { const P = aiP();
+      if(confirm(`¿Quitar la clave de ${P.name} de este navegador? En tus otros dispositivos sigue.`)){ const c = aiCfg(); delete c[P.keyF];
+        try{ localStorage.setItem(AIKEY, JSON.stringify(c)); }catch(e){} aiReopen(); refresh(); }
+      break; }
+    case 'aiProv': aiSet({provider: a.v === 'claude' ? 'claude' : 'gemini'}); aiReopen(); refresh(); break;
     case 'aiTest': aiTest(); break;
     case 'explain': explainOpen(a.c, a.s); break;
     case 'explSend': explSend(); break;
@@ -5949,7 +6043,7 @@ document.addEventListener('change', e => {
   else if(ds.set === 'lplN' && LPL){ LPL.n = e.target.value === 'all' ? 'all' : +e.target.value; renderLessonPlanner(); }
   else if(ds.set === 'lplStart' && LPL){ if(e.target.value) LPL.start = e.target.value; renderLessonPlanner(); }
   else if(ds.set === 'lessonDate'){ if(e.target.value){ setLessonDate(ds.c, ds.s, e.target.value); save(); toast('📅 Planeada para ' + dayLabel(e.target.value)); refresh(); } }
-  else if(ds.set === 'aiModel'){ aiSet({model: e.target.value}); aiSay('Modelo cambiado: pulsa "Probar conexión" para comprobarlo.'); }
+  else if(ds.set === 'aiModel'){ const P = aiP(); aiSet({[ds.tier === 'smart' ? P.smartF : P.fastF]: e.target.value}); aiSay('Modelo cambiado: pulsa "Probar conexión" para comprobarlo.'); }
   else if(ds.set === 'aiOn'){ aiSet({on: e.target.checked}); showSettings(); document.querySelector('.modal [data-ai]')?.scrollIntoView({block: 'start'}); refresh(); }
   else if(ds.set === 'explChk' && EXPL){ const i = +e.target.value; if(e.target.checked) EXPL.self.add(i); else EXPL.self.delete(i);
     const b = document.getElementById('explSelfBtn'); if(b) b.textContent = `Listo: dije ${EXPL.self.size} de ${section(EXPL.c, EXPL.s).keyPoints.length}`; }
